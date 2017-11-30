@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="callbacks.h" />
     <ClInclude Include="hooks.h" />
+    <ClInclude Include="patternfind.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="helpers.h" />
@@ -31,6 +32,7 @@
     <ClCompile Include="callbacks.c" />
     <ClCompile Include="dllmain.c" />
     <ClCompile Include="hooks.c" />
+    <ClCompile Include="patternfind.c" />
     <ClCompile Include="stdafx.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -118,7 +120,7 @@
     <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)inc\phnt;$(SolutionDir)inc\detours;$(SolutionDir)inc\patternfind;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)inc\phnt;$(SolutionDir)inc\detours;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib\detours;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

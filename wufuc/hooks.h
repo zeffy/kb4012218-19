@@ -1,7 +1,5 @@
 #pragma once
 
-#include <phnt_windows.h>
-
 typedef struct tagLANGANDCODEPAGE
 {
         WORD wLanguage;

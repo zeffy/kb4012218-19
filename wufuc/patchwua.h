@@ -1,9 +1,5 @@
 #pragma once
 
-#include <stdbool.h>
-
-#include <phnt_windows.h>
-
 typedef struct tagPatchSet
 {
         const char *Pattern;
