@@ -12,7 +12,6 @@ platform:
   - x86
   - x64
 build:
-  project: wufuc/wufuc.vcxproj
   verbosity: minimal
 before_build:
 - cmd: >-

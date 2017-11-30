@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2008
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wufuc", "wufuc\wufuc.vcxproj", "{00F96695-CE41-4C2F-A344-6219DFB4F887}"
 EndProject
@@ -25,8 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{840C416C-B8F3-42BC-B0DD-F6BB14C9F8CB}") = "wufuc_setup", "wufuc_setup\wufuc_setup.aiproj", "{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -49,18 +47,6 @@ Global
 		{00F96695-CE41-4C2F-A344-6219DFB4F887}.Release|x64.Build.0 = Release|x64
 		{00F96695-CE41-4C2F-A344-6219DFB4F887}.Release|x86.ActiveCfg = Release|Win32
 		{00F96695-CE41-4C2F-A344-6219DFB4F887}.Release|x86.Build.0 = Release|Win32
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.Debug|x64.ActiveCfg = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.Debug|x64.Build.0 = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.Debug|x86.ActiveCfg = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.Debug|x86.Build.0 = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.DefaultBuild|x64.ActiveCfg = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.DefaultBuild|x64.Build.0 = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.DefaultBuild|x86.ActiveCfg = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.DefaultBuild|x86.Build.0 = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.Release|x64.ActiveCfg = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.Release|x64.Build.0 = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.Release|x86.ActiveCfg = All
-		{8F75FC4A-22FF-4CDA-8A09-3BC547E7C29B}.Release|x86.Build.0 = All
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
