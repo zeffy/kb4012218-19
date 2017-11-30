@@ -1,4 +1,7 @@
-version: 0.8.0.{build}
+version: 1.0.0.{build}
+branches:
+  only:
+  - master
 skip_commits:
   files:
     - '**/*.md'
@@ -22,15 +25,15 @@ after_build:
     copy /Y "wufuc\bin\%CONFIGURATION%\%PLATFORM%\wufuc*.dll" "wufuc_setup_bat\"
 
     copy /Y "LICENSE" "wufuc_setup_bat\COPYING.txt"
-    
+
     cd "%APPVEYOR_BUILD_FOLDER%\wufuc_setup_bat"
 
     for /R %%i in (*.txt) do unix2dos "%%i"
-    
+
     for /R %%i in (*.bat) do unix2dos "%%i"
-    
+
     7z a "%BUILD_ZIPFILE%" "..\wufuc_setup_bat"
-    
+
     7z rn "%BUILD_ZIPFILE%" "wufuc_setup_bat" "%APPVEYOR_PROJECT_NAME%"
 artifacts:
   - path: '*.zip'
