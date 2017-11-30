@@ -1,26 +1,13 @@
 #pragma once
 
-#include <stdbool.h>
+bool create_exclusive_mutex(const wchar_t *name, HANDLE *pmutex);
+bool create_event_with_security_descriptor(const wchar_t *descriptor, bool manualreset, bool initialstate, const wchar_t *name, HANDLE *pevent);
 
-#include <phnt_windows.h>
+bool inject_self_into_process(DWORD dwProcessId, HMODULE *phModule);
+bool inject_dll_into_process(DWORD dwProcessId, const wchar_t *pszFilename, size_t nLength, HMODULE *phModule);
 
-bool verify_winver(
-        DWORD dwMajorVersion,
-        DWORD dwMinorVersion,
-        DWORD dwBuildNumber,
-        WORD wServicePackMajor,
-        WORD wServicePackMinor,
-        BYTE MajorVersionCondition,
-        BYTE MinorVersionCondition,
-        BYTE BuildNumberCondition,
-        BYTE ServicePackMajorCondition,
-        BYTE ServicePackMinorCondition
-);
-bool verify_win7(void);
-bool verify_win81(void);
-
-wchar_t *find_fname(wchar_t *pPath);
-bool file_exists(const wchar_t *path);
-int compare_versions(
-        WORD wMajorA, WORD wMinorA, WORD wBuildA, WORD wRevisionA,
-        WORD wMajorB, WORD wMinorB, WORD wBuildB, WORD wRevisionB);
+const wchar_t *path_find_fname(const wchar_t *path);
+bool path_change_fname(const wchar_t *srcpath, const wchar_t *fname, wchar_t *dstpath, size_t size);
+bool path_file_exists(const wchar_t *path);
+bool path_expand_file_exists(const wchar_t *path);
+int ffi_ver_compare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wBuild, WORD wRev);

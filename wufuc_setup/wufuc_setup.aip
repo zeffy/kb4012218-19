@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="14.3" version="14.3" Modules="enterprise" RootPath="." Language="en" Id="{C0F6BB2D-9CA9-48FA-A0A3-1ED9F2CBB431}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="14.3" version="14.4" Modules="enterprise" RootPath="." Language="en" Id="{C0F6BB2D-9CA9-48FA-A0A3-1ED9F2CBB431}">
   <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
     <ROW Name="HiddenItems" Value="AutorunComponent;MultipleInstancesComponent;AppXProductDetailsComponent;AppXDependenciesComponent;AppXAppDetailsComponent;AppXVisualAssetsComponent;AppXCapabilitiesComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent;MsiJavaComponent;AnalyticsComponent;ActSyncAppComponent;UserAccountsComponent;MsiClassComponent;WebApplicationsComponent;MsiOdbcDataSrcComponent;SqlConnectionComponent;SharePointSlnComponent;SilverlightSlnComponent"/>
   </COMPONENT>
@@ -8,7 +8,7 @@
     <ROW Property="AI_ThemeStyle" Value="default" MultiBuildValue="X64Build:classic#X86Build:classic" MsiKey="AI_ThemeStyle"/>
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPCOMMENTS" Value="Enables Windows Update on PCs with unsupported processors." ValueLocId="*"/>
-    <ROW Property="ARPHELPLINK" Value="https://github.com/zeffy/wufuc/issues"/>
+    <ROW Property="ARPHELPLINK" Value="https://github.com/zeffy/wufuc/issues "/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="X64Build:1#X86Build:1"/>
     <ROW Property="ARPPRODUCTICON" Value="msiexec.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="https://github.com/zeffy/wufuc"/>

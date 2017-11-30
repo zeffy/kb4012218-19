@@ -1,104 +1,163 @@
+#include "stdafx.h"
 #include "helpers.h"
+#include <sddl.h>
 
-#include <stdint.h>
-#include <stdbool.h>
-
-#include <phnt_windows.h>
-#include <phnt.h>
-
-bool verify_winver(
-        DWORD dwMajorVersion,
-        DWORD dwMinorVersion,
-        DWORD dwBuildNumber,
-        WORD wServicePackMajor,
-        WORD wServicePackMinor,
-        BYTE MajorVersionCondition,
-        BYTE MinorVersionCondition,
-        BYTE BuildNumberCondition,
-        BYTE ServicePackMajorCondition,
-        BYTE ServicePackMinorCondition
-)
+bool create_exclusive_mutex(const wchar_t *name, HANDLE *pmutex)
 {
-        RTL_OSVERSIONINFOEXW osvi = { 0 };
-        osvi.dwOSVersionInfoSize = sizeof(RTL_OSVERSIONINFOEXW);
+        HANDLE mutex;
 
-        osvi.dwMajorVersion = dwMajorVersion;
-        osvi.dwMinorVersion = dwMinorVersion;
-        osvi.dwBuildNumber = dwBuildNumber;
-        osvi.wServicePackMajor = wServicePackMajor;
-        osvi.wServicePackMinor = wServicePackMinor;
-
-        ULONGLONG ConditionMask = 0;
-        ULONG TypeMask = 0;
-        if ( MajorVersionCondition ) {
-                TypeMask |= VER_MAJORVERSION;
-                VER_SET_CONDITION(ConditionMask, VER_MAJORVERSION, MajorVersionCondition);
+        mutex = CreateMutexW(NULL, TRUE, name);
+        if ( mutex ) {
+                if ( GetLastError() == ERROR_ALREADY_EXISTS ) {
+                        CloseHandle(mutex);
+                        return false;
+                }
+                *pmutex = mutex;
+                return true;
         }
-        if ( MinorVersionCondition ) {
-                TypeMask |= VER_MINORVERSION;
-                VER_SET_CONDITION(ConditionMask, VER_MINORVERSION, MinorVersionCondition);
-        }
-        if ( BuildNumberCondition ) {
-                TypeMask |= VER_BUILDNUMBER;
-                VER_SET_CONDITION(ConditionMask, VER_BUILDNUMBER, BuildNumberCondition);
-        }
-        if ( ServicePackMajorCondition ) {
-                TypeMask |= VER_SERVICEPACKMAJOR;
-                VER_SET_CONDITION(ConditionMask, VER_SERVICEPACKMAJOR, ServicePackMajorCondition);
-        }
-        if ( ServicePackMinorCondition ) {
-                TypeMask |= VER_SERVICEPACKMINOR;
-                VER_SET_CONDITION(ConditionMask, VER_SERVICEPACKMINOR, ServicePackMinorCondition);
-        }
-        return RtlVerifyVersionInfo(&osvi, TypeMask, ConditionMask) == STATUS_SUCCESS;
+        return false;
 }
 
-bool verify_win7(void)
+bool create_event_with_security_descriptor(const wchar_t *descriptor, bool manualreset, bool initialstate, const wchar_t *name, HANDLE *pevent)
 {
-        static bool a, b;
-        if ( !a ) {
-                b = verify_winver(6, 1, 0, 0, 0, VER_EQUAL, VER_EQUAL, 0, 0, 0);
-                a = true;
+        SECURITY_ATTRIBUTES sa = { sizeof sa };
+        HANDLE event;
+
+        if ( ConvertStringSecurityDescriptorToSecurityDescriptorW(descriptor, SDDL_REVISION_1, &sa.lpSecurityDescriptor, NULL) ) {
+                event = CreateEventW(&sa, manualreset, initialstate, name);
+                if ( event ) {
+                        *pevent = event;
+                        return true;
+                }
         }
-        return b;
+        return false;
 }
 
-bool verify_win81(void)
+bool inject_self_into_process(DWORD dwProcessId, HMODULE *phModule)
 {
-        static bool a, b;
-        if ( !a ) {
-                b = verify_winver(6, 3, 0, 0, 0, VER_EQUAL, VER_EQUAL, 0, 0, 0);
-                a = true;
+        wchar_t szFilename[MAX_PATH];
+        DWORD nLength;
+
+        nLength = GetModuleFileNameW(PIMAGEBASE, szFilename, _countof(szFilename));
+
+        if ( nLength )
+                return inject_dll_into_process(dwProcessId, szFilename, nLength, phModule);
+
+        return false;
+}
+
+bool inject_dll_into_process(DWORD dwProcessId, const wchar_t *pszFilename, size_t nLength, HMODULE *phModule)
+{
+        bool result = false;
+        HANDLE hProcess;
+        NTSTATUS Status;
+        LPVOID pBaseAddress;
+        HANDLE hThread;
+        HANDLE hModule = NULL;
+
+        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcessId);
+        if ( !hProcess ) return result;
+
+        Status = NtSuspendProcess(hProcess);
+        if ( !NT_SUCCESS(Status) ) goto L1;
+
+        pBaseAddress = VirtualAllocEx(hProcess, NULL, nLength + (sizeof *pszFilename), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+        if ( !pBaseAddress ) goto L2;
+
+        if ( WriteProcessMemory(hProcess, pBaseAddress, pszFilename, nLength, NULL)
+                && (hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, pBaseAddress, 0, NULL)) ) {
+
+                WaitForSingleObject(hThread, INFINITE);
+                if ( sizeof(DWORD) < sizeof hModule ) {
+
+                } else {
+                        GetExitCodeThread(hThread, (LPDWORD)&hModule);
+                }
+                if ( hModule ) {
+                        result = true;
+                        *phModule = hModule;
+                }
+                CloseHandle(hThread);
         }
-        return b;
+        VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
+L2:     NtResumeProcess(hProcess);
+L1:     CloseHandle(hProcess);
+        return result;
 }
 
-wchar_t *find_fname(wchar_t *pPath)
+const wchar_t *path_find_fname(const wchar_t *path)
 {
-        wchar_t *pwc = wcsrchr(pPath, L'\\');
-        if ( pwc && *(++pwc) )
-                return pwc;
+        const wchar_t *pwc = NULL;
+        if ( path )
+                pwc = (const wchar_t *)wcsrchr(path, L'\\');
 
-        return pPath;
+        return (pwc && *(++pwc)) ? pwc : path;
 }
 
-bool file_exists(const wchar_t *path)
+bool path_change_fname(const wchar_t *srcpath, const wchar_t *fname, wchar_t *dstpath, size_t size)
+{
+        bool result;
+        wchar_t drive[_MAX_DRIVE];
+        wchar_t dir[_MAX_DIR];
+
+        result = !_wsplitpath_s(srcpath, drive, _countof(drive), dir, _countof(dir), NULL, 0, NULL, 0);
+        if ( result )
+                result = !_wmakepath_s(dstpath, size, drive, dir, fname, NULL);
+        return result;
+}
+
+bool path_file_exists(const wchar_t *path)
 {
         return GetFileAttributesW(path) != INVALID_FILE_ATTRIBUTES;
 }
 
-int compare_versions(
-        WORD wMajorA, WORD wMinorA, WORD wBuildA, WORD wRevisionA,
-        WORD wMajorB, WORD wMinorB, WORD wBuildB, WORD wRevisionB
-)
+bool path_expand_file_exists(const wchar_t *path)
 {
-        if ( wMajorA < wMajorB ) return -1;
-        if ( wMajorA > wMajorB ) return 1;
-        if ( wMinorA < wMinorB ) return -1;
-        if ( wMinorA > wMinorB ) return 1;
-        if ( wBuildA < wBuildB ) return -1;
-        if ( wBuildA > wBuildB ) return 1;
-        if ( wRevisionA < wRevisionB ) return -1;
-        if ( wRevisionA > wRevisionB ) return 1;
+        bool result;
+        wchar_t *dst;
+        DWORD buffersize;
+        DWORD size;
+
+        dst = NULL;
+        size = 0;
+        do {
+                if ( size ) {
+                        if ( dst )
+                                free(dst);
+                        dst = calloc(size, sizeof *dst);
+                }
+                buffersize = size;
+                size = ExpandEnvironmentStringsW(path, dst, buffersize);
+        } while ( buffersize < size );
+
+        result = path_file_exists(dst);
+        free(dst);
+        return result;
+}
+
+int ffi_ver_compare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wBuild, WORD wRev)
+{
+        if ( HIWORD(pffi->dwProductVersionMS) < wMajor ) return -1;
+        if ( HIWORD(pffi->dwProductVersionMS) > wMajor ) return 1;
+        if ( LOWORD(pffi->dwProductVersionMS) < wMinor ) return -1;
+        if ( LOWORD(pffi->dwProductVersionMS) > wMinor ) return 1;
+        if ( HIWORD(pffi->dwProductVersionLS) < wBuild ) return -1;
+        if ( HIWORD(pffi->dwProductVersionLS) > wBuild ) return 1;
+        if ( LOWORD(pffi->dwProductVersionLS) < wRev ) return -1;
+        if ( LOWORD(pffi->dwProductVersionLS) > wRev ) return 1;
         return 0;
+}
+
+size_t find_argv_option(const wchar_t **argv, size_t argc, const wchar_t *option)
+{
+        size_t index = -1;
+
+        for ( size_t i = 1; i < argc; i++ ) {
+                if ( !_wcsicmp(argv[i], option) )
+                        index = i;
+        }
+        if ( index == -1 )
+                return index;
+
+        return ++index < argc ? index : -1;
 }

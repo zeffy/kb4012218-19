@@ -2,10 +2,10 @@
 #define WUFUC_RCH_INCLUDED
 #pragma once
 #ifndef BUILD_COMMIT_VERSION
-#define BUILD_COMMIT_VERSION 0.8.0.0
+#define BUILD_COMMIT_VERSION 1.0.0.0
 #endif
 #ifndef BUILD_VERSION_COMMA
-#define BUILD_VERSION_COMMA 0,8,0,0
+#define BUILD_VERSION_COMMA 1,0,0,0
 #endif
 #define STRINGIZE_(x) #x
 #define STRINGIZE(x) STRINGIZE_(x)

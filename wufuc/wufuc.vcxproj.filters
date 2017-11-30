@@ -24,19 +24,19 @@
     <ClInclude Include="callbacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="hooks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tracing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="appverifier.h">
+    <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtl_malloc.h">
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,19 +53,19 @@
     <ClCompile Include="dllmain.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="helpers.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="hooks.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tracing.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rtl_malloc.c">
+    <ClCompile Include="rundll32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rundll32.c">
+    <ClCompile Include="stdafx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="helpers.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

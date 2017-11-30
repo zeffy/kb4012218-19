@@ -1,15 +1,22 @@
+#include "stdafx.h"
 #include "callbacks.h"
+#include "helpers.h"
+#include <Psapi.h>
 
-#include "tracing.h"
-
-#include <phnt_windows.h>
-
-VOID NTAPI VerifierDllLoadCallback(PWSTR DllName, PVOID DllBase, SIZE_T DllSize, PVOID Reserved)
+VOID CALLBACK ServiceNotifyCallback(PSERVICE_NOTIFYW pNotifyBuffer)
 {
-        trace(L"dll load %ls, DllBase=%p, DllSize=%Iu", DllName, DllBase, DllSize);
-}
+        HMODULE hModule;
 
-VOID NTAPI VerifierDllUnloadCallback(PWSTR DllName, PVOID DllBase, SIZE_T DllSize, PVOID Reserved)
-{
-        trace(L"dll unload %ls, DllBase=%p, DllSize=%Iu", DllName, DllBase, DllSize);
+        switch ( pNotifyBuffer->dwNotificationStatus ) {
+        case ERROR_SUCCESS:
+                if ( inject_self_into_process(pNotifyBuffer->ServiceStatus.dwProcessId, &hModule) ) {
+
+                }
+                break;
+        case ERROR_SERVICE_MARKED_FOR_DELETE:
+                SetEvent((HANDLE)pNotifyBuffer->pContext);
+                break;
+        }
+        if ( pNotifyBuffer->pszServiceNames )
+                LocalFree((HLOCAL)pNotifyBuffer->pszServiceNames);
 }
