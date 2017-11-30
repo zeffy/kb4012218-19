@@ -10,6 +10,7 @@
 #include <strsafe.h>
 #include <shellapi.h>
 #include <detours.h>
+#include <patternfind.h>
 
 #include "tracing.h"
 

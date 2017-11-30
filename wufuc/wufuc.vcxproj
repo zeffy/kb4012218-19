@@ -26,7 +26,6 @@
     <ClInclude Include="helpers.h" />
     <ClInclude Include="tracing.h" />
     <ClInclude Include="patchwua.h" />
-    <ClInclude Include="patternfind.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="callbacks.c" />
@@ -42,7 +41,6 @@
     <ClCompile Include="rundll32.c" />
     <ClCompile Include="tracing.c" />
     <ClCompile Include="patchwua.c" />
-    <ClCompile Include="patternfind.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
@@ -120,7 +118,7 @@
     <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)inc\phnt;$(SolutionDir)inc\detours;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)inc\phnt;$(SolutionDir)inc\detours;$(SolutionDir)inc\patternfind;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib\detours;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

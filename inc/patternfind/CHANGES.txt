@@ -1,0 +1,11 @@
+Based on mrexodia's patternfind code originally written in C++
+Licensed under Lesser GNU Public License 3.0
+
+  https://bitbucket.org/mrexodia/patternfind
+
+Changes made:
+
+- Ported to C, removed dependency on C++ type vector<T>
+- Uses stdint.h type uint8_t instead of unsigned char (for readability)
+- Renamed patternfind overloads to patternfind, patternfind_bytes, patternfind_pbyte
+- Added VirtualProtect calls to patternwrite function to prevent access violation exceptions

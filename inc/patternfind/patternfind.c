@@ -165,6 +165,7 @@ bool patternsnr(uint8_t *data, size_t datasize, const char *searchpattern, const
         return true;
 }
 
+__declspec(noinline)
 size_t patternfind_pbyte(uint8_t *data, size_t datasize, const PatternByte *pattern, size_t searchpatternsize)
 {
         for ( size_t i = 0, pos = 0; i < datasize; i++ ) { //search for the pattern

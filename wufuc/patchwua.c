@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "patchwua.h"
-#include "patternfind.h"
 
 #ifdef _M_AMD64
 static const PatchSet X64PatchSet = { "FFF3 4883EC?? 33DB 391D???????? 7508 8B05????????", 0xA, 0x12 };
