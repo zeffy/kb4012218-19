@@ -9,7 +9,7 @@ Disables the "Unsupported Hardware" message in Windows Update, and allows you to
 
 **[Latest stable build](https://github.com/zeffy/wufuc/releases/latest) - Most people will want this version.**
 
-[Unstable builds](https://ci.appveyor.com/project/zeffy/wufuc) - Most likely contains bugs; do not report issues with these builds.
+[Unstable builds](https://ci.appveyor.com/project/zeffy/wufuc) - Probably contains bugs; do not report issues with these builds.
 
 ## Donate
 
