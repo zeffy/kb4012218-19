@@ -34,7 +34,7 @@ if /I "%1"=="/UNATTENDED" set "UNATTENDED=1"
 if /I "%1"=="/NORESTART" set "NORESTART=1"
 shift /1
 goto :loop_args
-        
+
 :check_requirements
 echo Checking system requirements...
 
@@ -107,14 +107,14 @@ if "%UNINSTALL%"=="1" goto :confirm_uninstall
 :confirm_install
 if "%UNATTENDED%"=="1" goto :install
 echo.
-echo wufuc disables the "Unsupported Hardware" message in Windows Update, 
+echo wufuc disables the "Unsupported Hardware" message in Windows Update,
 echo and allows you to continue installing updates on Windows 7 and 8.1
 echo systems with Intel Kaby Lake, AMD Ryzen, or other unsupported processors.
 echo.
 echo Please be absolutely sure you really need wufuc before proceeding.
 echo.
 for /f "tokens=*" %%i in ('wmic /output:stdout datafile where "name='%wufuc_dll_fullpath:\=\\%'" get Version /value ^| find "="') do set "%%i"
-set /p CONTINUE_INSTALL=Enter 'Y' if you want to install wufuc %Version%: 
+set /p CONTINUE_INSTALL=Enter 'Y' if you want to install wufuc %Version%:
 if /I "%CONTINUE_INSTALL%"=="Y" goto :install
 goto :cancel
 
@@ -133,7 +133,7 @@ goto :confirm_restart
 :confirm_uninstall
 if "%UNATTENDED%"=="1" goto :uninstall_stub
 echo.
-set /p CONTINUE_UNINSTALL=Enter 'Y' if you want to uninstall wufuc: 
+set /p CONTINUE_UNINSTALL=Enter 'Y' if you want to uninstall wufuc:
 if /I "%CONTINUE_UNINSTALL%"=="Y" goto :uninstall_stub
 goto :cancel
 
@@ -169,7 +169,7 @@ goto :confirm_restart
 if "%NORESTART%"=="1" goto :die
 if "%UNATTENDED%"=="1" goto :restart
 echo.
-set /p CONTINUE_RESTART=Enter 'Y' if you would like to restart now: 
+set /p CONTINUE_RESTART=Enter 'Y' if you would like to restart now:
 if /I "%CONTINUE_RESTART%"=="Y" goto :restart
 goto :die
 :restart
