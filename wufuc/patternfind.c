@@ -94,7 +94,6 @@ static inline bool patternmatchbyte(uint8_t byte, const PatternByte pbyte)
         return (matched == 2);
 }
 
-__declspec(noinline)
 size_t patternfind(uint8_t *data, size_t datasize, const char *pattern)
 {
         size_t searchpatternsize = formathexpattern(pattern, NULL, 0) / 2;

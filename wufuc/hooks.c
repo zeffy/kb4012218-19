@@ -1,141 +1,88 @@
 #include "stdafx.h"
 #include "hooks.h"
-#include "patchwua.h"
 #include "helpers.h"
-
-#include <Psapi.h>
 
 LPFN_REGQUERYVALUEEXW g_pfnRegQueryValueExW;
 LPFN_LOADLIBRARYEXW g_pfnLoadLibraryExW;
+LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceable;
 
 LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
 {
+        PWCH pBuffer = NULL;
+        DWORD MaximumLength = 0;
         LSTATUS result;
-        DWORD cbData;
-        NTSTATUS Status;
         ULONG ResultLength;
         PKEY_NAME_INFORMATION pkni;
-        size_t BufferCount;
+        size_t NameCount;
         int current;
         int pos;
-        wchar_t *tmp;
-        size_t MaxCount;
-        size_t cbLength;
+        LPWSTR fname;
+        const WCHAR realpath[] = L"%systemroot%\\system32\\wuaueng.dll";
 
-        if ( (lpData && lpcbData)
-                && (lpValueName && !_wcsicmp(lpValueName, L"ServiceDll")) ) {
+        trace(L"");
 
-                // store original lpData buffer size
-                cbData = *lpcbData;
+        // save original buffer size
+        if ( lpData && lpcbData )
+                MaximumLength = *lpcbData;
+        trace(L"");
 
-                // this way the dll path is guaranteed to be null-terminated
-                result = RegGetValueW(hKey, NULL, lpValueName, RRF_RT_REG_EXPAND_SZ | RRF_NOEXPAND, lpType, lpData, lpcbData);
-                if ( result != ERROR_SUCCESS )
-                        goto L1;
+        result = g_pfnRegQueryValueExW(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
 
-                pkni = NULL;
-                ResultLength = 0;
-                do {
-                        if ( ResultLength ) {
-                                if ( pkni )
-                                        free(pkni);
-                                pkni = malloc(ResultLength);
-                        }
-                        Status = NtQueryKey((HANDLE)hKey, KeyNameInformation, pkni, ResultLength, &ResultLength);
-                } while ( Status == STATUS_BUFFER_OVERFLOW || Status == STATUS_BUFFER_TOO_SMALL );
-                if ( !NT_SUCCESS(Status) )
-                        goto L2;
+        if ( result != ERROR_SUCCESS || !MaximumLength || !lpValueName || _wcsicmp(lpValueName, L"ServiceDll") )
+                return result;
+        trace(L"");
 
-                BufferCount = pkni->NameLength / sizeof(wchar_t);
-                // change key name to lower-case because there is no case-insensitive version of _snwscanf_s
-                if ( !_wcslwr_s(pkni->Name, BufferCount) && _snwscanf_s(pkni->Name, BufferCount,
-                        L"\\registry\\machine\\system\\controlset%03d\\services\\wuauserv\\parameters%n", &current, &pos) == 1
-                        && pos == BufferCount ) {
+        pBuffer = (wchar_t *)lpData;
+        trace(L"");
 
-                        const wchar_t *fname = path_find_fname((wchar_t *)lpData);
+        // get name of registry key being queried
+        pkni = NtQueryKeyAlloc((HANDLE)hKey, KeyNameInformation, &ResultLength);
+        trace(L"");
+        if ( !pkni )
+                return result;
+        trace(L"");
 
-                        if ( !_wcsicmp(fname, L"wuaueng2.dll") // UpdatePack7R2
-                                || !_wcsicmp(fname, L"WuaCpuFix64.dll") // WuaCpuFix
-                                || !_wcsicmp(fname, L"WuaCpuFix.dll") ) {
+        NameCount = pkni->NameLength / sizeof *pkni->Name;
+        // change key name to lower-case because there is no case-insensitive version of _snwscanf_s
+        if ( !_wcslwr_s(pkni->Name, NameCount)
+                && _snwscanf_s(pkni->Name, NameCount, L"\\registry\\machine\\system\\controlset%03d\\services\\wuauserv\\parameters%n", &current, &pos) == 1
+                && pos == NameCount ) {
 
-                                MaxCount = cbData / sizeof(wchar_t);
-                                tmp = malloc(cbData);
-                                path_change_fname((wchar_t *)lpData, L"wuaueng.dll", tmp, MaxCount);
-                                if ( path_expand_file_exists(tmp)
-                                        && !wcscpy_s((wchar_t *)lpData, MaxCount, tmp)
-                                        && SUCCEEDED(StringCbLengthW((PNZWCH)lpData, cbData, &cbLength)) ) {
+                trace(L"key=%.*ls", NameCount, pkni->Name);
 
-                                        *lpcbData = (DWORD)(cbLength + (sizeof UNICODE_NULL));
-                                }
-                                free(tmp);
-                        }
+                fname = PathFindFileNameW(pBuffer);
+
+                trace(L"fname=%ls", fname);
+
+                if ( (!_wcsicmp(fname, L"wuaueng2.dll") // UpdatePack7R2
+                        || !_wcsicmp(fname, L"WuaCpuFix64.dll") // WuaCpuFix 64-bit
+                        || !_wcsicmp(fname, L"WuaCpuFix.dll"))
+                        && FileExistsExpandEnvironmentStrings(realpath)
+                        && SUCCEEDED(StringCbCopyW(pBuffer, MaximumLength, realpath)) ) {
+                        trace(L"");
+
+                        *lpcbData = sizeof realpath;
                 }
-L2:             free(pkni);
-        } else {
-                // handle normally
-                result = g_pfnRegQueryValueExW(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
         }
-L1:     return result;
+        free(pkni);
+        return result;
 }
 
 HMODULE WINAPI LoadLibraryExW_hook(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFlags)
 {
         HMODULE result;
-        DWORD dwLen;
-        LPVOID pBlock;
-        PLANGANDCODEPAGE ptl;
-        UINT cb;
-        wchar_t lpSubBlock[38];
-        wchar_t *lpszInternalName;
-        UINT uLen;
-        VS_FIXEDFILEINFO *pffi;
-        wchar_t path[MAX_PATH];
-        const wchar_t *fname;
-        MODULEINFO modinfo;
 
         result = g_pfnLoadLibraryExW(lpFileName, hFile, dwFlags);
-        if ( !result ) {
-                trace(L"Failed to load library: %ls (error code=%08X)", lpFileName, GetLastError());
-                goto L1;
-        }
+        if ( !result ) return result;
 
         trace(L"Loaded library: %ls", lpFileName);
-        dwLen = GetFileVersionInfoSizeW(lpFileName, NULL);
-        if ( !dwLen )
-                goto L1;
-
-        pBlock = malloc(dwLen);
-
-        if ( !GetFileVersionInfoW(lpFileName, 0, dwLen, pBlock)
-                || !VerQueryValueW(pBlock, L"\\VarFileInfo\\Translation", (LPVOID *)&ptl, &cb) )
-                goto L2;
-
-        for ( size_t i = 0; i < (cb / sizeof(LANGANDCODEPAGE)); i++ ) {
-                swprintf_s(lpSubBlock, _countof(lpSubBlock),
-                        L"\\StringFileInfo\\%04x%04x\\InternalName",
-                        ptl[i].wLanguage,
-                        ptl[i].wCodePage);
-
-                if ( VerQueryValueW(pBlock, lpSubBlock, (LPVOID *)&lpszInternalName, &uLen)
-                        && !_wcsicmp(lpszInternalName, L"wuaueng.dll") ) {
-
-                        VerQueryValueW(pBlock, L"\\", (LPVOID *)&pffi, &uLen);
-                        GetModuleFileNameW(result, path, _countof(path));
-                        fname = path_find_fname(path);
-
-                        if ( (/*verify_win7() &&*/ ffi_ver_compare(pffi, 7, 6, 7601, 23714) != -1)
-                                || (/*verify_win81() &&*/ ffi_ver_compare(pffi, 7, 9, 9600, 18621) != -1) ) {
-
-                                if ( GetModuleInformation(GetCurrentProcess(), result, &modinfo, sizeof(MODULEINFO)) ) {
-                                        if ( !patch_wua(modinfo.lpBaseOfDll, modinfo.SizeOfImage, fname) )
-                                                trace(L"Failed to patch %ls!", fname);
-                                }
-                        }
-                        break;
-                }
+        if ( FindIsDeviceServiceablePtr(lpFileName, result, (PVOID *)&g_pfnIsDeviceServiceable) ) {
+                DetourTransactionBegin();
+                DetourUpdateThread(GetCurrentThread());
+                DetourAttach((PVOID *)&g_pfnIsDeviceServiceable, IsDeviceServiceable_hook);
+                DetourTransactionCommit();
         }
-L2:     free(pBlock);
-L1:     return result;
+        return result;
 }
 
 BOOL WINAPI IsDeviceServiceable_hook(void)

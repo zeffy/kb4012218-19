@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="patchwua.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="callbacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -41,9 +38,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="patchwua.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="callbacks.c">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -6,19 +6,44 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
 {
         HANDLE hMutex;
         HANDLE hEvent;
-        bool Unloading;
+        DWORD cbBufSize;
+        LPQUERY_SERVICE_CONFIGW pServiceConfig;
+        wchar_t GroupName[256];
+        DWORD dwProcessId;
+        bool Unloading = false;
         bool Lagging;
         SC_HANDLE hSCM;
         SC_HANDLE hService;
         SERVICE_NOTIFYW NotifyBuffer;
 
-        if ( !create_exclusive_mutex(L"Global\\{25020063-B5A7-4227-9FDF-25CB75E8C645}", &hMutex) )
+        if ( !CreateExclusiveMutex(L"Global\\{25020063-B5A7-4227-9FDF-25CB75E8C645}", &hMutex) )
                 return;
 
-        if ( !create_event_with_security_descriptor(L"D:(A;;0x001F0003;;;BA)", true, false, L"Global\\wufuc_UnloadEvent", &hEvent) )
+        if ( !CreateEventWithStringSecurityDescriptor(L"D:(A;;0x001F0003;;;BA)", true, false, L"Global\\wufuc_UnloadEvent", &hEvent) )
                 goto L1;
 
-        Unloading = false;
+        //hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
+        //if ( hSCM ) {
+        //        trace(L"hSCM=%p", hSCM);
+        //        pServiceConfig = QueryServiceConfigByNameAlloc(hSCM, L"wuauserv", &cbBufSize);
+        //        trace(L"pServiceConfig=%p", pServiceConfig);
+        //        if ( pServiceConfig ) {
+        //                // inject into existing service host process if wuauserv is configured as shared process
+        //                trace(L"pServiceConfig->dwServiceType=%lu", pServiceConfig->dwServiceType);
+        //                if ( pServiceConfig->dwServiceType == SERVICE_WIN32_SHARE_PROCESS
+        //                        && QueryServiceGroupName(pServiceConfig, GroupName, _countof(GroupName)) ) {
+        //                        trace(L"GroupName=%ls", GroupName);
+
+        //                        dwProcessId = InferSvchostGroupProcessId(hSCM, GroupName);
+        //                        trace(L"dwProcessId=%lu", dwProcessId);
+        //                        if ( dwProcessId )
+        //                                InjectSelfAndCreateRemoteThread(dwProcessId, StartAddress, hEvent, SYNCHRONIZE);
+        //                }
+        //                free(pServiceConfig);
+        //        }
+        //        CloseServiceHandle(hSCM);
+        //}
+
         do {
                 Lagging = false;
                 hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ENUMERATE_SERVICE);
@@ -57,12 +82,12 @@ L1:     ReleaseMutex(hMutex);
 
 void CALLBACK RUNDLL32_UnloadW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
 {
-        HANDLE event;
+        HANDLE hEvent;
 
-        event = OpenEventW(EVENT_MODIFY_STATE, FALSE, L"Global\\wufuc_UnloadEvent");
-        if ( event ) {
-                SetEvent(event);
-                CloseHandle(event);
+        hEvent = OpenEventW(EVENT_MODIFY_STATE, FALSE, L"Global\\wufuc_UnloadEvent");
+        if ( hEvent ) {
+                SetEvent(hEvent);
+                CloseHandle(hEvent);
         }
 }
 

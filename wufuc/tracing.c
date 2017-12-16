@@ -1,13 +1,20 @@
 #include "stdafx.h"
 #include "tracing.h"
 
+static FILE *steam;
+
 void trace_(const wchar_t *const format, ...)
 {
         va_list argptr;
+        int count;
+        wchar_t *buffer;
+
         va_start(argptr, format);
-        int count = _vscwprintf(format, argptr) + 1;
-        wchar_t *buffer = calloc(count, sizeof(wchar_t));
+
+        count = _vscwprintf(format, argptr) + 1;
+        buffer = calloc(count, sizeof *buffer);
         vswprintf_s(buffer, count, format, argptr);
+
         va_end(argptr);
         OutputDebugStringW(buffer);
         free(buffer);

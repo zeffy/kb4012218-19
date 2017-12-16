@@ -61,7 +61,7 @@ set "wufuc_dll=wufuc64.dll"
 
 :dll_exists
 set "wufuc_dll_fullpath=%~dp0%wufuc_dll%"
-if exist "%wufuc_dll_fullpath%" goto :check_winver
+if exist "%wufuc_dll_fullpath%" goto :xml_exists
 
 echo ERROR - Could not find %wufuc_dll_fullpath%!
 echo.
@@ -75,6 +75,19 @@ echo.
 echo AVG ^(and possibly other anti-virus^) users:
 echo This error could also mean that your anti-virus deleted or quarantined %wufuc_dll%
 echo in which case, you will need to make an exception and restore it.
+goto :die
+
+:xml_exists
+for /f "tokens=*" %%i in ('wmic /output:stdout datafile where "name='%wufuc_dll_fullpath:\=\\%'" get Version /value ^| find "="') do set "%%i"
+set "wufuc_xml=%~dp0wufuc_ScheduledTask.xml"
+if exist "%wufuc_xml%" goto :check_winver
+
+echo ERROR - Could not find %wufuc_xml%!
+echo.
+echo This most likely means you didn't extract all the files from the archive.
+echo.
+echo Please extract all the files from wufuc_v%Version%.zip to a permanent
+echo location like C:\Program Files\wufuc and try again.
 goto :die
 
 :check_winver
@@ -98,8 +111,7 @@ echo.
 goto :die
 
 :check_mode
-set "regkey=HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\svchost.exe"
-set "wufuc_dll_target=%systemfolder%\%wufuc_dll%"
+set "wufuc_task=wufuc.{72EEE38B-9997-42BD-85D3-2DD96DA17307}"
 
 if "%UNINSTALL%"=="1" goto :confirm_uninstall
 
@@ -113,19 +125,24 @@ echo systems with Intel Kaby Lake, AMD Ryzen, or other unsupported processors.
 echo.
 echo Please be absolutely sure you really need wufuc before proceeding.
 echo.
-for /f "tokens=*" %%i in ('wmic /output:stdout datafile where "name='%wufuc_dll_fullpath:\=\\%'" get Version /value ^| find "="') do set "%%i"
-set /p CONTINUE_INSTALL=Enter 'Y' if you want to install wufuc %Version%:
+set /p CONTINUE_INSTALL=Enter 'Y' if you want to install wufuc %Version%: 
 if /I "%CONTINUE_INSTALL%"=="Y" goto :install
 goto :cancel
 
 :install
 call :uninstall
-copy /Y "%wufuc_dll_fullpath%" "%wufuc_dll_target%" && (
-        reg add "%regkey%" /v VerifierDlls /t REG_SZ /d "%wufuc_dll%" /f
-        reg add "%regkey%" /v GlobalFlag /t REG_DWORD /d 0x00000100 /f
-)
+net start Schedule
+schtasks /Create /XML "%wufuc_xml%" /TN "%wufuc_task%" /F
+schtasks /Change /TN "%wufuc_task%" /TR "'%systemroot%\System32\rundll32.exe' """%wufuc_dll_fullpath%""",RUNDLL32_Start"
+schtasks /Change /TN "%wufuc_task%" /ENABLE
+rundll32 "%wufuc_dll_fullpath%",RUNDLL32_Unload
+net stop wuauserv
+schtasks /Run /TN "%wufuc_task%"
+
+timeout /nobreak /t 3 >nul
+net start wuauserv
 echo.
-echo You will need to restart your PC to finish installing wufuc.
+echo You may need to restart your PC to finish installing wufuc.
 goto :confirm_restart
 :: END INSTALL MODE ///////////////////////////////////////////////////////////
 
@@ -133,26 +150,27 @@ goto :confirm_restart
 :confirm_uninstall
 if "%UNATTENDED%"=="1" goto :uninstall_stub
 echo.
-set /p CONTINUE_UNINSTALL=Enter 'Y' if you want to uninstall wufuc:
+set /p CONTINUE_UNINSTALL=Enter 'Y' if you want to uninstall wufuc: 
 if /I "%CONTINUE_UNINSTALL%"=="Y" goto :uninstall_stub
 goto :cancel
 
 :uninstall_stub
 call :uninstall
-echo You will need to restart your PC to finish uninstalling wufuc.
+echo You may need to restart your PC to finish uninstalling wufuc.
 goto :confirm_restart
 
 :uninstall
         :: restore wuaueng.dll if it was modified by 0.1-0.5
         sfc /SCANFILE="%systemfolder%\wuaueng.dll"
 
-        :: remove traces of wufuc 0.6-0.7
-        set "wufuc_task=wufuc.{72EEE38B-9997-42BD-85D3-2DD96DA17307}"
+        :: remove traces of wufuc 0.6-0.7, 0.9.999+
         schtasks /Query /TN "%wufuc_task%" >nul 2>&1 && (
         schtasks /Delete /TN "%wufuc_task%" /F )
-        rundll32 "%wufuc_dll_fullpath%",RUNDLL32_LegacyUnload
+        rundll32 "%wufuc_dll_fullpath%",RUNDLL32_Unload
 
-        :: remove traces of wufuc >=0.8
+        :: remove traces of wufuc 0.8.x
+        set "regkey=HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\svchost.exe"
+        set "wufuc_dll_target=%systemfolder%\%wufuc_dll%"
         reg query "%regkey%" >nul 2>&1 || goto :delete_target
         reg delete "%regkey%" /f || goto :skip_delete
 :delete_target
@@ -169,7 +187,7 @@ goto :confirm_restart
 if "%NORESTART%"=="1" goto :die
 if "%UNATTENDED%"=="1" goto :restart
 echo.
-set /p CONTINUE_RESTART=Enter 'Y' if you would like to restart now:
+set /p CONTINUE_RESTART=Enter 'Y' if you would like to restart now: 
 if /I "%CONTINUE_RESTART%"=="Y" goto :restart
 goto :die
 :restart

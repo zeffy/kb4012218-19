@@ -1,15 +1,15 @@
 # wufuc
-[![Donate Bitcoin](https://cdn.rawgit.com/zeffy/wufuc/badges/bitcoin.svg)](https://admin.gear.mycelium.com/gateways/3554/orders/new) [![AppVeyor Builds](https://img.shields.io/appveyor/ci/zeffy/wufuc.svg?logo=appveyor&style=flat-square)](https://ci.appveyor.com/project/zeffy/wufuc) [![Chat on Telegram](https://cdn.rawgit.com/zeffy/wufuc/badges/telegram.svg)](https://t.me/joinchat/HEo6LUvV_83O92WzbYXLeQ) [![All Releases](https://img.shields.io/github/downloads/zeffy/wufuc/total.svg?style=flat-square)](https://github.com/zeffy/wufuc/releases/latest)
+[![Donate Bitcoin](https://cdn.rawgit.com/zeffy/wufuc/badges/bitcoin.svg)](https://admin.gear.mycelium.com/gateways/3554/orders/new) [![AppVeyor Builds](https://img.shields.io/appveyor/ci/zeffy/wufuc.svg?logo=appveyor&style=flat-square)][AppVeyor] [![Chat on Telegram](https://cdn.rawgit.com/zeffy/wufuc/badges/telegram.svg)](https://t.me/joinchat/HEo6LUvV_83O92WzbYXLeQ) [![All Releases](https://img.shields.io/github/downloads/zeffy/wufuc/total.svg?style=flat-square)][Latest]
 
-**English** | [Community translations](https://github.com/zeffy/wufuc/wiki)
+This document is also available in [简体中文], [繁体中文], [русский], [Español] and [more...](https://github.com/zeffy/wufuc/wiki)
 
 Disables the "Unsupported Hardware" message in Windows Update, and allows you to continue installing updates on Windows 7 and 8.1 systems with Intel Kaby Lake, AMD Ryzen, or other unsupported processors.
 
 ## Downloads 
 
-**[Latest stable build](https://github.com/zeffy/wufuc/releases/latest) - Most people will want this version.**
+**[Latest stable build][Latest] - Most people will want this version.**
 
-[Unstable builds](https://ci.appveyor.com/project/zeffy/wufuc) - Probably contains bugs; do not report issues with these builds.
+[Unstable builds][AppVeyor] - Probably contains bugs; do not report issues with these builds.
 
 ## Donate
 
@@ -96,12 +96,19 @@ There was a fundamental issue with the method I tried using in this version that
 
 ## Sponsors
 
-### [Advanced Installer](http://www.advancedinstaller.com/)
+### [Advanced Installer](https://www.advancedinstaller.com/)
 
 The installer packages are created with Advanced Installer using an [open source license](http://www.advancedinstaller.com/free-license.html). 
-Advanced Installer's intuitive and friendly user interface allowed me to quickly create a feature complete installer with minimal effort. [Check it out!](http://www.advancedinstaller.com/)
+Advanced Installer's intuitive and friendly user interface allowed me to quickly create a feature complete installer with minimal effort. Check it out!
 
 ## Special thanks
 
 - Wen Jia Liu ([@wj32](https://github.com/wj32)) for his awesome program [Process Hacker](https://github.com/processhacker2/processhacker) which has been absolutely instrumental in the development of wufuc, and also for his [`phnt`](https://github.com/processhacker2/processhacker/tree/master/phnt) headers.
 - Duncan Ogilvie ([@mrexodia](https://github.com/mrexodia)) for his [`patternfind.cpp`](https://github.com/x64dbg/x64dbg/blob/development/src/dbg/patternfind.cpp) algorithm from [x64dbg](https://github.com/x64dbg/x64dbg).
+
+[Latest]: https://github.com/zeffy/wufuc/releases/latest
+[AppVeyor]: https://ci.appveyor.com/project/zeffy/wufuc
+[简体中文]: https://github.com/zeffy/wufuc/wiki/README-(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
+[繁体中文]: https://github.com/zeffy/wufuc/wiki/README-(%E7%B9%81%E9%AB%94%E4%B8%AD%E6%96%87)
+[русский]: https://github.com/zeffy/wufuc/wiki/README-(%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
+[Español]: https://github.com/zeffy/wufuc/wiki/README-(Espa%C3%B1ol)

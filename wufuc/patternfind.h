@@ -2,7 +2,7 @@
 
 typedef struct
 {
-        struct PatternNibble
+        struct
         {
                 uint8_t data;
                 bool wildcard;

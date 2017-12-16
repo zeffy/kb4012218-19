@@ -26,7 +26,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="helpers.h" />
     <ClInclude Include="tracing.h" />
-    <ClInclude Include="patchwua.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="callbacks.c" />
@@ -42,7 +41,6 @@
     <ClCompile Include="helpers.c" />
     <ClCompile Include="rundll32.c" />
     <ClCompile Include="tracing.c" />
-    <ClCompile Include="patchwua.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
@@ -157,7 +155,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>ntdll.lib;version.lib;detours.X86.MTd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;version.lib;Shlwapi.lib;detours.X86.MTd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>X86;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -179,7 +177,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>ntdll.lib;version.lib;detours.X64.MTd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;version.lib;Shlwapi.lib;detours.X64.MTd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -209,7 +207,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>ntdll.lib;version.lib;detours.X86.MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;version.lib;Shlwapi.lib;detours.X86.MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SetChecksum>true</SetChecksum>
     </Link>
     <ResourceCompile>
@@ -238,7 +236,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>ntdll.lib;version.lib;detours.X64.MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ntdll.lib;version.lib;Shlwapi.lib;detours.X64.MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SetChecksum>true</SetChecksum>
     </Link>
     <ResourceCompile>
