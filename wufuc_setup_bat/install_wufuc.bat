@@ -14,7 +14,8 @@
 :: You should have received a copy of the GNU General Public License
 :: along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+set /p wufuc_version=<"%~dp0version.txt"
+title wufuc v%wufuc_version% Setup
 echo Copyright ^(C^) 2017 zeffy
 echo This program comes with ABSOLUTELY NO WARRANTY.
 echo This is free software, and you are welcome to redistribute it
@@ -78,7 +79,6 @@ echo in which case, you will need to make an exception and restore it.
 goto :die
 
 :xml_exists
-for /f "tokens=*" %%i in ('wmic /output:stdout datafile where "name='%wufuc_dll_fullpath:\=\\%'" get Version /value ^| find "="') do set "%%i"
 set "wufuc_xml=%~dp0wufuc_ScheduledTask.xml"
 if exist "%wufuc_xml%" goto :check_winver
 
@@ -86,7 +86,7 @@ echo ERROR - Could not find %wufuc_xml%!
 echo.
 echo This most likely means you didn't extract all the files from the archive.
 echo.
-echo Please extract all the files from wufuc_v%Version%.zip to a permanent
+echo Please extract all the files from wufuc_v%wufuc_version%.zip to a permanent
 echo location like C:\Program Files\wufuc and try again.
 goto :die
 
@@ -112,6 +112,7 @@ goto :die
 
 :check_mode
 set "wufuc_task=wufuc.{72EEE38B-9997-42BD-85D3-2DD96DA17307}"
+set "space= "
 
 if "%UNINSTALL%"=="1" goto :confirm_uninstall
 
@@ -125,7 +126,7 @@ echo systems with Intel Kaby Lake, AMD Ryzen, or other unsupported processors.
 echo.
 echo Please be absolutely sure you really need wufuc before proceeding.
 echo.
-set /p CONTINUE_INSTALL=Enter 'Y' if you want to install wufuc %Version%: 
+set /p CONTINUE_INSTALL=Enter 'Y' if you want to install wufuc %wufuc_version%:%space%
 if /I "%CONTINUE_INSTALL%"=="Y" goto :install
 goto :cancel
 
@@ -135,7 +136,6 @@ net start Schedule
 schtasks /Create /XML "%wufuc_xml%" /TN "%wufuc_task%" /F
 schtasks /Change /TN "%wufuc_task%" /TR "'%systemroot%\System32\rundll32.exe' """%wufuc_dll_fullpath%""",RUNDLL32_Start"
 schtasks /Change /TN "%wufuc_task%" /ENABLE
-rundll32 "%wufuc_dll_fullpath%",RUNDLL32_Unload
 net stop wuauserv
 schtasks /Run /TN "%wufuc_task%"
 
@@ -150,7 +150,7 @@ goto :confirm_restart
 :confirm_uninstall
 if "%UNATTENDED%"=="1" goto :uninstall_stub
 echo.
-set /p CONTINUE_UNINSTALL=Enter 'Y' if you want to uninstall wufuc: 
+set /p CONTINUE_UNINSTALL=Enter 'Y' if you want to uninstall wufuc:%space%
 if /I "%CONTINUE_UNINSTALL%"=="Y" goto :uninstall_stub
 goto :cancel
 
@@ -187,7 +187,7 @@ goto :confirm_restart
 if "%NORESTART%"=="1" goto :die
 if "%UNATTENDED%"=="1" goto :restart
 echo.
-set /p CONTINUE_RESTART=Enter 'Y' if you would like to restart now: 
+set /p CONTINUE_RESTART=Enter 'Y' if you would like to restart now:%space%
 if /I "%CONTINUE_RESTART%"=="Y" goto :restart
 goto :die
 :restart

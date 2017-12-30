@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "tracing.h"
 
-static FILE *steam;
-
 void trace_(const wchar_t *const format, ...)
 {
         va_list argptr;

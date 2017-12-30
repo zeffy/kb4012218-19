@@ -3,57 +3,45 @@
 #include "hooks.h"
 #include <sddl.h>
 
-bool CreateExclusiveMutex(const wchar_t *name, HANDLE *pmutex)
+bool InitializeMutex(bool InitialOwner, const wchar_t *pMutexName, HANDLE *phMutex)
 {
-        HANDLE mutex;
+        HANDLE hMutex;
 
-        mutex = CreateMutexW(NULL, TRUE, name);
-        if ( mutex ) {
+        hMutex = CreateMutexW(NULL, InitialOwner, pMutexName);
+        if ( hMutex ) {
                 if ( GetLastError() == ERROR_ALREADY_EXISTS ) {
-                        CloseHandle(mutex);
+                        CloseHandle(hMutex);
                         return false;
                 }
-                *pmutex = mutex;
+                *phMutex = hMutex;
                 return true;
         }
         return false;
 }
 
-bool CreateEventWithStringSecurityDescriptor(const wchar_t *descriptor, bool manualreset, bool initialstate, const wchar_t *name, HANDLE *pevent)
+bool CreateEventWithStringSecurityDescriptor(
+        const wchar_t *pStringSecurityDescriptor,
+        bool ManualReset,
+        bool InitialState,
+        const wchar_t *pName,
+        HANDLE *phEvent)
 {
         SECURITY_ATTRIBUTES sa = { sizeof sa };
         HANDLE event;
 
-        if ( ConvertStringSecurityDescriptorToSecurityDescriptorW(descriptor, SDDL_REVISION_1, &sa.lpSecurityDescriptor, NULL) ) {
-                event = CreateEventW(&sa, manualreset, initialstate, name);
+        if ( ConvertStringSecurityDescriptorToSecurityDescriptorW(
+                pStringSecurityDescriptor,
+                SDDL_REVISION_1,
+                &sa.lpSecurityDescriptor,
+                NULL) ) {
+
+                event = CreateEventW(&sa, ManualReset, InitialState, pName);
                 if ( event ) {
-                        *pevent = event;
+                        *phEvent = event;
                         return true;
                 }
         }
         return false;
-}
-
-bool FileExists(const wchar_t *path)
-{
-        return GetFileAttributesW(path) != INVALID_FILE_ATTRIBUTES;
-}
-
-bool FileExistsExpandEnvironmentStrings(const wchar_t *path)
-{
-        bool result;
-        LPWSTR dst;
-        DWORD buffersize;
-        DWORD size;
-
-        buffersize = ExpandEnvironmentStringsW(path, NULL, 0);
-        dst = calloc(buffersize, sizeof *dst);
-        size = ExpandEnvironmentStringsW(path, dst, buffersize);
-        if ( !size || size > buffersize )
-                return false;
-        result = FileExists(dst);
-        free(dst);
-        return result;
 }
 
 int FileInfoVerCompare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wBuild, WORD wRev)
@@ -69,140 +57,267 @@ int FileInfoVerCompare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wB
         return 0;
 }
 
-bool FindIsDeviceServiceablePtr(const wchar_t *pFilename, HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
+bool GetVersionInfoFromHModule(HMODULE hModule, LPCWSTR pszSubBlock, LPVOID pData, PUINT pcbData)
 {
         bool result = false;
-        DWORD dwLen;
-        LPVOID pBlock;
-        PLANGANDCODEPAGE ptl;
-        UINT cb;
-        wchar_t SubBlock[38];
-        wchar_t *pInternalName;
+        UINT cbData;
+        HRSRC hResInfo;
+        DWORD dwSize;
+        HGLOBAL hResData;
+        LPVOID pRes;
+        LPVOID pCopy;
+        LPVOID pBuffer;
         UINT uLen;
-        VS_FIXEDFILEINFO *pffi;
-        bool is_win7 = false;
-        bool is_win81 = false;
-        size_t n;
-        char szModule[MAX_PATH];
-        LPFN_ISDEVICESERVICEABLE pfnIsDeviceServiceable = NULL;
-        MODULEINFO modinfo;
-        const char *pattern;
-        size_t offset;
 
-        dwLen = GetFileVersionInfoSizeW(pFilename, NULL);
-        if ( !dwLen ) return result;
+        if ( !pcbData ) return result;
+        cbData = *pcbData;
 
-        pBlock = malloc(dwLen);
-        if ( !pBlock ) return result;
+        hResInfo = FindResourceW(hModule,
+                MAKEINTRESOURCEW(VS_VERSION_INFO),
+                RT_VERSION);
+        if ( !hResInfo ) return result;
 
-        if ( !GetFileVersionInfoW(pFilename, 0, dwLen, pBlock)
-                || !VerQueryValueW(pBlock, L"\\VarFileInfo\\Translation", (LPVOID *)&ptl, &cb) )
+        dwSize = SizeofResource(hModule, hResInfo);
+        if ( !dwSize ) return result;
+
+        hResData = LoadResource(hModule, hResInfo);
+        if ( !hResData ) return result;
+
+        pRes = LockResource(hResData);
+        if ( !pRes ) return result;
+
+        pCopy = malloc(dwSize);
+        if ( !pCopy
+                || memcpy_s(pCopy, dwSize, pRes, dwSize)
+                || !VerQueryValueW(pCopy, pszSubBlock, &pBuffer, &uLen) )
                 goto cleanup;
 
-        is_win7 = IsWindowsVersion(6, 1, 1);
+        if ( !_wcsnicmp(pszSubBlock, L"\\StringFileInfo\\", 16) )
+                *pcbData = uLen * sizeof(wchar_t);
+        else
+                *pcbData = uLen;
 
-        if ( !is_win7 )
-                is_win81 = IsWindowsVersion(6, 3, 0);
-
-        for ( size_t i = 0; i < (cb / sizeof *ptl); i++ ) {
-                swprintf_s(SubBlock, _countof(SubBlock), L"\\StringFileInfo\\%04x%04x\\InternalName",
-                        ptl[i].wLanguage,
-                        ptl[i].wCodePage);
-
-                // identify wuaueng.dll by its resource data
-                if ( !VerQueryValueW(pBlock, SubBlock, (LPVOID *)&pInternalName, &uLen)
-                        || _wcsicmp(pInternalName, L"wuaueng.dll")
-                        || !VerQueryValueW(pBlock, L"\\", (LPVOID *)&pffi, &uLen) )
-                        continue;
-
-                // assure wuaueng.dll is at least the minimum supported version
-                if ( (is_win7 && FileInfoVerCompare(pffi, 7, 6, 7601, 23714) != -1)
-                        || (is_win81 && FileInfoVerCompare(pffi, 7, 9, 9600, 18621) != -1) ) {
-
-                        // convert pFilename to multibyte string because DetourFindFunction doesn't take wide string
-                        // try resolving with detours helper function first (needs dbghelp.dll and an internet connection)
-                        //if ( !wcstombs_s(&n, szModule, _countof(szModule), pFilename, _TRUNCATE) )
-                        //        pfnIsDeviceServiceable = DetourFindFunction(PathFindFileNameA(szModule), "IsDeviceServiceable");
-
-                        // fall back to byte pattern search if the above method fails
-                        if ( !pfnIsDeviceServiceable
-                                && K32GetModuleInformation(GetCurrentProcess(), hModule, &modinfo, sizeof modinfo) ) {
-#ifdef _WIN64
-                                pattern = "FFF3 4883EC?? 33DB 391D???????? 7508 8B05????????";
-#else
-                                if ( is_win7 )
-                                        pattern = "833D????????00 743E E8???????? A3????????";
-                                else // if we've reached this point we can assume win 8.1 without checking is_win81 again
-                                        pattern = "8BFF 51 833D????????00 7507 A1????????";
-#endif
-                                offset = patternfind(modinfo.lpBaseOfDll, modinfo.SizeOfImage, pattern);
-                                if ( offset != -1 )
-                                        pfnIsDeviceServiceable = (LPFN_ISDEVICESERVICEABLE)((uint8_t *)modinfo.lpBaseOfDll + offset);
-                        }
-
-                        if ( pfnIsDeviceServiceable ) {
-                                trace(L"Found IsDeviceServiceable address: %p", pfnIsDeviceServiceable);
-                                *ppfnIsDeviceServiceable = pfnIsDeviceServiceable;
-                                result = true;
-                        }
-                        break;
-                }
+        if ( !pData ) {
+                result = true;
+                goto cleanup;
         }
+        if ( cbData < *pcbData
+                || memcpy_s(pData, cbData, pBuffer, *pcbData) )
+                goto cleanup;
+
+        result = true;
 cleanup:
-        free(pBlock);
+        free(pCopy);
         return result;
 }
 
-bool GetRemoteHModuleFromTh32ModuleSnapshot(HANDLE hSnapshot, const wchar_t *pLibFileName, HMODULE *phRemoteModule)
+LPVOID GetVersionInfoFromHModuleAlloc(HMODULE hModule, LPCWSTR pszSubBlock, PUINT pcbData)
+{
+        UINT cbData = 0;
+        LPVOID result = NULL;
+
+        if ( !GetVersionInfoFromHModule(hModule, pszSubBlock, NULL, &cbData) )
+                return result;
+
+        result = malloc(cbData);
+        if ( !result ) return result;
+
+        if ( GetVersionInfoFromHModule(hModule, pszSubBlock, result, &cbData) ) {
+                *pcbData = cbData;
+        } else {
+                free(result);
+                result = NULL;
+        }
+        return result;
+}
+
+bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
+{
+        bool result = false;
+        bool is_win7 = false;
+        bool is_win81 = false;
+        PLANGANDCODEPAGE ptl;
+        HANDLE hProcess;
+        int tmp;
+        UINT cbtl;
+        wchar_t SubBlock[38];
+        UINT cbInternalName;
+        wchar_t *pInternalName;
+        UINT cbffi;
+        VS_FIXEDFILEINFO *pffi;
+        MODULEINFO modinfo;
+        size_t offset;
+
+        is_win7 = IsWindowsVersion(6, 1, 1);
+        if ( !is_win7 ) {
+                is_win81 = IsWindowsVersion(6, 3, 0);
+                if ( !is_win81 ) {
+                        trace(L"Unsupported operating system. is_win7=%ls is_win81=%ls",
+                                is_win7 ? L"true" : L"false",
+                                is_win81 ? L"true" : L"false");
+                        return result;
+                }
+        }
+
+        ptl = GetVersionInfoFromHModuleAlloc(hModule, L"\\VarFileInfo\\Translation", &cbtl);
+        if ( !ptl ) {
+                trace(L"Failed to allocate version translation information from hmodule.");
+                return result;
+        }
+        hProcess = GetCurrentProcess();
+
+        for ( size_t i = 0, count = (cbtl / sizeof *ptl); i < count; i++ ) {
+                if ( swprintf_s(SubBlock,
+                        _countof(SubBlock),
+                        L"\\StringFileInfo\\%04x%04x\\InternalName",
+                        ptl[i].wLanguage,
+                        ptl[i].wCodePage) == -1 )
+                        continue;
+
+                pInternalName = GetVersionInfoFromHModuleAlloc(hModule, SubBlock, &cbInternalName);
+                if ( !pInternalName ) {
+                        trace(L"Failed to allocate version internal name from hmodule.");
+                        continue;
+                }
+
+                // identify wuaueng.dll by its resource data
+                tmp = _wcsicmp(pInternalName, L"wuaueng.dll");
+                if ( tmp )
+                        trace(L"Module internal name does not match. pInternalName=%ls cbInternalName=%lu", pInternalName, cbInternalName);
+                free(pInternalName);
+                if ( tmp )
+                        continue;
+
+                pffi = GetVersionInfoFromHModuleAlloc(hModule, L"\\", &cbffi);
+                if ( !pffi ) {
+                        trace(L"Failed to allocate version information from hmodule.");
+                        continue;
+                }
+
+                // assure wuaueng.dll is at least the minimum supported version
+                tmp = ((is_win7 && FileInfoVerCompare(pffi, 7, 6, 7601, 23714) != -1)
+                        || (is_win81 && FileInfoVerCompare(pffi, 7, 9, 9600, 18621) != -1));
+                free(pffi);
+                if ( !tmp ) {
+                        trace(L"Module does not meet the minimum supported version.");
+                        continue;
+                }
+
+                if ( !GetModuleInformation(hProcess, hModule, &modinfo, sizeof modinfo) )
+                        break;
+
+                offset = patternfind(modinfo.lpBaseOfDll,
+                        modinfo.SizeOfImage,
+#ifdef _WIN64
+                        "FFF3 4883EC?? 33DB 391D???????? 7508 8B05????????"
+#else
+                        is_win7
+                        ? "833D????????00 743E E8???????? A3????????"
+                        : "8BFF 51 833D????????00 7507 A1????????"
+#endif
+                );
+                if ( offset != -1 ) {
+                        *ppfnIsDeviceServiceable = (PVOID)((uint8_t *)modinfo.lpBaseOfDll + offset);
+                        trace(L"Found IsDeviceServiceable address: %p", *ppfnIsDeviceServiceable);
+                        result = true;
+                } else {
+                        trace(L"IsDeviceServiceable function pattern not found.");
+                }
+                break;
+        }
+        free(ptl);
+        return result;
+}
+
+HANDLE GetRemoteHModuleFromTh32ModuleSnapshot(HANDLE hSnapshot, const wchar_t *pLibFileName)
 {
         MODULEENTRY32W me = { sizeof me };
         if ( !Module32FirstW(hSnapshot, &me) )
-                return false;
+                return NULL;
         do {
-                if ( !_wcsicmp(me.szExePath, pLibFileName) ) {
-                        *phRemoteModule = me.hModule;
-                        return true;
-                }
+                if ( !_wcsicmp(me.szExePath, pLibFileName) )
+                        return me.hModule;
         } while ( Module32NextW(hSnapshot, &me) );
-        return false;
+        return NULL;
 }
 
-bool InjectSelfAndCreateRemoteThread(DWORD dwProcessId, LPTHREAD_START_ROUTINE pStartAddress, HANDLE SourceHandle, DWORD dwDesiredAccess)
+bool InjectLibraryAndCreateRemoteThread(
+        HANDLE hProcess,
+        HMODULE hModule,
+        LPTHREAD_START_ROUTINE pStartAddress,
+        const void *pParam,
+        size_t cbParam)
 {
         bool result = false;
-        HANDLE hProcess;
         NTSTATUS Status;
-        HMODULE hRemoteModule;
-        LPTHREAD_START_ROUTINE pfnTargetStartAddress;
-        HANDLE TargetHandle = NULL;
+        LPVOID pBaseAddress = NULL;
+        SIZE_T cb;
+        HMODULE hRemoteModule = NULL;
         HANDLE hThread;
 
-        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcessId);
-        if ( !hProcess ) return result;
-
         Status = NtSuspendProcess(hProcess);
+        if ( !NT_SUCCESS(Status) ) return result;
+        trace(L"Suspended process. hProcess=%p", hProcess);
 
-        if ( !NT_SUCCESS(Status) ) goto cleanup;
+        if ( pParam ) {
+                // this gets freed by pStartAddress
+                pBaseAddress = VirtualAllocEx(hProcess,
+                        NULL,
+                        cbParam,
+                        MEM_RESERVE | MEM_COMMIT,
+                        PAGE_READWRITE);
+                if ( !pBaseAddress ) goto resume;
 
-        if ( InjectLibraryByLocalHModule(hProcess, PIMAGEBASE, &hRemoteModule)
-                && (!SourceHandle || DuplicateHandle(GetCurrentProcess(), SourceHandle, hProcess, &TargetHandle, dwDesiredAccess, FALSE, 0)) ) {
+                if ( !WriteProcessMemory(hProcess, pBaseAddress, pParam, cbParam, &cb) )
+                        goto vfree;
+        }
+        if ( InjectLibrary(hProcess, hModule, &hRemoteModule) ) {
+                trace(L"Injected library. hRemoteModule=%p", hRemoteModule);
 
-                // get pointer to StartAddress in remote process
-                pfnTargetStartAddress = (LPTHREAD_START_ROUTINE)((uint8_t *)hRemoteModule + ((uint8_t *)pStartAddress - (uint8_t *)PIMAGEBASE));
+                hThread = CreateRemoteThread(hProcess,
+                        NULL,
+                        0,
+                        (LPTHREAD_START_ROUTINE)((uint8_t *)hRemoteModule + ((uint8_t *)pStartAddress - (uint8_t *)hModule)),
+                        pBaseAddress,
+                        0,
+                        NULL);
 
-                hThread = CreateRemoteThread(hProcess, NULL, 0, pfnTargetStartAddress, (LPVOID)TargetHandle, 0, NULL);
                 if ( hThread ) {
+                        trace(L"Created remote thread. hThread=%p", hThread);
                         CloseHandle(hThread);
                         result = true;
                 }
         }
-        NtResumeProcess(hProcess);
-cleanup:
-        CloseHandle(hProcess);
+vfree:
+        if ( !result && pBaseAddress )
+                VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
+resume: NtResumeProcess(hProcess);
         return result;
 }
 
-bool InjectLibraryByFileName(HANDLE hProcess, const wchar_t *pLibFileName, size_t cchLibFileName, HMODULE *phRemoteModule)
+bool InjectLibrary(HANDLE hProcess, HMODULE hModule, HMODULE *phRemoteModule)
+{
+        WCHAR Filename[MAX_PATH];
+        DWORD nLength;
+
+        nLength = GetModuleFileNameW(hModule, Filename, _countof(Filename));
+        if ( nLength ) {
+                trace(L"Got module filename for local module. "
+                        L"hModule=%p Filename=%ls nLength=%lu",
+                        hModule, Filename, nLength);
+                return InjectLibraryByFilename(hProcess,
+                        Filename,
+                        nLength,
+                        phRemoteModule);
+        }
+        return false;
+}
+
+bool InjectLibraryByFilename(
+        HANDLE hProcess,
+        const wchar_t *pLibFilename,
+        size_t cchLibFilename,
+        HMODULE *phRemoteModule)
 {
         bool result = false;
         DWORD dwProcessId;
@@ -214,57 +329,67 @@ bool InjectLibraryByFileName(HANDLE hProcess, const wchar_t *pLibFileName, size_
 
         Status = NtSuspendProcess(hProcess);
         if ( !NT_SUCCESS(Status) ) return result;
+        trace(L"Suspended process. hProcess=%p", hProcess);
 
         dwProcessId = GetProcessId(hProcess);
 
         hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
-        if ( !hSnapshot ) goto L1;
+        if ( !hSnapshot ) goto resume;
+        trace(L"Created TH32 module snapshot. dwProcessId=%lu", dwProcessId);
 
-        result = GetRemoteHModuleFromTh32ModuleSnapshot(hSnapshot, pLibFileName, phRemoteModule);
+        *phRemoteModule = GetRemoteHModuleFromTh32ModuleSnapshot(hSnapshot,
+                pLibFilename);
+
         CloseHandle(hSnapshot);
 
-        // already injected... returns false but sets *phRemoteModule
-        if ( result ) goto L1;
+        // already injected... still sets *phRemoteModule
+        if ( *phRemoteModule ) goto resume;
 
-        nSize = (cchLibFileName + 1) * sizeof *pLibFileName;
-        pBaseAddress = VirtualAllocEx(hProcess, NULL, nSize, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+        nSize = (cchLibFilename + 1) * sizeof *pLibFilename;
+        pBaseAddress = VirtualAllocEx(hProcess,
+                NULL,
+                nSize,
+                MEM_RESERVE | MEM_COMMIT,
+                PAGE_READWRITE);
 
-        if ( !pBaseAddress ) goto L1;
+        if ( !pBaseAddress ) goto resume;
+        trace(L"Allocated virtual memory in process. hProcess=%p pBaseAddress=%p nSize=%Iu",
+                hProcess, pBaseAddress, nSize);
 
-        if ( !WriteProcessMemory(hProcess, pBaseAddress, pLibFileName, nSize, NULL) )
-                goto L2;
+        if ( !WriteProcessMemory(hProcess, pBaseAddress, pLibFilename, nSize, NULL) )
+                goto vfree;
+        trace(L"Wrote to process memory. hProcess=%p pBaseAddress=%p pLibFileName=%.*ls nSize=%Iu",
+                hProcess, pBaseAddress, cchLibFilename, pLibFilename, nSize);
 
-        hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)LoadLibraryW, pBaseAddress, 0, NULL);
-        if ( !hThread ) goto L2;
+        hThread = CreateRemoteThread(hProcess,
+                NULL,
+                0,
+                (LPTHREAD_START_ROUTINE)LoadLibraryW,
+                pBaseAddress,
+                0,
+                NULL);
+        if ( !hThread ) goto vfree;
+        trace(L"Created remote thread. hThread=%p", hThread);
 
         WaitForSingleObject(hThread, INFINITE);
+        trace(L"Created thread finished running. hThread=%p", hThread);
 
         if ( sizeof *phRemoteModule > sizeof(DWORD) ) {
                 hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
                 if ( hSnapshot ) {
-                        result = GetRemoteHModuleFromTh32ModuleSnapshot(hSnapshot, pLibFileName, phRemoteModule);
+                        *phRemoteModule = GetRemoteHModuleFromTh32ModuleSnapshot(
+                                hSnapshot,
+                                pLibFilename);
+
                         CloseHandle(hSnapshot);
                 }
         } else {
                 result = !!GetExitCodeThread(hThread, (LPDWORD)phRemoteModule);
         }
         CloseHandle(hThread);
-L2:     VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
-L1:     NtResumeProcess(hProcess);
+vfree:  VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
+resume: NtResumeProcess(hProcess);
         return result;
-}
-
-bool InjectLibraryByLocalHModule(HANDLE hProcess, HMODULE hModule, HMODULE *phRemoteModule)
-{
-        WCHAR Filename[MAX_PATH];
-        DWORD nLength;
-
-        nLength = GetModuleFileNameW(hModule, Filename, _countof(Filename));
-
-        if ( nLength )
-                return InjectLibraryByFileName(hProcess, Filename, nLength, phRemoteModule);
-
-        return false;
 }
 
 bool IsWindowsVersion(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
@@ -280,33 +405,18 @@ bool IsWindowsVersion(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackM
         osvi.dwMinorVersion = wMinorVersion;
         osvi.wServicePackMajor = wServicePackMajor;
 
-        return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+        return VerifyVersionInfoW(&osvi,
+                VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR,
+                dwlConditionMask) != FALSE;
 }
 
-PVOID NtQueryKeyAlloc(HANDLE KeyHandle, KEY_INFORMATION_CLASS KeyInformationClass, PULONG pResultLength)
-{
-        NTSTATUS Status;
-        ULONG ResultLength;
-        PVOID result = NULL;
-
-        Status = NtQueryKey(KeyHandle, KeyInformationClass, NULL, 0, &ResultLength);
-        if ( Status != STATUS_BUFFER_OVERFLOW && Status != STATUS_BUFFER_TOO_SMALL )
-                return result;
-
-        result = malloc(ResultLength);
-        if ( !result ) return result;
-
-        Status = NtQueryKey(KeyHandle, KeyInformationClass, result, ResultLength, &ResultLength);
-        if ( NT_SUCCESS(Status) ) {
-                *pResultLength = ResultLength;
-        } else {
-                free(result);
-                result = NULL;
-        }
-        return result;
-}
-
-PVOID RegGetValueAlloc(HKEY hkey, const wchar_t *pSubKey, const wchar_t *pValue, DWORD dwFlags, LPDWORD pdwType, LPDWORD pcbData)
+PVOID RegGetValueAlloc(
+        HKEY hkey,
+        const wchar_t *pSubKey,
+        const wchar_t *pValue,
+        DWORD dwFlags,
+        LPDWORD pdwType,
+        LPDWORD pcbData)
 {
         DWORD cbData = 0;
         PVOID result = NULL;
@@ -326,7 +436,10 @@ PVOID RegGetValueAlloc(HKEY hkey, const wchar_t *pSubKey, const wchar_t *pValue,
         return result;
 }
 
-LPQUERY_SERVICE_CONFIGW QueryServiceConfigByNameAlloc(SC_HANDLE hSCM, const wchar_t *pServiceName, LPDWORD pcbBufSize)
+LPQUERY_SERVICE_CONFIGW QueryServiceConfigByNameAlloc(
+        SC_HANDLE hSCM,
+        const wchar_t *pServiceName,
+        LPDWORD pcbBufSize)
 {
         SC_HANDLE hService;
         DWORD cbBytesNeeded;
@@ -352,37 +465,27 @@ LPQUERY_SERVICE_CONFIGW QueryServiceConfigByNameAlloc(SC_HANDLE hSCM, const wcha
         return result;
 }
 
-bool QueryServiceStatusProcessInfoByName(SC_HANDLE hSCM, const wchar_t *pServiceName, LPSERVICE_STATUS_PROCESS pServiceStatus)
+bool QueryServiceStatusProcessInfoByName(
+        SC_HANDLE hSCM,
+        const wchar_t *pServiceName,
+        LPSERVICE_STATUS_PROCESS pServiceStatus)
 {
         bool result = false;
         SC_HANDLE hService;
         DWORD cbBytesNeeded;
 
         hService = OpenServiceW(hSCM, pServiceName, SERVICE_QUERY_STATUS);
-        if ( !hService ) return result;
-
-        result = !!QueryServiceStatusEx(hService, SC_STATUS_PROCESS_INFO, (LPBYTE)pServiceStatus, sizeof *pServiceStatus, &cbBytesNeeded);
-        CloseServiceHandle(hService);
-        return result;
-}
-
-bool QueryServiceGroupName(const LPQUERY_SERVICE_CONFIGW pServiceConfig, wchar_t *pGroupName, size_t nSize)
-{
-        bool result = false;
-        int NumArgs;
-        LPWSTR *argv;
-
-        argv = CommandLineToArgvW(pServiceConfig->lpBinaryPathName, &NumArgs);
-        if ( argv ) {
-                if ( !_wcsicmp(PathFindFileNameW(argv[0]), L"svchost.exe") ) {
-
-                        for ( int i = 1; (i + 1) < NumArgs; i++ ) {
-                                if ( !_wcsicmp(argv[i], L"-k") )
-                                        return !wcscpy_s(pGroupName, nSize, argv[++i]);
-                        }
-                }
-                LocalFree((HLOCAL)argv);
+        if ( !hService ) {
+                trace(L"Failed to open service %ls! (GetLastError=%ul)", pServiceName, GetLastError());
+                return result;
         }
+
+        result = !!QueryServiceStatusEx(hService,
+                SC_STATUS_PROCESS_INFO,
+                (LPBYTE)pServiceStatus,
+                sizeof *pServiceStatus,
+                &cbBytesNeeded);
+        CloseServiceHandle(hService);
         return result;
 }
 
@@ -393,37 +496,4 @@ DWORD QueryServiceProcessId(SC_HANDLE hSCM, const wchar_t *pServiceName)
         if ( QueryServiceStatusProcessInfoByName(hSCM, pServiceName, &ServiceStatusProcess) )
                 return ServiceStatusProcess.dwProcessId;
         return 0;
-}
-
-DWORD InferSvchostGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupName)
-{
-        DWORD result = 0;
-        DWORD cbData;
-        wchar_t *pData;
-        DWORD dwProcessId;
-        DWORD cbBufSize;
-        LPQUERY_SERVICE_CONFIGW pServiceConfig;
-        bool success;
-        WCHAR GroupName[256];
-
-        pData = RegGetValueAlloc(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Svchost", pGroupName, RRF_RT_REG_MULTI_SZ, NULL, &cbData);
-        if ( !pData ) return result;
-
-        for ( wchar_t *pName = pData; *pName; pName += wcslen(pName) + 1 ) {
-                dwProcessId = QueryServiceProcessId(hSCM, pName);
-                trace(L"pName=%ls dwProcessId=%lu", pName, dwProcessId);
-                if ( !dwProcessId ) continue;
-
-                pServiceConfig = QueryServiceConfigByNameAlloc(hSCM, pName, &cbBufSize);
-                if ( !pServiceConfig ) continue;
-                success = QueryServiceGroupName(pServiceConfig, GroupName, _countof(GroupName));
-                free(pServiceConfig);
-                if ( success && !_wcsicmp(pGroupName, GroupName) ) {
-                        trace(L"found PID for group %ls: %lu", pGroupName, dwProcessId);
-                        result = dwProcessId;
-                        break;
-                }
-        }
-        free(pData);
-        return result;
 }

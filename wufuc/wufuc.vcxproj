@@ -155,7 +155,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>ntdll.lib;version.lib;Shlwapi.lib;detours.X86.MTd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Shlwapi.lib;detours.X86.MTd.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>X86;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -177,7 +177,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>ntdll.lib;version.lib;Shlwapi.lib;detours.X64.MTd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Shlwapi.lib;detours.X64.MTd.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -207,7 +207,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>ntdll.lib;version.lib;Shlwapi.lib;detours.X86.MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Shlwapi.lib;detours.X86.MT.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
       <SetChecksum>true</SetChecksum>
     </Link>
     <ResourceCompile>
@@ -236,7 +236,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>ntdll.lib;version.lib;Shlwapi.lib;detours.X64.MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Shlwapi.lib;detours.X64.MT.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
       <SetChecksum>true</SetChecksum>
     </Link>
     <ResourceCompile>

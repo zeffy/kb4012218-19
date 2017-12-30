@@ -28,6 +28,8 @@ after_build:
 
     cd "%APPVEYOR_BUILD_FOLDER%\wufuc_setup_bat"
 
+	echo %BUILD_COMMIT_VERSION% >version.txt
+
     for /R %%i in (*.txt) do unix2dos "%%i"
 
     for /R %%i in (*.bat) do unix2dos "%%i"
