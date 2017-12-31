@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="14.3" version="14.4" Modules="enterprise" RootPath="." Language="en" Id="{C0F6BB2D-9CA9-48FA-A0A3-1ED9F2CBB431}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="14.3" version="14.5.2" Modules="enterprise" RootPath="." Language="en" Id="{C0F6BB2D-9CA9-48FA-A0A3-1ED9F2CBB431}">
   <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
     <ROW Name="HiddenItems" Value="AutorunComponent;MultipleInstancesComponent;AppXProductDetailsComponent;AppXDependenciesComponent;AppXAppDetailsComponent;AppXVisualAssetsComponent;AppXCapabilitiesComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent;MsiJavaComponent;AnalyticsComponent;ActSyncAppComponent;UserAccountsComponent;MsiClassComponent;WebApplicationsComponent;MsiOdbcDataSrcComponent;SqlConnectionComponent;SharePointSlnComponent;SilverlightSlnComponent"/>
   </COMPONENT>
@@ -10,15 +10,15 @@
     <ROW Property="ARPCOMMENTS" Value="Enables Windows Update on PCs with unsupported processors." ValueLocId="*"/>
     <ROW Property="ARPHELPLINK" Value="https://github.com/zeffy/wufuc/issues "/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="X64Build:1#X86Build:1"/>
-    <ROW Property="ARPPRODUCTICON" Value="msiexec.exe" Type="8"/>
+    <ROW Property="ARPPRODUCTICON" Value="msiexec_1.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="https://github.com/zeffy/wufuc"/>
     <ROW Property="ARPURLUPDATEINFO" Value="https://github.com/zeffy/wufuc/releases/latest"/>
     <ROW Property="AiPreventAutoPin" Value="System.AppUserModel.ExcludeFromShowInNewInstall"/>
     <ROW Property="Manufacturer" Value="zeffy"/>
-    <ROW Property="ProductCode" Value="1027:{FD01A904-C4EE-41DE-98B5-05B56C9BF124} 1028:{C5BD132C-74D9-4F29-BDA3-E53F362BB93A} 1031:{349419A7-D1E6-4F7F-805A-8BB89DB52B8F} 1033:{8AB4032C-3333-484D-837F-63254ECC61D0} 1035:{614B36A2-4EFA-4179-8B9B-C10BCDCD6EE4} 1036:{3F5C9C51-FDB6-4CC7-BD3B-397B1ADF2612} 1038:{341EB700-1ED1-4091-B3FE-328250ECD40C} 1040:{54BF6CB0-507E-4A56-AE57-C9AA7621218E} 1041:{6EA5EDBE-382E-4FE4-BA64-35C4ECD92FA5} 1042:{BDB9EA6E-AE2D-4D99-9415-1243A1B18C61} 1043:{18FEFE80-7F0A-4273-984F-A1B6DB8A4534} 1045:{A2F4A8DF-0D97-4058-A0A8-DF66ADBF011F} 1046:{4C402CCA-E316-4594-8ED3-2394F78C3F6D} 1049:{70E459BE-48F3-4EC4-8CB7-3B85D345D7D7} 1060:{04C38485-4F74-41EE-8D73-C9A319C20842} 2052:{1193C110-CAA6-4FE4-B944-6F255FE21029} 2070:{B2F1ED11-46DD-4C28-A4FE-4B4E7B76A24D} 3082:{96DB5834-B739-4E90-82B5-B7F802280000} " Type="16"/>
+    <ROW Property="ProductCode" Value="1027:{1E24B245-A0DF-4498-9849-9D06729599F7} 1028:{12266864-B69A-450E-AB35-D84806A3C3D2} 1031:{9AEE9454-4DA2-4671-9867-1D4B41F75F6B} 1033:{663C22B1-799F-4993-A9B1-6F41D6868F9C} 1035:{5997A9AB-5DC9-4D41-A48D-C060255B9394} 1036:{3DC117D6-E1E2-47CC-9869-ACD95D3B8911} 1038:{00FA5005-398F-466D-836F-B362B5D4F7B3} 1040:{CD3916BB-340C-4FA1-BCB7-4E80F4ADDAA9} 1041:{1F395079-B0B9-4844-A14D-F1E5E15F0951} 1042:{2DF68FEA-71E5-4C15-9482-2AB23B4E878C} 1043:{639528E6-9CC8-4520-880D-97430C0987D5} 1045:{51B92E50-546A-43E9-9C02-786738F48BF9} 1046:{3E7EE6D8-6E37-4B86-8C49-0F6331E7FCE4} 1049:{09627D3F-8EA4-4756-8A37-ABB00B79CE49} 1060:{B5526C59-D6EB-40A4-8B49-013846493AA9} 2052:{4AD6CEFD-F6A3-47AD-905C-1E16E4B35F55} 2070:{7B79F581-F2F7-40C2-8F28-EE4BFA2AB4C4} 3082:{D035428B-7B79-410D-96E0-13D34880D52C} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="wufuc"/>
-    <ROW Property="ProductVersion" Value="0.8.0.143" Type="32" TargetFile="wufuc64.dll"/>
+    <ROW Property="ProductVersion" Value="0.9.999.0" Type="32" TargetFile="wufuc64.dll"/>
     <ROW Property="REBOOT" MultiBuildValue="X64Build:Force#X86Build:Force"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{4C52972C-251E-4D1B-AD09-EAA765719DCC}"/>
@@ -44,26 +44,20 @@
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
-    <ROW Component="CurrentVersion" ComponentId="{DBB12D6F-60DF-4FBB-AD3F-398843286B56}" Directory_="APPDIR" Attributes="4" KeyPath="CurrentVersion"/>
-    <ROW Component="GlobalFlag" ComponentId="{1BE26048-5DDD-4F0A-9112-7B6E880E82E8}" Directory_="APPDIR" Attributes="4" KeyPath="GlobalFlag"/>
-    <ROW Component="ImageFileExecutionOptions" ComponentId="{7FE0B423-B807-4450-B02C-1F6CD6C008DD}" Directory_="APPDIR" Attributes="4" KeyPath="ImageFileExecutionOptions"/>
-    <ROW Component="Microsoft" ComponentId="{685BF691-61C5-4F14-BE63-BAED91C0D26B}" Directory_="APPDIR" Attributes="4" KeyPath="Microsoft"/>
     <ROW Component="ProductInformation" ComponentId="{B4E6A1C3-F836-4CB2-8D69-0F625143144A}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="SHORTCUTDIR" ComponentId="{25D9B1DD-C44A-4B99-B442-55881698C64B}" Directory_="SHORTCUTDIR" Attributes="0"/>
-    <ROW Component="VerifierDlls" ComponentId="{9F6C7248-62C9-4339-ACB7-393498AF35A3}" Directory_="APPDIR" Attributes="4" KeyPath="VerifierDlls"/>
-    <ROW Component="WindowsNT" ComponentId="{7C8BB4E4-521E-4B54-8CE9-453E0B5D1AE2}" Directory_="APPDIR" Attributes="4" KeyPath="WindowsNT"/>
-    <ROW Component="wufuc32.dll" ComponentId="{024CB7C2-90B5-417E-BD99-E54E8922A305}" Directory_="SystemFolder" Attributes="8" KeyPath="wufuc32.dll"/>
-    <ROW Component="wufuc64.dll" ComponentId="{B2F45E1F-1485-466E-930F-EA69BA935428}" Directory_="System64Folder" Attributes="264" KeyPath="wufuc64.dll"/>
+    <ROW Component="wufuc32.dll" ComponentId="{DEC03176-B609-4B3F-9A22-119F6EFBA156}" Directory_="APPDIR" Attributes="0" KeyPath="wufuc32.dll"/>
+    <ROW Component="wufuc64.dll" ComponentId="{D718F513-69FD-4BBB-82F1-E1FEAD53B78F}" Directory_="APPDIR" Attributes="256" KeyPath="wufuc64.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="3" Level="1" Directory_="APPDIR" Attributes="0" Components="CurrentVersion GlobalFlag ImageFileExecutionOptions Microsoft ProductInformation SHORTCUTDIR VerifierDlls WindowsNT"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="3" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation SHORTCUTDIR"/>
     <ROW Feature="X64Feature" Feature_Parent="MainFeature" Title="X64Feature" Description="Description" Display="0" Level="1" Directory_="APPDIR" Attributes="16" Components="wufuc64.dll" Builds="X64Build"/>
     <ROW Feature="X86Feature" Feature_Parent="MainFeature" Title="X86Feature" Description="Description" Display="0" Level="1" Directory_="APPDIR" Attributes="16" Components="wufuc32.dll" Builds="X86Build"/>
     <ATTRIBUTE name="CurrentFeature" value="X64Feature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="wufuc32.dll" Component_="wufuc32.dll" FileName="wufuc32.dll" Attributes="512" SourcePath="..\wufuc\bin\Release\x86\wufuc32.dll" SelfReg="false"/>
-    <ROW File="wufuc64.dll" Component_="wufuc64.dll" FileName="wufuc64.dll" Attributes="512" SourcePath="..\wufuc\bin\Release\x64\wufuc64.dll" SelfReg="false" NextFile="wufuc32.dll"/>
+    <ROW File="wufuc32.dll" Component_="wufuc32.dll" FileName="wufuc32.dll" Attributes="512" SourcePath="..\wufuc\bin\Release\x86\wufuc32.dll" SelfReg="false" NextFile="wufuc64.dll"/>
+    <ROW File="wufuc64.dll" Component_="wufuc64.dll" FileName="wufuc64.dll" Attributes="512" SourcePath="..\wufuc\bin\Release\x64\wufuc64.dll" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
     <ROW MsiShortcutProperty="Uninstall1" Shortcut_="Uninstall" PropertyKey="[AiPreventAutoPin]" PropVariantValue="1"/>
@@ -163,16 +157,15 @@
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
-    <ROW Name="SystemFoldermsiexec.exe" SourcePath="&lt;AI_RES&gt;uninstall.ico" Index="0"/>
-    <ROW Name="msiexec.exe" SourcePath="..\..\..\..\..\..\Windows\System32\msiexec.exe" Index="0"/>
+    <ROW Name="msiexec_1.exe" SourcePath="C:\Windows\System32\msiexec.exe" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIniFileComponent">
-    <ROW IniFile="URL" FileName="Homepage.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc" Action="0" Component_="GlobalFlag"/>
-    <ROW IniFile="URL_1" FileName="Donate.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc/blob/master/DONATIONS.md" Action="0" Component_="GlobalFlag"/>
-    <ROW IniFile="URL_2" FileName="Readme.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc/blob/master/README.md" Action="0" Component_="GlobalFlag"/>
-    <ROW IniFile="WorkingDirectory" FileName="Homepage.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="GlobalFlag"/>
-    <ROW IniFile="WorkingDirectory_1" FileName="Donate.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="GlobalFlag"/>
-    <ROW IniFile="WorkingDirectory_2" FileName="Readme.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="GlobalFlag"/>
+    <ROW IniFile="URL" FileName="Homepage.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="URL_1" FileName="Donate.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc/blob/master/DONATE.md" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="URL_2" FileName="Readme.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc/blob/master/README.md" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="WorkingDirectory" FileName="Homepage.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="WorkingDirectory_1" FileName="Donate.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="WorkingDirectory_2" FileName="Readme.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="SHORTCUTDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
@@ -205,17 +198,11 @@
     <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="X64Build;X86Build"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
-    <ROW Registry="CurrentVersion" Root="2" Key="Software\Microsoft\Windows NT\CurrentVersion" Name="+" Component_="CurrentVersion"/>
-    <ROW Registry="GlobalFlag" Root="2" Key="Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\svchost.exe" Name="GlobalFlag" Value="#256" Component_="GlobalFlag"/>
-    <ROW Registry="ImageFileExecutionOptions" Root="2" Key="Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" Name="+" Component_="ImageFileExecutionOptions"/>
-    <ROW Registry="Microsoft" Root="2" Key="Software\Microsoft" Name="+" Component_="Microsoft"/>
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
-    <ROW Registry="VerifierDlls" Root="2" Key="Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\svchost.exe" Name="VerifierDlls" Value="[wufucDllName]" Component_="VerifierDlls"/>
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
-    <ROW Registry="WindowsNT" Root="2" Key="Software\Microsoft\Windows NT" Name="+" Component_="WindowsNT"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
-    <ROW Shortcut="Uninstall" Directory_="SHORTCUTDIR" Name="UNINST~1|Uninstall" Component_="wufuc64.dll" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]" Hotkey="0" Icon_="SystemFoldermsiexec.exe" IconIndex="0" ShowCmd="1" CustomFlags="1"/>
+    <ROW Shortcut="Uninstall" Directory_="SHORTCUTDIR" Name="UNINST~2|Uninstall wufuc" Component_="SHORTCUTDIR" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]" Hotkey="0" Icon_="msiexec_1.exe" IconIndex="0" ShowCmd="1" CustomFlags="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>

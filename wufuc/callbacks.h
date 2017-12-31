@@ -10,12 +10,7 @@ typedef struct
                 {
                         HANDLE hMainMutex;
                         HANDLE hUnloadEvent;
-                } DUMMYSTRUCTNAME;
-                struct
-                {
-                        HANDLE hMainMutex;
-                        HANDLE hUnloadEvent;
-                } u;
+                };
                 HANDLE handles[2];
         };
 } ContextHandles;
