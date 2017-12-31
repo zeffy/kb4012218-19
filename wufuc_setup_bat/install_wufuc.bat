@@ -14,8 +14,10 @@
 :: You should have received a copy of the GNU General Public License
 :: along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+set "wufuc_version=^(unknown version^)"
 set /p wufuc_version=<"%~dp0version.txt"
-title wufuc v%wufuc_version% Setup
+title wufuc %wufuc_version% Setup
+
 echo Copyright ^(C^) 2017 zeffy
 echo This program comes with ABSOLUTELY NO WARRANTY.
 echo This is free software, and you are welcome to redistribute it
@@ -86,7 +88,7 @@ echo ERROR - Could not find %wufuc_xml%!
 echo.
 echo This most likely means you didn't extract all the files from the archive.
 echo.
-echo Please extract all the files from wufuc_v%wufuc_version%.zip to a permanent
+echo Please extract all the files from wufuc_%wufuc_version%.zip to a permanent
 echo location like C:\Program Files\wufuc and try again.
 goto :die
 
