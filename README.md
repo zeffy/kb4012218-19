@@ -65,6 +65,30 @@ My patch takes advantage of this behavior by patching a couple of boolean values
 
 ## FAQ
 
+### If you get BSODs after installing certain updates on specific AMD CPUs (Updated 01/11/2018)
+
+> Microsoft has resumed updating the majority of AMD devices with the Windows operating system security update to help protect against the chipset vulnerabilities known as Spectre and Meltdown.
+>
+> A small subset of older AMD processors remain blocked to avoid users getting into an unbootable state after installation of recent Windows operating system security updates. Microsoft is working with AMD to resolve this issue and should resume Windows OS security updates to this subset of AMD processors via Windows Update and WSUS by next week. For AMD device-specific information please refer to AMD’s Security Advisory.
+>
+> Microsoft has temporarily paused sending the following Windows operating system updates to this subset of older AMD processors:
+>
+> - January 3, 2018—KB4056897 (Security-only update)
+> - January 9, 2018—KB4056894 (Monthly Rollup)
+> - January 3, 2018—KB4056888 (OS Build 10586.1356)
+> - January 3, 2018—KB4056892 (OS Build 16299.192)
+> - January 3, 2018—KB4056891 (OS Build 15063.850)
+> - January 3, 2018—KB4056890 (OS Build 14393.2007)
+> - January 3, 2018—KB4056898 (Security-only update)
+> - January 3, 2018—KB4056893 (OS Build 10240.17735)
+> - January 9, 2018—KB4056895 (Monthly Rollup)
+
+For more information, you can read the Microsoft Support article [here](https://support.microsoft.com/en-us/help/4073707/windows-os-security-update-block-for-some-amd-based-devices),
+but basically Microsoft put out some updates recently that cause problems on older AMD processors, and blocked them on those CPUs, but apparently (I haven't been able to test this due to lack of time and compatible hardware)
+wufuc bypasses the block and lets you uninstall these buggy updates which can cause problems. Unfortunately as far as I know, there is no comprehensive list of the processors that should be blocked, but if you experience BSODs
+after installing any of these updates, you can try the solution posted in this [comment](https://github.com/zeffy/wufuc/issues/132#issuecomment-356921433) to uninstall the updates and fix the crashes.
+According to the Microsoft Support article, this issue should be resolved within the next week.
+
 ### How to deploy wufuc using Group Policy
 
 [There is a tutorial on the Advanced Installer website that explains how to do this](http://www.advancedinstaller.com/user-guide/tutorial-gpo.html).

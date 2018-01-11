@@ -149,6 +149,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,6 +172,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -186,7 +188,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;WUFUC_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -195,6 +197,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <ResourceCompile Condition="'$(APPVEYOR)'=='True'">
       <PreprocessorDefinitions>BUILD_COMMIT_VERSION=$(BUILD_COMMIT_VERSION);BUILD_VERSION_COMMA=$(BUILD_VERSION_COMMA);$(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -213,6 +216,13 @@
     <ResourceCompile>
       <PreprocessorDefinitions>X86;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy /Y "$(TargetPath)" "$(SolutionDir)wufuc_setup_bat\"
+copy /Y "$(TargetPath)" "$(SolutionDir)wufuc_setup\"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy release binaries to the setup staging directories</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -226,6 +236,7 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <ResourceCompile Condition="'$(APPVEYOR)'=='True'">
       <PreprocessorDefinitions>BUILD_COMMIT_VERSION=$(BUILD_COMMIT_VERSION);BUILD_VERSION_COMMA=$(BUILD_VERSION_COMMA);$(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -242,6 +253,13 @@
     <ResourceCompile>
       <PreprocessorDefinitions>X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy /Y "$(TargetPath)" "$(SolutionDir)wufuc_setup_bat\"
+copy /Y "$(TargetPath)" "$(SolutionDir)wufuc_setup\"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy release binaries to the setup staging directories</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

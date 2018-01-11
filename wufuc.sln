@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2010
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wufuc", "wufuc\wufuc.vcxproj", "{00F96695-CE41-4C2F-A344-6219DFB4F887}"
 EndProject
@@ -20,10 +20,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{65210B26-9B74-4B7E-B777-7A2EE4162595}"
 	ProjectSection(SolutionItems) = preProject
 		CONTRIBUTING.md = CONTRIBUTING.md
+		COPYING = COPYING
 		DONATE.md = DONATE.md
-		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdvancedInstallerHelper", "AdvancedInstallerHelper\AdvancedInstallerHelper.vcxproj", "{12498D61-02AF-4C13-925D-E130EEDE2543}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,12 @@ Global
 		{00F96695-CE41-4C2F-A344-6219DFB4F887}.Release|x64.Build.0 = Release|x64
 		{00F96695-CE41-4C2F-A344-6219DFB4F887}.Release|x86.ActiveCfg = Release|Win32
 		{00F96695-CE41-4C2F-A344-6219DFB4F887}.Release|x86.Build.0 = Release|Win32
+		{12498D61-02AF-4C13-925D-E130EEDE2543}.Debug|x64.ActiveCfg = Debug|Win32
+		{12498D61-02AF-4C13-925D-E130EEDE2543}.Debug|x86.ActiveCfg = Debug|Win32
+		{12498D61-02AF-4C13-925D-E130EEDE2543}.Debug|x86.Build.0 = Debug|Win32
+		{12498D61-02AF-4C13-925D-E130EEDE2543}.Release|x64.ActiveCfg = Release|Win32
+		{12498D61-02AF-4C13-925D-E130EEDE2543}.Release|x86.ActiveCfg = Release|Win32
+		{12498D61-02AF-4C13-925D-E130EEDE2543}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

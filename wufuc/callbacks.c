@@ -9,10 +9,10 @@ bool DuplicateContextHandles(HANDLE hSrcProcess, ContextHandles *pSrcContext, HA
                 hTargetProcess, &pTargetContext->hMainMutex, SYNCHRONIZE, FALSE, 0)
 
                 && DuplicateHandle(hSrcProcess, pSrcContext->hUnloadEvent,
-                hTargetProcess, &pTargetContext->hUnloadEvent, SYNCHRONIZE, FALSE, 0)
+                        hTargetProcess, &pTargetContext->hUnloadEvent, SYNCHRONIZE, FALSE, 0)
 
                 && DuplicateHandle(hSrcProcess, hAuxiliaryMutex,
-                hTargetProcess, &pTargetContext->hAuxiliaryMutex, 0, FALSE, DUPLICATE_SAME_ACCESS) ) {
+                        hTargetProcess, &pTargetContext->hAuxiliaryMutex, 0, FALSE, DUPLICATE_SAME_ACCESS) ) {
 
                 return true;
         }
@@ -22,14 +22,16 @@ bool DuplicateContextHandles(HANDLE hSrcProcess, ContextHandles *pSrcContext, HA
 VOID CALLBACK ServiceNotifyCallback(PSERVICE_NOTIFYW pNotifyBuffer)
 {
         HANDLE hProcess;
-        wchar_t MutexName[37];
+        wchar_t MutexName[44];
         HANDLE hAuxiliaryMutex;
         ContextHandles TargetContext;
 
         switch ( pNotifyBuffer->dwNotificationStatus ) {
         case ERROR_SUCCESS:
                 if ( !pNotifyBuffer->ServiceStatus.dwProcessId
-                        || swprintf_s(MutexName, _countof(MutexName), L"Global\\wufuc_AuxiliaryMutex*%08X", pNotifyBuffer->ServiceStatus.dwProcessId) == -1
+                        || swprintf_s(MutexName, _countof(MutexName),
+                                L"Global\\%08x-7132-44a8-be15-56698979d2f3",
+                                pNotifyBuffer->ServiceStatus.dwProcessId) == -1
                         || !InitializeMutex(false, MutexName, &hAuxiliaryMutex) )
                         break;
 

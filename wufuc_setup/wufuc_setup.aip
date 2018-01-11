@@ -1,74 +1,77 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="14.3" version="14.5.2" Modules="enterprise" RootPath="." Language="en" Id="{C0F6BB2D-9CA9-48FA-A0A3-1ED9F2CBB431}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="14.5.2" version="14.5.2" Modules="enterprise" RootPath="." Language="en" Id="{6464EF62-1DC3-46AF-A162-AA1057FBB517}">
   <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
-    <ROW Name="HiddenItems" Value="AutorunComponent;MultipleInstancesComponent;AppXProductDetailsComponent;AppXDependenciesComponent;AppXAppDetailsComponent;AppXVisualAssetsComponent;AppXCapabilitiesComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent;MsiJavaComponent;AnalyticsComponent;ActSyncAppComponent;UserAccountsComponent;MsiClassComponent;WebApplicationsComponent;MsiOdbcDataSrcComponent;SqlConnectionComponent;SharePointSlnComponent;SilverlightSlnComponent"/>
+    <ROW Name="HiddenItems" Value="AutorunComponent;AppXProductDetailsComponent;AppXDependenciesComponent;AppXAppDetailsComponent;AppXVisualAssetsComponent;AppXCapabilitiesComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent;AnalyticsComponent;ActSyncAppComponent;GameUxComponent;FirewallExceptionComponent;WebApplicationsComponent;MsiOdbcDataSrcComponent;SqlConnectionComponent;SharePointSlnComponent;SilverlightSlnComponent"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
-    <ROW Property="AI_ThemeStyle" Value="default" MultiBuildValue="X64Build:classic#X86Build:classic" MsiKey="AI_ThemeStyle"/>
+    <ROW Property="AI_ThemeStyle" Value="aero" MsiKey="AI_ThemeStyle"/>
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPCOMMENTS" Value="Enables Windows Update on PCs with unsupported processors." ValueLocId="*"/>
-    <ROW Property="ARPHELPLINK" Value="https://github.com/zeffy/wufuc/issues "/>
-    <ROW Property="ARPNOMODIFY" MultiBuildValue="X64Build:1#X86Build:1"/>
-    <ROW Property="ARPPRODUCTICON" Value="msiexec_1.exe" Type="8"/>
+    <ROW Property="ARPHELPLINK" Value="https://github.com/zeffy/wufuc/issues"/>
+    <ROW Property="ARPNOMODIFY" MultiBuildValue="x64Build:1"/>
+    <ROW Property="ARPPRODUCTICON" Value="msiexec.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="https://github.com/zeffy/wufuc"/>
     <ROW Property="ARPURLUPDATEINFO" Value="https://github.com/zeffy/wufuc/releases/latest"/>
     <ROW Property="AiPreventAutoPin" Value="System.AppUserModel.ExcludeFromShowInNewInstall"/>
+    <ROW Property="MSIFASTINSTALL" MultiBuildValue="x64Build:6#x86Build:6"/>
     <ROW Property="Manufacturer" Value="zeffy"/>
-    <ROW Property="ProductCode" Value="1027:{1E24B245-A0DF-4498-9849-9D06729599F7} 1028:{12266864-B69A-450E-AB35-D84806A3C3D2} 1031:{9AEE9454-4DA2-4671-9867-1D4B41F75F6B} 1033:{663C22B1-799F-4993-A9B1-6F41D6868F9C} 1035:{5997A9AB-5DC9-4D41-A48D-C060255B9394} 1036:{3DC117D6-E1E2-47CC-9869-ACD95D3B8911} 1038:{00FA5005-398F-466D-836F-B362B5D4F7B3} 1040:{CD3916BB-340C-4FA1-BCB7-4E80F4ADDAA9} 1041:{1F395079-B0B9-4844-A14D-F1E5E15F0951} 1042:{2DF68FEA-71E5-4C15-9482-2AB23B4E878C} 1043:{639528E6-9CC8-4520-880D-97430C0987D5} 1045:{51B92E50-546A-43E9-9C02-786738F48BF9} 1046:{3E7EE6D8-6E37-4B86-8C49-0F6331E7FCE4} 1049:{09627D3F-8EA4-4756-8A37-ABB00B79CE49} 1060:{B5526C59-D6EB-40A4-8B49-013846493AA9} 2052:{4AD6CEFD-F6A3-47AD-905C-1E16E4B35F55} 2070:{7B79F581-F2F7-40C2-8F28-EE4BFA2AB4C4} 3082:{D035428B-7B79-410D-96E0-13D34880D52C} " Type="16"/>
+    <ROW Property="ProductCode" Value="1027:{CC613AA5-4798-4054-9EEA-8B2A6D1B4CDA} 1028:{881771C0-B2C4-4897-846E-851B21C0BEF1} 1031:{30490585-E9E0-4633-BD6E-66B68097A7FB} 1033:{4976F3F2-3569-4E88-8A1A-3D6FCEC947A4} 1035:{5F8FF584-8EB1-4AAF-82C2-EE3E08B7BEF7} 1036:{0695BA7A-AB4E-41C4-9127-B6EAF1DE0912} 1038:{5F460401-33EE-478D-B475-CEEDDF731908} 1040:{BCC3B19F-A2D2-401A-887B-93316C14A3F5} 1041:{FF7E9BF0-2D0E-48EC-BDA3-630AA17A24BF} 1042:{9ED2A3FA-C04A-4A3A-A8C4-99A25E1DBC4A} 1043:{E2BE0759-232C-4F04-87AB-F84016709765} 1045:{0D4669C1-6725-4368-9136-560194D8C3AD} 1046:{2D99527C-3056-4C91-A65B-8A2A6516723D} 1049:{9E7DF8DE-7227-4E04-8FC8-F8AAA5FE0272} 1060:{1F6C1D7A-15A4-4337-B463-F4DC4BD269F5} 2052:{EE224C8E-5F27-4EAC-B323-3664338025D6} 2070:{019D2F24-689D-4FD7-AD46-E4103B24F9BE} 3082:{61176E8B-FB9E-4DD0-8D6F-938984047B69} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="wufuc"/>
     <ROW Property="ProductVersion" Value="0.9.999.0" Type="32" TargetFile="wufuc64.dll"/>
-    <ROW Property="REBOOT" MultiBuildValue="X64Build:Force#X86Build:Force"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{4C52972C-251E-4D1B-AD09-EAA765719DCC}"/>
-    <ROW Property="WindowsType9X" MultiBuildValue="X64Build:Windows 9x/ME#X86Build:Windows 9x/ME" ValueLocId="-"/>
-    <ROW Property="WindowsType9XDisplay" MultiBuildValue="X64Build:Windows 9x/ME#X86Build:Windows 9x/ME" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT" MultiBuildValue="X64Build:Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86/Windows 10 x86#X86Build:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86, Windows Server 2008 x86, Windows 8 x86, Windows 10 x86" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT40" MultiBuildValue="X64Build:Windows NT 4.0#X86Build:Windows NT 4.0" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT40Display" MultiBuildValue="X64Build:Windows NT 4.0#X86Build:Windows NT 4.0" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT50" MultiBuildValue="X64Build:Windows 2000#X86Build:Windows 2000" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT50Display" MultiBuildValue="X64Build:Windows 2000#X86Build:Windows 2000" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT5X" MultiBuildValue="X64Build:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86#X86Build:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="X64Build:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86#X86Build:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT64" MultiBuildValue="X64Build:Windows XP SP2 x64, Windows Server 2003 SP2 x64, Windows Vista x64, Windows Server 2008 x64, Windows 8 x64, Windows Server 2012 x64, Windows 10 x64, Windows Server 2016 x64#X86Build:Windows XP/Vista/Windows 7/Windows 8 x64/Windows 8.1 x64/Windows 10 x64" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNT64Display" MultiBuildValue="X64Build:Windows XP SP2 x64, Windows Server 2003 SP2 x64, Windows Vista x64, Windows Server 2008 x64, Windows 8 x64, Windows Server 2012 x64, Windows 10 x64, Windows Server 2016 x64#X86Build:64-bit Windows versions" ValueLocId="-"/>
-    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="X64Build:32-bit Windows versions#X86Build:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86, Windows Server 2008 x86, Windows 8 x86, Windows 10 x86" ValueLocId="-"/>
-    <ROW Property="wufucDllName" Value="wufuc64.dll" MultiBuildValue="X86Build:wufuc32.dll"/>
+    <ROW Property="WindowsType9X" MultiBuildValue="x64Build:Windows 9x/ME#x86Build:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsType9XDisplay" MultiBuildValue="x64Build:Windows 9x/ME#x86Build:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT" MultiBuildValue="x64Build:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86, Windows Server 2008 x86, Windows 8 x86, Windows 10 x86#x86Build:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86, Windows Server 2008 x86, Windows 8 x86, Windows 10 x86" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40" MultiBuildValue="x64Build:Windows NT 4.0#x86Build:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40Display" MultiBuildValue="x64Build:Windows NT 4.0#x86Build:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50" MultiBuildValue="x64Build:Windows 2000#x86Build:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50Display" MultiBuildValue="x64Build:Windows 2000#x86Build:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5X" MultiBuildValue="x64Build:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86#x86Build:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="x64Build:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86#x86Build:Windows XP/2003 RTM, Windows XP/2003 SP1, Windows XP SP2 x86" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64" MultiBuildValue="x64Build:Windows XP SP2 x64, Windows Server 2003 SP2 x64, Windows Vista x64, Windows Server 2008 x64, Windows 8 x64, Windows Server 2012 x64, Windows 10 x64, Windows Server 2016 x64#x86Build:Windows XP SP2 x64, Windows Server 2003 SP2 x64, Windows Vista x64, Windows Server 2008 x64, Windows 8 x64, Windows Server 2012 x64, Windows 10 x64, Windows Server 2016 x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64Display" MultiBuildValue="x64Build:Windows XP SP2 x64, Windows Server 2003 SP2 x64, Windows Vista x64, Windows Server 2008 x64, Windows 8 x64, Windows Server 2012 x64, Windows 10 x64, Windows Server 2016 x64#x86Build:Windows XP SP2 x64, Windows Server 2003 SP2 x64, Windows Vista x64, Windows Server 2008 x64, Windows 8 x64, Windows Server 2012 x64, Windows 10 x64, Windows Server 2016 x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="x64Build:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86, Windows Server 2008 x86, Windows 8 x86, Windows 10 x86#x86Build:Windows XP SP3 x86, Windows Server 2003 SP2 x86, Windows Vista x86, Windows Server 2008 x86, Windows 8 x86, Windows 10 x86" ValueLocId="-"/>
+    <ROW Property="wufuc_TaskName" Value="wufuc.{72EEE38B-9997-42BD-85D3-2DD96DA17307}"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
     <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
-    <ROW Directory="System64Folder" Directory_Parent="TARGETDIR" DefaultDir="SYSTEM~1|System64Folder" IsPseudoRoot="1"/>
-    <ROW Directory="SystemFolder" Directory_Parent="TARGETDIR" DefaultDir="SYSTEM~2|SystemFolder" IsPseudoRoot="1"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+    <ROW Directory="X64FeatureItems_Dir" Directory_Parent="APPDIR" DefaultDir=".:X64FEA~1|X64FeatureItems"/>
+    <ROW Directory="X86FeatureItems_Dir" Directory_Parent="APPDIR" DefaultDir=".:X86FEA~1|X86FeatureItems"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
-    <ROW Component="ProductInformation" ComponentId="{B4E6A1C3-F836-4CB2-8D69-0F625143144A}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
-    <ROW Component="SHORTCUTDIR" ComponentId="{25D9B1DD-C44A-4B99-B442-55881698C64B}" Directory_="SHORTCUTDIR" Attributes="0"/>
-    <ROW Component="wufuc32.dll" ComponentId="{DEC03176-B609-4B3F-9A22-119F6EFBA156}" Directory_="APPDIR" Attributes="0" KeyPath="wufuc32.dll"/>
-    <ROW Component="wufuc64.dll" ComponentId="{D718F513-69FD-4BBB-82F1-E1FEAD53B78F}" Directory_="APPDIR" Attributes="256" KeyPath="wufuc64.dll"/>
+    <ROW Component="ProductInformation" ComponentId="{75030EAB-5C17-4F84-B529-28003271CA3F}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{910396A4-AFDD-4E57-BF00-2FDD4108AC61}" Directory_="SHORTCUTDIR" Attributes="0"/>
+    <ROW Component="X64FeatureItems" ComponentId="{0E189A37-1F40-4756-ACB9-6511067D5B47}" Directory_="X64FeatureItems_Dir" Attributes="0"/>
+    <ROW Component="X86FeatureItems" ComponentId="{CBB84726-9EC3-4570-9012-37BA98719022}" Directory_="X86FeatureItems_Dir" Attributes="0"/>
+    <ROW Component="wufuc32.dll" ComponentId="{7FBEF396-DCBC-4838-A4EB-336F74A836C7}" Directory_="APPDIR" Attributes="0" KeyPath="wufuc32.dll"/>
+    <ROW Component="wufuc64.dll" ComponentId="{0407D471-998A-4FD3-BC2D-72EE56FBEEF4}" Directory_="APPDIR" Attributes="256" KeyPath="wufuc64.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="3" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation SHORTCUTDIR"/>
-    <ROW Feature="X64Feature" Feature_Parent="MainFeature" Title="X64Feature" Description="Description" Display="0" Level="1" Directory_="APPDIR" Attributes="16" Components="wufuc64.dll" Builds="X64Build"/>
-    <ROW Feature="X86Feature" Feature_Parent="MainFeature" Title="X86Feature" Description="Description" Display="0" Level="1" Directory_="APPDIR" Attributes="16" Components="wufuc32.dll" Builds="X86Build"/>
-    <ATTRIBUTE name="CurrentFeature" value="X64Feature"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation SHORTCUTDIR X64FeatureItems X86FeatureItems"/>
+    <ROW Feature="X64Feature" Feature_Parent="MainFeature" Title="X64Feature" Display="0" Level="1" Directory_="APPDIR" Attributes="0" Components="wufuc64.dll" Builds="x64Build"/>
+    <ROW Feature="X86Feature" Feature_Parent="MainFeature" Title="X86Feature" Display="0" Level="1" Directory_="APPDIR" Attributes="0" Components="wufuc32.dll" Builds="x86Build"/>
+    <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="wufuc32.dll" Component_="wufuc32.dll" FileName="wufuc32.dll" Attributes="512" SourcePath="..\wufuc\bin\Release\x86\wufuc32.dll" SelfReg="false" NextFile="wufuc64.dll"/>
-    <ROW File="wufuc64.dll" Component_="wufuc64.dll" FileName="wufuc64.dll" Attributes="512" SourcePath="..\wufuc\bin\Release\x64\wufuc64.dll" SelfReg="false"/>
+    <ROW File="wufuc32.dll" Component_="wufuc32.dll" FileName="wufuc32.dll" Attributes="0" SourcePath="wufuc32.dll" SelfReg="false" NextFile="wufuc64.dll"/>
+    <ROW File="wufuc64.dll" Component_="wufuc64.dll" FileName="wufuc64.dll" Attributes="0" SourcePath="wufuc64.dll" SelfReg="false"/>
   </COMPONENT>
-  <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
-    <ROW MsiShortcutProperty="Uninstall1" Shortcut_="Uninstall" PropertyKey="[AiPreventAutoPin]" PropVariantValue="1"/>
+  <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
+    <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="X64Build" BuildName="x64" BuildOrder="1" BuildType="1" PackageFileName="wufuc_setup_x64" Languages="en;zh;zh_TW;nl;fi;fr;de;hu;it;ja;ko;pl;pt;pt_BR;ru;sl;ca;es" LangOpt="1" InstallationType="4" UseLargeSchema="true" Unicode="true" MsiPackageType="x64"/>
-    <ROW BuildKey="X86Build" BuildName="x86" BuildOrder="2" BuildType="1" PackageFileName="wufuc_setup_x86" Languages="en;zh;zh_TW;nl;fi;fr;de;hu;it;ja;ko;pl;pt;pt_BR;ru;sl;ca;es" LangOpt="1" InstallationType="4" UseLargeSchema="true" Unicode="true"/>
+    <ROW BuildKey="x64Build" BuildName="x64" BuildOrder="1" BuildType="1" PackageFileName="[|ProductName]_v[|ProductVersion]-[|AI_BUILD_NAME]" Languages="en;ca;zh;zh_TW;nl;fi;fr;de;hu;it;ja;ko;pl;pt;pt_BR;ru;sl;es" LangOpt="1" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
+    <ROW BuildKey="x86Build" BuildName="x86" BuildOrder="2" BuildType="1" PackageFileName="[|ProductName]_v[|ProductVersion]-[|AI_BUILD_NAME]" Languages="en;ca;zh;zh_TW;nl;fi;fr;de;hu;it;ja;ko;pl;pt;pt_BR;ru;sl;es" LangOpt="1" InstallationType="4" UseLargeSchema="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
     <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
     <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_ca.ail"/>
     <ROW Path="&lt;AI_DICTS&gt;ui_zh.ail"/>
     <ROW Path="&lt;AI_DICTS&gt;ui_zh_TW.ail"/>
     <ROW Path="&lt;AI_DICTS&gt;ui_nl.ail"/>
@@ -84,11 +87,12 @@
     <ROW Path="&lt;AI_DICTS&gt;ui_pt_BR.ail"/>
     <ROW Path="&lt;AI_DICTS&gt;ui_ru.ail"/>
     <ROW Path="&lt;AI_DICTS&gt;ui_sl.ail"/>
-    <ROW Path="&lt;AI_DICTS&gt;ui_ca.ail"/>
     <ROW Path="&lt;AI_DICTS&gt;ui_es.ail"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
     <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
+    <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\FolderDlg.aip"/>
+    <ROW Fragment="LicenseAgreementDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\LicenseAgreementDlg.aip"/>
     <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceTypeDlg.aip"/>
     <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceWelcomeDlg.aip"/>
     <ROW Fragment="SequenceDialogs.aip" Path="&lt;AI_THEMES&gt;classic\fragments\SequenceDialogs.aip"/>
@@ -100,21 +104,35 @@
     <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
     <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\WelcomeDlg.aip"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_XmlCommit" Description="Committing XML file configurations." DescriptionLocId="ActionText.Description.AI_XmlCommit" Template="Committing XML file configurations." TemplateLocId="ActionText.Template.AI_XmlCommit"/>
+    <ROW Action="AI_XmlConfig" Description="Executing XML file configurations" DescriptionLocId="ActionText.Description.AI_XmlConfig" Template="Configuring XML file: &quot;[1]&quot;" TemplateLocId="ActionText.Template.AI_XmlConfig"/>
+    <ROW Action="AI_XmlInstall" Description="Generating actions to configure XML files" DescriptionLocId="ActionText.Description.AI_XmlInstall"/>
+    <ROW Action="AI_XmlRemove" Description="Executing XML file configurations" DescriptionLocId="ActionText.Description.AI_XmlRemove" Template="Configuring XML file: &quot;[1]&quot;" TemplateLocId="ActionText.Template.AI_XmlRemove"/>
+    <ROW Action="AI_XmlRollback" Description="Rolling back XML file configurations." DescriptionLocId="ActionText.Description.AI_XmlRollback" Template="Rolling back XML file configurations." TemplateLocId="ActionText.Template.AI_XmlRollback"/>
+    <ROW Action="AI_XmlUninstall" Description="Generating actions to configure XML files" DescriptionLocId="ActionText.Description.AI_XmlUninstall"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
+    <ROW Name="AdvancedInstallerHelper.dll" SourcePath="AdvancedInstallerHelper.dll"/>
     <ROW Name="ShortcutFlags.dll" SourcePath="&lt;AI_CUSTACTS&gt;ShortcutFlags.dll"/>
     <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
     <ROW Name="viewer.exe" SourcePath="&lt;AI_CUSTACTS&gt;viewer.exe"/>
-    <ROW Name="viewer.exe_1" SourcePath="&lt;AI_CUSTACTS64&gt;viewer.exe"/>
+    <ROW Name="xmlCfg.dll" SourcePath="&lt;AI_CUSTACTS&gt;xmlCfg.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
+    <ROW Dialog_="LicenseAgreementDlg" Control="AgreementText" Type="ScrollableText" X="20" Y="60" Width="330" Height="120" Attributes="7" Text="LICENSE.rtf" Order="400" TextLocId="-" MsiKey="LicenseAgreementDlg#AgreementText"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
-    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="202"/>
+    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
     <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
     <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="202"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control_="ChangeButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="501"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control_="RemoveButton" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="601"/>
@@ -127,12 +145,19 @@
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="SHORTCUTDIR" Component_="SHORTCUTDIR" ManualDelete="false"/>
+    <ROW Directory_="X86FeatureItems_Dir" Component_="X86FeatureItems" ManualDelete="false"/>
+    <ROW Directory_="X64FeatureItems_Dir" Component_="X64FeatureItems" ManualDelete="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_ApplyShortcutFlags" Type="3073" Source="ShortcutFlags.dll" Target="UpdateShortcutFlags" WithoutSeq="true"/>
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH_ORIGINAL" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[~]"/>
+    <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="[~]"/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
     <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
@@ -142,6 +167,7 @@
     <ROW Action="AI_PinToStartScreen" Type="1025" Source="ShortcutFlags.dll" Target="PinToStartScreen" WithoutSeq="true"/>
     <ROW Action="AI_PinToTaskbar" Type="1025" Source="ShortcutFlags.dll" Target="PinToTaskbar" WithoutSeq="true"/>
     <ROW Action="AI_PrepareShortcutFlags" Type="1" Source="ShortcutFlags.dll" Target="PrepareActionData"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH" Target="[AI_SETUPEXEPATH_ORIGINAL]"/>
     <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
     <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
@@ -150,59 +176,73 @@
     <ROW Action="AI_UnpinFromStartScreen" Type="1025" Source="ShortcutFlags.dll" Target="UnpinFromStartScreen" WithoutSeq="true"/>
     <ROW Action="AI_UnpinFromTaskbar" Type="1025" Source="ShortcutFlags.dll" Target="UnpinFromTaskbar" WithoutSeq="true"/>
     <ROW Action="AI_UnpinShortcuts" Type="1" Source="ShortcutFlags.dll" Target="UnpinShortcuts"/>
-    <ROW Action="LaunchSfcScan32" Type="3138" Source="viewer.exe" Target="/RunAsAdmin /HideWindow &quot;[SystemFolder]sfc.exe&quot; /SCANFILE=&quot;[SystemFolder]wuaueng.dll&quot;" Options="1"/>
-    <ROW Action="LaunchSfcScan64" Type="3138" Source="viewer.exe_1" Target="/RunAsAdmin /HideWindow &quot;[System64Folder]sfc.exe&quot; /SCANFILE=&quot;[System64Folder]wuaueng.dll&quot;" Options="1"/>
-    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="X64Build:[ProgramFiles64Folder]\[ProductName]#X86Build:[ProgramFilesFolder]\[ProductName]"/>
+    <ROW Action="AI_XmlCommit" Type="11777" Source="xmlCfg.dll" Target="OnXmlCommit" WithoutSeq="true"/>
+    <ROW Action="AI_XmlConfig" Type="11265" Source="xmlCfg.dll" Target="OnXmlConfig" WithoutSeq="true"/>
+    <ROW Action="AI_XmlInstall" Type="1" Source="xmlCfg.dll" Target="OnXmlInstall" AdditionalSeq="AI_DATA_SETTER"/>
+    <ROW Action="AI_XmlRemove" Type="11265" Source="xmlCfg.dll" Target="OnXmlRemove" WithoutSeq="true"/>
+    <ROW Action="AI_XmlRollback" Type="11521" Source="xmlCfg.dll" Target="OnXmlRollback" WithoutSeq="true"/>
+    <ROW Action="AI_XmlUninstall" Type="1" Source="xmlCfg.dll" Target="OnXmlUninstall" AdditionalSeq="AI_DATA_SETTER_1"/>
+    <ROW Action="AdvancedInstallerHelper.dll" Type="1" Source="AdvancedInstallerHelper.dll" Target="UnloadCustomAction"/>
+    <ROW Action="CreateScheduledTask" Type="3074" Source="viewer.exe" Target="/HideWindow schtasks.exe /Create /XML &quot;[APPDIR]wufuc_ScheduledTask.xml&quot; /TN &quot;[wufuc_TaskName]&quot; /F" Options="1"/>
+    <ROW Action="DeleteScheduledTask" Type="3138" Source="viewer.exe" Target="/HideWindow schtasks.exe /Delete /TN &quot;[wufuc_TaskName]&quot; /F" Options="1"/>
+    <ROW Action="RunScheduledTask" Type="3074" Source="viewer.exe" Target="/HideWindow schtasks.exe /Run /TN &quot;[wufuc_TaskName]&quot;" Options="1"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="x64Build:[ProgramFiles64Folder]\[ProductName]#x86Build:[ProgramFilesFolder]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
-    <ROW Name="msiexec_1.exe" SourcePath="C:\Windows\System32\msiexec.exe" Index="0"/>
+    <ROW Name="msiexec.exe" SourcePath="C:\Windows\System32\msiexec.exe" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIniFileComponent">
-    <ROW IniFile="URL" FileName="Homepage.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc" Action="0" Component_="SHORTCUTDIR"/>
-    <ROW IniFile="URL_1" FileName="Donate.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc/blob/master/DONATE.md" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="URL" FileName="Donate.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc/blob/master/DONATE.md" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="URL_1" FileName="Homepage.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc" Action="0" Component_="SHORTCUTDIR"/>
     <ROW IniFile="URL_2" FileName="Readme.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="https://github.com/zeffy/wufuc/blob/master/README.md" Action="0" Component_="SHORTCUTDIR"/>
-    <ROW IniFile="WorkingDirectory" FileName="Homepage.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="SHORTCUTDIR"/>
-    <ROW IniFile="WorkingDirectory_1" FileName="Donate.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="WorkingDirectory" FileName="Donate.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="SHORTCUTDIR"/>
+    <ROW IniFile="WorkingDirectory_1" FileName="Homepage.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="SHORTCUTDIR"/>
     <ROW IniFile="WorkingDirectory_2" FileName="Readme.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="SHORTCUTDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
     <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
     <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
-    <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
-    <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1398"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
     <ROW Action="AI_EnableDebugLog" Sequence="51"/>
     <ROW Action="AI_SelectAutoPinOption" Condition="VersionNT &gt; 601" Sequence="1401"/>
     <ROW Action="AI_PrepareShortcutFlags" Condition="(VersionNT &gt; 501) AND ((NOT Installed) OR (Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;)))" Sequence="4501"/>
     <ROW Action="AI_PinShortcuts" Condition="(VersionNT &gt; 600) AND ((NOT Installed) OR (Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;)))" Sequence="6499"/>
     <ROW Action="AI_UnpinShortcuts" Condition="(VersionNT &gt; 600) AND (REMOVE = &quot;ALL&quot;)" Sequence="3199"/>
-    <ROW Action="LaunchSfcScan64" Condition="( NOT Installed ) AND ( (VersionNT64) AND (Not Installed) )" Sequence="1601"/>
-    <ROW Action="LaunchSfcScan32" Condition="( NOT Installed ) AND ( (NOT VersionNT64) AND (Not Installed) )" Sequence="1602"/>
+    <ROW Action="AI_XmlInstall" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5102"/>
+    <ROW Action="AI_DATA_SETTER" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5101"/>
+    <ROW Action="AI_XmlUninstall" Condition="(REMOVE)" Sequence="3102"/>
+    <ROW Action="AI_DATA_SETTER_1" Condition="(REMOVE)" Sequence="3101"/>
+    <ROW Action="CreateScheduledTask" Condition="( ( NOT Installed ) OR ( Installed AND REMOVE &lt;&gt; &quot;ALL&quot; AND AI_INSTALL_MODE &lt;&gt; &quot;Remove&quot; ) )" Sequence="5826"/>
+    <ROW Action="RunScheduledTask" Condition="( ( NOT Installed ) OR ( Installed AND REMOVE &lt;&gt; &quot;ALL&quot; AND AI_INSTALL_MODE &lt;&gt; &quot;Remove&quot; ) )" Sequence="6401"/>
+    <ROW Action="DeleteScheduledTask" Sequence="3601"/>
+    <ROW Action="AdvancedInstallerHelper.dll" Sequence="1399"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
     <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
     <ROW Action="AI_DpiContentScale" Sequence="52"/>
     <ROW Action="AI_EnableDebugLog" Sequence="51"/>
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="101"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
-    <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 600) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 600) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 602) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 602) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 1000) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 1000) OR (ServicePackLevel &lt;&gt; 0) OR (MsiNTProductType = 1)) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="X64Build"/>
-    <ROW Condition="( Version9X OR (VersionNT AND (NOT VersionNT64)) )" Description="[ProductName] cannot be installed on [WindowsTypeNT64Display]." DescriptionLocId="AI.LaunchCondition.NoNT64" IsPredefined="true" Builds="X86Build"/>
-    <ROW Condition="( Version9X OR VersionNT64 )" Description="[ProductName] cannot be installed on [WindowsTypeNTDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT" IsPredefined="true" Builds="X64Build"/>
-    <ROW Condition="( Version9X OR VersionNT64 OR ( VersionNT AND ((VersionNT &lt;&gt; 501) OR (ServicePackLevel &lt;&gt; 3)) AND ((VersionNT &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2)) AND ((VersionNT &lt;&gt; 600) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT &lt;&gt; 600) OR (MsiNTProductType = 1)) AND (VersionNT &lt;&gt; 602) AND (VersionNT &lt;&gt; 1000) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNTDisplay]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT" IsPredefined="true" Builds="X86Build"/>
-    <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on [WindowsTypeNT40Display]." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="X64Build;X86Build"/>
-    <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="X64Build;X86Build"/>
-    <ROW Condition="(VersionNT64 OR ((VersionNT &lt;&gt; 501) OR (ServicePackLevel = 3))) AND ((VersionNT &lt;&gt; 502) OR (ServicePackLevel = 2))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="X64Build;X86Build"/>
-    <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="X64Build;X86Build"/>
+    <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 600) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 600) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 602) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 602) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 1000) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 1000) OR (ServicePackLevel &lt;&gt; 0) OR (MsiNTProductType = 1)) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="x64Build;x86Build"/>
+    <ROW Condition="( Version9X OR VersionNT64 OR ( VersionNT AND ((VersionNT &lt;&gt; 501) OR (ServicePackLevel &lt;&gt; 3)) AND ((VersionNT &lt;&gt; 502) OR (ServicePackLevel &lt;&gt; 2)) AND ((VersionNT &lt;&gt; 600) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT &lt;&gt; 600) OR (MsiNTProductType = 1)) AND (VersionNT &lt;&gt; 602) AND (VersionNT &lt;&gt; 1000) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNTDisplay]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT" IsPredefined="true" Builds="x64Build;x86Build"/>
+    <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on [WindowsTypeNT40Display]." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="x64Build;x86Build"/>
+    <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="x64Build;x86Build"/>
+    <ROW Condition="(VersionNT64 OR ((VersionNT &lt;&gt; 501) OR (ServicePackLevel = 3))) AND ((VersionNT &lt;&gt; 502) OR (ServicePackLevel = 2))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="x64Build;x86Build"/>
+    <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="x64Build;x86Build"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
-    <ROW Shortcut="Uninstall" Directory_="SHORTCUTDIR" Name="UNINST~2|Uninstall wufuc" Component_="SHORTCUTDIR" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]" Hotkey="0" Icon_="msiexec_1.exe" IconIndex="0" ShowCmd="1" CustomFlags="1"/>
+    <ROW Shortcut="Uninstallwufuc" Directory_="SHORTCUTDIR" Name="UNINST~2|Uninstall [|ProductName]" Component_="ProductInformation" Target="[SystemFolder]msiexec.exe" Arguments="/x [ProductCode]" Hotkey="0" Icon_="msiexec.exe" IconIndex="0" ShowCmd="1" CustomFlags="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>
@@ -210,5 +250,93 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="[|ProductVersion]" Attributes="257" ActionProperty="OLDPRODUCTS"/>
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.XmlAttributeComponent">
+    <ROW XmlAttribute="Context" XmlElement="Actions" Name="Context" Flags="14" Order="0" Value="Author"/>
+    <ROW XmlAttribute="Context_1" XmlElement="Actions_1" Name="Context" Flags="14" Order="0" Value="Author"/>
+    <ROW XmlAttribute="id" XmlElement="Principal" Name="id" Flags="15" Order="0" Value="Author"/>
+    <ROW XmlAttribute="id_1" XmlElement="Principal_1" Name="id" Flags="15" Order="0" Value="Author"/>
+    <ROW XmlAttribute="version" XmlElement="Task" Name="version" Flags="14" Order="0" Value="1.3"/>
+    <ROW XmlAttribute="version_1" XmlElement="Task_1" Name="version" Flags="14" Order="0" Value="1.3"/>
+    <ROW XmlAttribute="xmlns" XmlElement="Task" Name="xmlns" Flags="14" Order="1" Value="http://schemas.microsoft.com/windows/2004/02/mit/task"/>
+    <ROW XmlAttribute="xmlns_1" XmlElement="Task_1" Name="xmlns" Flags="14" Order="1" Value="http://schemas.microsoft.com/windows/2004/02/mit/task"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.XmlElementComponent">
+    <ROW XmlElement="Actions" ParentElement="Task" Name="Actions" Condition="1" Order="4" Flags="14"/>
+    <ROW XmlElement="Actions_1" ParentElement="Task_1" Name="Actions" Condition="1" Order="4" Flags="14"/>
+    <ROW XmlElement="AllowHardTerminate" ParentElement="Settings" Name="AllowHardTerminate" Condition="1" Order="3" Flags="14" Text="true"/>
+    <ROW XmlElement="AllowHardTerminate_1" ParentElement="Settings_1" Name="AllowHardTerminate" Condition="1" Order="3" Flags="14" Text="true"/>
+    <ROW XmlElement="AllowStartOnDemand" ParentElement="Settings" Name="AllowStartOnDemand" Condition="1" Order="7" Flags="14" Text="true"/>
+    <ROW XmlElement="AllowStartOnDemand_1" ParentElement="Settings_1" Name="AllowStartOnDemand" Condition="1" Order="7" Flags="14" Text="true"/>
+    <ROW XmlElement="Arguments" ParentElement="Exec" Name="Arguments" Condition="1" Order="1" Flags="14" Text="&quot;[#wufuc32.dll]&quot;,RUNDLL32_Start"/>
+    <ROW XmlElement="Arguments_1" ParentElement="Exec_1" Name="Arguments" Condition="1" Order="1" Flags="14" Text="&quot;[#wufuc64.dll]&quot;,RUNDLL32_Start"/>
+    <ROW XmlElement="Author" ParentElement="RegistrationInfo" Name="Author" Condition="1" Order="0" Flags="14" Text="zeffy &lt;https://github.com/zeffy&gt;"/>
+    <ROW XmlElement="Author_1" ParentElement="RegistrationInfo_1" Name="Author" Condition="1" Order="0" Flags="14" Text="zeffy &lt;https://github.com/zeffy&gt;"/>
+    <ROW XmlElement="BootTrigger" ParentElement="Triggers" Name="BootTrigger" Condition="1" Order="0" Flags="14"/>
+    <ROW XmlElement="BootTrigger_1" ParentElement="Triggers_1" Name="BootTrigger" Condition="1" Order="0" Flags="14"/>
+    <ROW XmlElement="Command" ParentElement="Exec" Name="Command" Condition="1" Order="0" Flags="14" Text="&quot;[SystemFolder]rundll32.exe&quot;"/>
+    <ROW XmlElement="Command_1" ParentElement="Exec_1" Name="Command" Condition="1" Order="0" Flags="14" Text="&quot;[System64Folder]rundll32.exe&quot;"/>
+    <ROW XmlElement="Description" ParentElement="RegistrationInfo" Name="Description" Condition="1" Order="1" Flags="14" Text="Enables Windows Update on PCs with unsupported processors.  https://github.com/zeffy/wufuc"/>
+    <ROW XmlElement="Description_1" ParentElement="RegistrationInfo_1" Name="Description" Condition="1" Order="1" Flags="14" Text="Enables Windows Update on PCs with unsupported processors.  https://github.com/zeffy/wufuc"/>
+    <ROW XmlElement="DisallowStartIfOnBatteries" ParentElement="Settings" Name="DisallowStartIfOnBatteries" Condition="1" Order="1" Flags="14" Text="false"/>
+    <ROW XmlElement="DisallowStartIfOnBatteries_1" ParentElement="Settings_1" Name="DisallowStartIfOnBatteries" Condition="1" Order="1" Flags="14" Text="false"/>
+    <ROW XmlElement="DisallowStartOnRemoteAppSession" ParentElement="Settings" Name="DisallowStartOnRemoteAppSession" Condition="1" Order="11" Flags="14" Text="false"/>
+    <ROW XmlElement="DisallowStartOnRemoteAppSession_1" ParentElement="Settings_1" Name="DisallowStartOnRemoteAppSession" Condition="1" Order="11" Flags="14" Text="false"/>
+    <ROW XmlElement="Enabled" ParentElement="BootTrigger" Name="Enabled" Condition="1" Order="0" Flags="14" Text="true"/>
+    <ROW XmlElement="Enabled_1" ParentElement="LogonTrigger" Name="Enabled" Condition="1" Order="0" Flags="14" Text="true"/>
+    <ROW XmlElement="Enabled_2" ParentElement="Settings" Name="Enabled" Condition="1" Order="8" Flags="14" Text="true"/>
+    <ROW XmlElement="Enabled_3" ParentElement="BootTrigger_1" Name="Enabled" Condition="1" Order="0" Flags="14" Text="true"/>
+    <ROW XmlElement="Enabled_4" ParentElement="LogonTrigger_1" Name="Enabled" Condition="1" Order="0" Flags="14" Text="true"/>
+    <ROW XmlElement="Enabled_5" ParentElement="Settings_1" Name="Enabled" Condition="1" Order="8" Flags="14" Text="true"/>
+    <ROW XmlElement="Exec" ParentElement="Actions" Name="Exec" Condition="1" Order="0" Flags="14"/>
+    <ROW XmlElement="Exec_1" ParentElement="Actions_1" Name="Exec" Condition="1" Order="0" Flags="14"/>
+    <ROW XmlElement="ExecutionTimeLimit" ParentElement="Settings" Name="ExecutionTimeLimit" Condition="1" Order="14" Flags="14" Text="PT0S"/>
+    <ROW XmlElement="ExecutionTimeLimit_1" ParentElement="Settings_1" Name="ExecutionTimeLimit" Condition="1" Order="14" Flags="14" Text="PT0S"/>
+    <ROW XmlElement="Hidden" ParentElement="Settings" Name="Hidden" Condition="1" Order="9" Flags="14" Text="false"/>
+    <ROW XmlElement="Hidden_1" ParentElement="Settings_1" Name="Hidden" Condition="1" Order="9" Flags="14" Text="false"/>
+    <ROW XmlElement="IdleSettings" ParentElement="Settings" Name="IdleSettings" Condition="1" Order="6" Flags="14"/>
+    <ROW XmlElement="IdleSettings_1" ParentElement="Settings_1" Name="IdleSettings" Condition="1" Order="6" Flags="14"/>
+    <ROW XmlElement="LogonTrigger" ParentElement="Triggers" Name="LogonTrigger" Condition="1" Order="1" Flags="14"/>
+    <ROW XmlElement="LogonTrigger_1" ParentElement="Triggers_1" Name="LogonTrigger" Condition="1" Order="1" Flags="14"/>
+    <ROW XmlElement="MultipleInstancesPolicy" ParentElement="Settings" Name="MultipleInstancesPolicy" Condition="1" Order="0" Flags="14" Text="IgnoreNew"/>
+    <ROW XmlElement="MultipleInstancesPolicy_1" ParentElement="Settings_1" Name="MultipleInstancesPolicy" Condition="1" Order="0" Flags="14" Text="IgnoreNew"/>
+    <ROW XmlElement="Principal" ParentElement="Principals" Name="Principal" Condition="1" Order="0" Flags="14"/>
+    <ROW XmlElement="Principal_1" ParentElement="Principals_1" Name="Principal" Condition="1" Order="0" Flags="14"/>
+    <ROW XmlElement="Principals" ParentElement="Task" Name="Principals" Condition="1" Order="2" Flags="14"/>
+    <ROW XmlElement="Principals_1" ParentElement="Task_1" Name="Principals" Condition="1" Order="2" Flags="14"/>
+    <ROW XmlElement="Priority" ParentElement="Settings" Name="Priority" Condition="1" Order="15" Flags="14" Text="7"/>
+    <ROW XmlElement="Priority_1" ParentElement="Settings_1" Name="Priority" Condition="1" Order="15" Flags="14" Text="7"/>
+    <ROW XmlElement="RegistrationInfo" ParentElement="Task" Name="RegistrationInfo" Condition="1" Order="0" Flags="14"/>
+    <ROW XmlElement="RegistrationInfo_1" ParentElement="Task_1" Name="RegistrationInfo" Condition="1" Order="0" Flags="14"/>
+    <ROW XmlElement="RestartOnIdle" ParentElement="IdleSettings" Name="RestartOnIdle" Condition="1" Order="1" Flags="14" Text="false"/>
+    <ROW XmlElement="RestartOnIdle_1" ParentElement="IdleSettings_1" Name="RestartOnIdle" Condition="1" Order="1" Flags="14" Text="false"/>
+    <ROW XmlElement="RunLevel" ParentElement="Principal" Name="RunLevel" Condition="1" Order="1" Flags="14" Text="HighestAvailable"/>
+    <ROW XmlElement="RunLevel_1" ParentElement="Principal_1" Name="RunLevel" Condition="1" Order="1" Flags="14" Text="HighestAvailable"/>
+    <ROW XmlElement="RunOnlyIfIdle" ParentElement="Settings" Name="RunOnlyIfIdle" Condition="1" Order="10" Flags="14" Text="false"/>
+    <ROW XmlElement="RunOnlyIfIdle_1" ParentElement="Settings_1" Name="RunOnlyIfIdle" Condition="1" Order="10" Flags="14" Text="false"/>
+    <ROW XmlElement="RunOnlyIfNetworkAvailable" ParentElement="Settings" Name="RunOnlyIfNetworkAvailable" Condition="1" Order="5" Flags="14" Text="false"/>
+    <ROW XmlElement="RunOnlyIfNetworkAvailable_1" ParentElement="Settings_1" Name="RunOnlyIfNetworkAvailable" Condition="1" Order="5" Flags="14" Text="false"/>
+    <ROW XmlElement="Settings" ParentElement="Task" Name="Settings" Condition="1" Order="3" Flags="14"/>
+    <ROW XmlElement="Settings_1" ParentElement="Task_1" Name="Settings" Condition="1" Order="3" Flags="14"/>
+    <ROW XmlElement="StartWhenAvailable" ParentElement="Settings" Name="StartWhenAvailable" Condition="1" Order="4" Flags="14" Text="true"/>
+    <ROW XmlElement="StartWhenAvailable_1" ParentElement="Settings_1" Name="StartWhenAvailable" Condition="1" Order="4" Flags="14" Text="true"/>
+    <ROW XmlElement="StopIfGoingOnBatteries" ParentElement="Settings" Name="StopIfGoingOnBatteries" Condition="1" Order="2" Flags="14" Text="true"/>
+    <ROW XmlElement="StopIfGoingOnBatteries_1" ParentElement="Settings_1" Name="StopIfGoingOnBatteries" Condition="1" Order="2" Flags="14" Text="true"/>
+    <ROW XmlElement="StopOnIdleEnd" ParentElement="IdleSettings" Name="StopOnIdleEnd" Condition="1" Order="0" Flags="14" Text="true"/>
+    <ROW XmlElement="StopOnIdleEnd_1" ParentElement="IdleSettings_1" Name="StopOnIdleEnd" Condition="1" Order="0" Flags="14" Text="true"/>
+    <ROW XmlElement="Task" Name="Task" Condition="1" Order="0" Flags="30"/>
+    <ROW XmlElement="Task_1" Name="Task" Condition="1" Order="0" Flags="30"/>
+    <ROW XmlElement="Triggers" ParentElement="Task" Name="Triggers" Condition="1" Order="1" Flags="14"/>
+    <ROW XmlElement="Triggers_1" ParentElement="Task_1" Name="Triggers" Condition="1" Order="1" Flags="14"/>
+    <ROW XmlElement="UseUnifiedSchedulingEngine" ParentElement="Settings" Name="UseUnifiedSchedulingEngine" Condition="1" Order="12" Flags="14" Text="false"/>
+    <ROW XmlElement="UseUnifiedSchedulingEngine_1" ParentElement="Settings_1" Name="UseUnifiedSchedulingEngine" Condition="1" Order="12" Flags="14" Text="false"/>
+    <ROW XmlElement="UserId" ParentElement="Principal" Name="UserId" Condition="1" Order="0" Flags="14" Text="S-1-5-18"/>
+    <ROW XmlElement="UserId_1" ParentElement="Principal_1" Name="UserId" Condition="1" Order="0" Flags="14" Text="S-1-5-18"/>
+    <ROW XmlElement="WakeToRun" ParentElement="Settings" Name="WakeToRun" Condition="1" Order="13" Flags="14" Text="false"/>
+    <ROW XmlElement="WakeToRun_1" ParentElement="Settings_1" Name="WakeToRun" Condition="1" Order="13" Flags="14" Text="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.XmlFileComponent">
+    <ROW XmlFile="wufuc_ScheduledTask32.xml" FileName="WUFUC_~2.XML|wufuc_ScheduledTask.xml" DirProperty="X86FeatureItems_Dir" Component="wufuc32.dll" RootElement="Task" Flags="89" Version="1.0" Encoding="UTF-16" IndentUnits="2"/>
+    <ROW XmlFile="wufuc_ScheduledTask64.xml" FileName="WUFUC_~1.XML|wufuc_ScheduledTask.xml" DirProperty="X64FeatureItems_Dir" Component="wufuc64.dll" RootElement="Task_1" Flags="89" Version="1.0" Encoding="UTF-16" IndentUnits="2"/>
   </COMPONENT>
 </DOCUMENT>

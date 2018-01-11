@@ -14,7 +14,7 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
         SERVICE_NOTIFYW NotifyBuffer;
 
         if ( !InitializeMutex(true,
-                L"Global\\{25020063-B5A7-4227-9FDF-25CB75E8C645}",
+                L"Global\\25020063-b5a7-4227-9fdf-25cb75e8c645",
                 &ctx.hMainMutex) ) {
 
                 trace(L"Failed to initialize main mutex. (GetLastError=%ul)", GetLastError());

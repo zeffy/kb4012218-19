@@ -1,0 +1,7 @@
+# Advanced Installer
+*-cache/
+*-SetupFiles/
+*.back.aip
+
+# Other
+*.dll
