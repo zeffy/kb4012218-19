@@ -84,8 +84,8 @@ My patch takes advantage of this behavior by patching a couple of boolean values
 > - January 9, 2018—KB4056895 (Monthly Rollup)
 
 For more information, you can read the Microsoft Support article [here](https://support.microsoft.com/en-us/help/4073707/windows-os-security-update-block-for-some-amd-based-devices),
-but basically Microsoft put out some updates recently that cause problems on older AMD processors, and blocked them on those CPUs, but apparently (I haven't been able to test this due to lack of time and compatible hardware)
-wufuc bypasses the block and lets you uninstall these buggy updates which can cause problems. 
+but basically Microsoft put out some updates recently that cause problems on older AMD processors, and blocked them on those CPUs, but apparently
+wufuc bypasses the block and lets you uninstall these buggy updates which can cause problems.
 
 Unfortunately as far as I know, there is no comprehensive list of the processors that should be blocked, but if you experience BSODs
 after installing any of these updates, you can try the solution posted in this [comment](https://github.com/zeffy/wufuc/issues/132#issuecomment-356921433) to uninstall the updates and fix the crashes.
