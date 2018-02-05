@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "hooks.h"
-#include "helpers.h"
+#include "hlpmem.h"
+#include "hlpmisc.h"
+#include "hlpsvc.h"
 
 LPWSTR g_pszWUServiceDll;
 

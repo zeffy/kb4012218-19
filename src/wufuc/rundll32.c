@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "callbacks.h"
-#include "helpers.h"
-
+#include "hlpmisc.h"
 
 
 void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)

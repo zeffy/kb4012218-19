@@ -30,10 +30,19 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="helpers.h">
+    <ClInclude Include="patternfind.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="patternfind.h">
+    <ClInclude Include="hlpmem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hlpmisc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hlpsvc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hlpver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,10 +65,19 @@
     <ClCompile Include="stdafx.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="helpers.c">
+    <ClCompile Include="patternfind.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="patternfind.c">
+    <ClCompile Include="hlpsvc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hlpmem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hlpver.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hlpmisc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

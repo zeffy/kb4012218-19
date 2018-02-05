@@ -22,9 +22,9 @@ before_build:
     set "BUILD_ZIPFILE=%APPVEYOR_BUILD_FOLDER%\%APPVEYOR_PROJECT_NAME%_v%BUILD_COMMIT_VERSION%-%PLATFORM%.zip"
 after_build:
 - cmd: >-
-    copy /Y "COPYING" "wufuc_setup_bat\COPYING.txt"
+    copy /Y "COPYING" "src\wufuc_setup_bat\COPYING.txt"
 
-    cd "%APPVEYOR_BUILD_FOLDER%\wufuc_setup_bat"
+    cd "%APPVEYOR_BUILD_FOLDER%\src\wufuc_setup_bat"
 
     echo v%BUILD_COMMIT_VERSION%>version.txt
 

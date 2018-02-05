@@ -20,16 +20,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="callbacks.h" />
+    <ClInclude Include="hlpmem.h" />
+    <ClInclude Include="hlpmisc.h" />
+    <ClInclude Include="hlpsvc.h" />
+    <ClInclude Include="hlpver.h" />
     <ClInclude Include="hooks.h" />
     <ClInclude Include="patternfind.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="helpers.h" />
     <ClInclude Include="tracing.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="callbacks.c" />
     <ClCompile Include="dllmain.c" />
+    <ClCompile Include="hlpmem.c" />
+    <ClCompile Include="hlpmisc.c" />
+    <ClCompile Include="hlpsvc.c" />
+    <ClCompile Include="hlpver.c" />
     <ClCompile Include="hooks.c" />
     <ClCompile Include="patternfind.c" />
     <ClCompile Include="stdafx.c">
@@ -38,7 +45,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="helpers.c" />
     <ClCompile Include="rundll32.c" />
     <ClCompile Include="tracing.c" />
   </ItemGroup>
@@ -109,8 +115,8 @@
     <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)inc\phnt;$(SolutionDir)inc\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\detours;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\lib\detours;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -118,8 +124,8 @@
     <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)inc\phnt;$(SolutionDir)inc\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\detours;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\lib\detours;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -127,8 +133,8 @@
     <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)inc\phnt;$(SolutionDir)inc\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\detours;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\lib\detours;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -136,8 +142,8 @@
     <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)inc\phnt;$(SolutionDir)inc\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\detours;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\lib\detours;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

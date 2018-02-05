@@ -1,22 +1,19 @@
 #include "stdafx.h"
 #include "callbacks.h"
 #include "hooks.h"
-#include "helpers.h"
+#include "hlpmisc.h"
+#include "hlpmem.h"
+#include "hlpsvc.h"
 
 bool DuplicateContextHandles(HANDLE hSrcProcess, ContextHandles *pSrcContext, HANDLE hAuxiliaryMutex, HANDLE hTargetProcess, ContextHandles *pTargetContext)
 {
-        if ( DuplicateHandle(hSrcProcess, pSrcContext->hMainMutex,
-                hTargetProcess, &pTargetContext->hMainMutex, SYNCHRONIZE, FALSE, 0)
-
+        return
+                DuplicateHandle(hSrcProcess, pSrcContext->hMainMutex,
+                        hTargetProcess, &pTargetContext->hMainMutex, SYNCHRONIZE, FALSE, 0)
                 && DuplicateHandle(hSrcProcess, pSrcContext->hUnloadEvent,
                         hTargetProcess, &pTargetContext->hUnloadEvent, SYNCHRONIZE, FALSE, 0)
-
                 && DuplicateHandle(hSrcProcess, hAuxiliaryMutex,
-                        hTargetProcess, &pTargetContext->hAuxiliaryMutex, 0, FALSE, DUPLICATE_SAME_ACCESS) ) {
-
-                return true;
-        }
-        return false;
+                        hTargetProcess, &pTargetContext->hAuxiliaryMutex, 0, FALSE, DUPLICATE_SAME_ACCESS);
 }
 
 VOID CALLBACK ServiceNotifyCallback(PSERVICE_NOTIFYW pNotifyBuffer)

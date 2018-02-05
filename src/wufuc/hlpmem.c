@@ -1,135 +1,8 @@
 #include "stdafx.h"
-#include "helpers.h"
+#include "hlpmem.h"
+#include "hlpver.h"
 #include "hooks.h"
 #include <sddl.h>
-
-bool InitializeMutex(bool InitialOwner, const wchar_t *pMutexName, HANDLE *phMutex)
-{
-        HANDLE hMutex;
-
-        hMutex = CreateMutexW(NULL, InitialOwner, pMutexName);
-        if ( hMutex ) {
-                if ( GetLastError() == ERROR_ALREADY_EXISTS ) {
-                        CloseHandle(hMutex);
-                        return false;
-                }
-                *phMutex = hMutex;
-                return true;
-        }
-        return false;
-}
-
-bool CreateEventWithStringSecurityDescriptor(
-        const wchar_t *pStringSecurityDescriptor,
-        bool ManualReset,
-        bool InitialState,
-        const wchar_t *pName,
-        HANDLE *phEvent)
-{
-        SECURITY_ATTRIBUTES sa = { sizeof sa };
-        HANDLE event;
-
-        if ( ConvertStringSecurityDescriptorToSecurityDescriptorW(
-                pStringSecurityDescriptor,
-                SDDL_REVISION_1,
-                &sa.lpSecurityDescriptor,
-                NULL) ) {
-
-                event = CreateEventW(&sa, ManualReset, InitialState, pName);
-                if ( event ) {
-                        *phEvent = event;
-                        return true;
-                }
-        }
-        return false;
-}
-
-int FileInfoVerCompare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wBuild, WORD wRev)
-{
-        if ( HIWORD(pffi->dwProductVersionMS) < wMajor ) return -1;
-        if ( HIWORD(pffi->dwProductVersionMS) > wMajor ) return 1;
-        if ( LOWORD(pffi->dwProductVersionMS) < wMinor ) return -1;
-        if ( LOWORD(pffi->dwProductVersionMS) > wMinor ) return 1;
-        if ( HIWORD(pffi->dwProductVersionLS) < wBuild ) return -1;
-        if ( HIWORD(pffi->dwProductVersionLS) > wBuild ) return 1;
-        if ( LOWORD(pffi->dwProductVersionLS) < wRev ) return -1;
-        if ( LOWORD(pffi->dwProductVersionLS) > wRev ) return 1;
-        return 0;
-}
-
-bool GetVersionInfoFromHModule(HMODULE hModule, LPCWSTR pszSubBlock, LPVOID pData, PUINT pcbData)
-{
-        bool result = false;
-        UINT cbData;
-        HRSRC hResInfo;
-        DWORD dwSize;
-        HGLOBAL hResData;
-        LPVOID pRes;
-        LPVOID pCopy;
-        LPVOID pBuffer;
-        UINT uLen;
-
-        if ( !pcbData ) return result;
-        cbData = *pcbData;
-
-        hResInfo = FindResourceW(hModule,
-                MAKEINTRESOURCEW(VS_VERSION_INFO),
-                RT_VERSION);
-        if ( !hResInfo ) return result;
-
-        dwSize = SizeofResource(hModule, hResInfo);
-        if ( !dwSize ) return result;
-
-        hResData = LoadResource(hModule, hResInfo);
-        if ( !hResData ) return result;
-
-        pRes = LockResource(hResData);
-        if ( !pRes ) return result;
-
-        pCopy = malloc(dwSize);
-        if ( !pCopy
-                || memcpy_s(pCopy, dwSize, pRes, dwSize)
-                || !VerQueryValueW(pCopy, pszSubBlock, &pBuffer, &uLen) )
-                goto cleanup;
-
-        if ( !_wcsnicmp(pszSubBlock, L"\\StringFileInfo\\", 16) )
-                *pcbData = uLen * sizeof(wchar_t);
-        else
-                *pcbData = uLen;
-
-        if ( !pData ) {
-                result = true;
-                goto cleanup;
-        }
-        if ( cbData < *pcbData
-                || memcpy_s(pData, cbData, pBuffer, *pcbData) )
-                goto cleanup;
-
-        result = true;
-cleanup:
-        free(pCopy);
-        return result;
-}
-
-LPVOID GetVersionInfoFromHModuleAlloc(HMODULE hModule, LPCWSTR pszSubBlock, PUINT pcbData)
-{
-        UINT cbData = 0;
-        LPVOID result = NULL;
-
-        if ( !GetVersionInfoFromHModule(hModule, pszSubBlock, NULL, &cbData) )
-                return result;
-
-        result = malloc(cbData);
-        if ( !result ) return result;
-
-        if ( GetVersionInfoFromHModule(hModule, pszSubBlock, result, &cbData) ) {
-                *pcbData = cbData;
-        } else {
-                free(result);
-                result = NULL;
-        }
-        return result;
-}
 
 bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
 {
@@ -152,9 +25,7 @@ bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
         if ( !is_win7 ) {
                 is_win81 = IsWindowsVersion(6, 3, 0);
                 if ( !is_win81 ) {
-                        trace(L"Unsupported operating system. is_win7=%ls is_win81=%ls",
-                                is_win7 ? L"true" : L"false",
-                                is_win81 ? L"true" : L"false");
+                        trace(L"Unsupported operating system.");
                         return result;
                 }
         }
@@ -382,6 +253,7 @@ bool InjectLibraryByFilename(
                                 pLibFilename);
 
                         CloseHandle(hSnapshot);
+                        result = !!*phRemoteModule;
                 }
         } else {
                 result = !!GetExitCodeThread(hThread, (LPDWORD)phRemoteModule);
@@ -390,110 +262,4 @@ bool InjectLibraryByFilename(
 vfree:  VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
 resume: NtResumeProcess(hProcess);
         return result;
-}
-
-bool IsWindowsVersion(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
-{
-        OSVERSIONINFOEXW osvi = { sizeof osvi };
-
-        DWORDLONG dwlConditionMask = 0;
-        VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION, VER_EQUAL);
-        VER_SET_CONDITION(dwlConditionMask, VER_MINORVERSION, VER_EQUAL);
-        VER_SET_CONDITION(dwlConditionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-
-        osvi.dwMajorVersion = wMajorVersion;
-        osvi.dwMinorVersion = wMinorVersion;
-        osvi.wServicePackMajor = wServicePackMajor;
-
-        return VerifyVersionInfoW(&osvi,
-                VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR,
-                dwlConditionMask) != FALSE;
-}
-
-PVOID RegGetValueAlloc(
-        HKEY hkey,
-        const wchar_t *pSubKey,
-        const wchar_t *pValue,
-        DWORD dwFlags,
-        LPDWORD pdwType,
-        LPDWORD pcbData)
-{
-        DWORD cbData = 0;
-        PVOID result = NULL;
-
-        if ( RegGetValueW(hkey, pSubKey, pValue, dwFlags, pdwType, NULL, &cbData) != ERROR_SUCCESS )
-                return result;
-
-        result = malloc(cbData);
-        if ( !result ) return result;
-
-        if ( RegGetValueW(hkey, pSubKey, pValue, dwFlags, pdwType, result, &cbData) == ERROR_SUCCESS ) {
-                *pcbData = cbData;
-        } else {
-                free(result);
-                result = NULL;
-        }
-        return result;
-}
-
-LPQUERY_SERVICE_CONFIGW QueryServiceConfigByNameAlloc(
-        SC_HANDLE hSCM,
-        const wchar_t *pServiceName,
-        LPDWORD pcbBufSize)
-{
-        SC_HANDLE hService;
-        DWORD cbBytesNeeded;
-        LPQUERY_SERVICE_CONFIGW result = NULL;
-
-        hService = OpenServiceW(hSCM, pServiceName, SERVICE_QUERY_CONFIG);
-        if ( !hService ) return result;
-
-        if ( !QueryServiceConfigW(hService, NULL, 0, &cbBytesNeeded)
-                && GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
-
-                result = malloc(cbBytesNeeded);
-                if ( result ) {
-                        if ( QueryServiceConfigW(hService, result, cbBytesNeeded, &cbBytesNeeded) ) {
-                                *pcbBufSize = cbBytesNeeded;
-                        } else {
-                                free(result);
-                                result = NULL;
-                        }
-                }
-        }
-        CloseServiceHandle(hService);
-        return result;
-}
-
-bool QueryServiceStatusProcessInfoByName(
-        SC_HANDLE hSCM,
-        const wchar_t *pServiceName,
-        LPSERVICE_STATUS_PROCESS pServiceStatus)
-{
-        bool result = false;
-        SC_HANDLE hService;
-        DWORD cbBytesNeeded;
-
-        hService = OpenServiceW(hSCM, pServiceName, SERVICE_QUERY_STATUS);
-        if ( !hService ) {
-                trace(L"Failed to open service %ls! (GetLastError=%ul)", pServiceName, GetLastError());
-                return result;
-        }
-
-        result = !!QueryServiceStatusEx(hService,
-                SC_STATUS_PROCESS_INFO,
-                (LPBYTE)pServiceStatus,
-                sizeof *pServiceStatus,
-                &cbBytesNeeded);
-        CloseServiceHandle(hService);
-        return result;
-}
-
-DWORD QueryServiceProcessId(SC_HANDLE hSCM, const wchar_t *pServiceName)
-{
-        SERVICE_STATUS_PROCESS ServiceStatusProcess;
-
-        if ( QueryServiceStatusProcessInfoByName(hSCM, pServiceName, &ServiceStatusProcess) )
-                return ServiceStatusProcess.dwProcessId;
-        return 0;
 }
