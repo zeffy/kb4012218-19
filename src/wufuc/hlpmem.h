@@ -1,12 +1,33 @@
 #pragma once
 
+#pragma pack(push, 1)
+typedef struct
+{
+        HANDLE hChildMutex;
+        union
+        {
+                struct
+                {
+                        HANDLE hParentMutex;
+                        HANDLE hUnloadEvent;
+                } DUMMYSTRUCTNAME;
+                struct
+                {
+                        HANDLE hMainMutex;
+                        HANDLE hUnloadEvent;
+                } u;
+                HANDLE handles[2];
+        };
+} ContextHandles;
+#pragma pack(pop)
+
 typedef struct
 {
         WORD wLanguage;
         WORD wCodePage;
 } LANGANDCODEPAGE, *PLANGANDCODEPAGE;
 
-bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable);
+bool FindIDSFunctionPointer(HMODULE hModule, PVOID *ppfnIsDeviceServiceable);
 HANDLE GetRemoteHModuleFromTh32ModuleSnapshot(HANDLE hSnapshot, const wchar_t *pLibFileName);
 bool InjectLibraryAndCreateRemoteThread(
         HANDLE hProcess,
@@ -20,3 +41,4 @@ bool InjectLibraryByFilename(
         const wchar_t *pLibFilename,
         size_t cchLibFilename,
         HMODULE *phRemoteModule);
+bool wufuc_InjectLibrary(DWORD dwProcessId, ContextHandles *pContext);

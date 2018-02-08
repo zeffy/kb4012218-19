@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include "callbacks.h"
 #include "hlpmisc.h"
-
+#include "hlpmem.h"
+#include "hlpsvc.h"
 
 void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)
 {
         ContextHandles ctx;
+        DWORD dwDesiredAccess;
+        DWORD dwProcessId;
         bool Unloading = false;
         bool Lagging;
         SC_HANDLE hSCM;
@@ -14,7 +17,7 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
 
         if ( !InitializeMutex(true,
                 L"Global\\25020063-b5a7-4227-9fdf-25cb75e8c645",
-                &ctx.hMainMutex) ) {
+                &ctx.hParentMutex) ) {
 
                 trace(L"Failed to initialize main mutex. (GetLastError=%ul)", GetLastError());
                 return;
@@ -28,6 +31,7 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
                 trace(L"Failed to create unload event. (GetLastError=%ul)", GetLastError());
                 goto close_mutex;
         }
+        dwDesiredAccess = SERVICE_QUERY_STATUS | SERVICE_QUERY_CONFIG;
         do {
                 Lagging = false;
                 hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_ENUMERATE_SERVICE);
@@ -36,12 +40,18 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
                         goto close_event;
                 }
 
-                hService = OpenServiceW(hSCM, L"wuauserv", SERVICE_QUERY_STATUS);
+                hService = OpenServiceW(hSCM, L"wuauserv", dwDesiredAccess);
                 if ( !hService ) {
                         trace(L"Failed to open service. (GetLastError=%ul)", GetLastError());
                         goto close_scm;
                 }
+                if ( (dwDesiredAccess & SERVICE_QUERY_CONFIG) == SERVICE_QUERY_CONFIG ) {
+                        dwDesiredAccess &= ~SERVICE_QUERY_CONFIG;
 
+                        dwProcessId = HeuristicServiceProcessId(hSCM, hService);
+                        if ( dwProcessId )
+                                wufuc_InjectLibrary(dwProcessId, &ctx);
+                }
                 ZeroMemory(&NotifyBuffer, sizeof NotifyBuffer);
                 NotifyBuffer.dwVersion = SERVICE_NOTIFY_STATUS_CHANGE;
                 NotifyBuffer.pfnNotifyCallback = ServiceNotifyCallback;
@@ -68,8 +78,8 @@ close_scm:      CloseServiceHandle(hSCM);
 close_event:
         CloseHandle(ctx.hUnloadEvent);
 close_mutex:
-        ReleaseMutex(ctx.hMainMutex);
-        CloseHandle(ctx.hMainMutex);
+        ReleaseMutex(ctx.hParentMutex);
+        CloseHandle(ctx.hParentMutex);
 }
 
 void CALLBACK RUNDLL32_UnloadW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)

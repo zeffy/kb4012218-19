@@ -14,6 +14,8 @@ bool InitializeMutex(bool InitialOwner, const wchar_t *pMutexName, HANDLE *phMut
                 }
                 *phMutex = hMutex;
                 return true;
+        } else {
+                trace(L"Failed to create mutex: %ls (GetLastError=%ld)", pMutexName, GetLastError());
         }
         return false;
 }
@@ -66,5 +68,46 @@ PVOID RegGetValueAlloc(
                 free(result);
                 result = NULL;
         }
+        return result;
+}
+
+PVOID NtQueryKeyAlloc(HANDLE KeyHandle, KEY_INFORMATION_CLASS KeyInformationClass, PULONG pResultLength)
+{
+        NTSTATUS Status;
+        ULONG ResultLength;
+        PVOID result = NULL;
+
+        Status = NtQueryKey(KeyHandle, KeyInformationClass, NULL, 0, &ResultLength);
+        if ( Status != STATUS_BUFFER_OVERFLOW && Status != STATUS_BUFFER_TOO_SMALL )
+                return result;
+
+        result = malloc(ResultLength);
+        if ( !result ) return result;
+
+        Status = NtQueryKey(KeyHandle, KeyInformationClass, result, ResultLength, &ResultLength);
+        if ( NT_SUCCESS(Status) ) {
+                *pResultLength = ResultLength;
+        } else {
+                free(result);
+                result = NULL;
+        }
+        return result;
+}
+
+
+bool FileExistsExpandEnvironmentStrings(const wchar_t *path)
+{
+        bool result;
+        LPWSTR dst;
+        DWORD buffersize;
+        DWORD size;
+
+        buffersize = ExpandEnvironmentStringsW(path, NULL, 0);
+        dst = calloc(buffersize, sizeof *dst);
+        size = ExpandEnvironmentStringsW(path, dst, buffersize);
+        if ( !size || size > buffersize )
+                return false;
+        result = PathFileExistsW(dst);
+        free(dst);
         return result;
 }

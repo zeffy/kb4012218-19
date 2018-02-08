@@ -5,66 +5,23 @@
 #include "hlpmem.h"
 #include "hlpsvc.h"
 
-bool DuplicateContextHandles(HANDLE hSrcProcess, ContextHandles *pSrcContext, HANDLE hAuxiliaryMutex, HANDLE hTargetProcess, ContextHandles *pTargetContext)
-{
-        return
-                DuplicateHandle(hSrcProcess, pSrcContext->hMainMutex,
-                        hTargetProcess, &pTargetContext->hMainMutex, SYNCHRONIZE, FALSE, 0)
-                && DuplicateHandle(hSrcProcess, pSrcContext->hUnloadEvent,
-                        hTargetProcess, &pTargetContext->hUnloadEvent, SYNCHRONIZE, FALSE, 0)
-                && DuplicateHandle(hSrcProcess, hAuxiliaryMutex,
-                        hTargetProcess, &pTargetContext->hAuxiliaryMutex, 0, FALSE, DUPLICATE_SAME_ACCESS);
-}
-
 VOID CALLBACK ServiceNotifyCallback(PSERVICE_NOTIFYW pNotifyBuffer)
 {
-        HANDLE hProcess;
-        wchar_t MutexName[44];
-        HANDLE hAuxiliaryMutex;
-        ContextHandles TargetContext;
-
+        trace(L"Enter service notify callback. (NotifyStatus=%ld ServiceStatus=%ld)", pNotifyBuffer->dwNotificationStatus, pNotifyBuffer->ServiceStatus);
         switch ( pNotifyBuffer->dwNotificationStatus ) {
         case ERROR_SUCCESS:
-                if ( !pNotifyBuffer->ServiceStatus.dwProcessId
-                        || swprintf_s(MutexName, _countof(MutexName),
-                                L"Global\\%08x-7132-44a8-be15-56698979d2f3",
-                                pNotifyBuffer->ServiceStatus.dwProcessId) == -1
-                        || !InitializeMutex(false, MutexName, &hAuxiliaryMutex) )
-                        break;
-
-                hProcess = OpenProcess(PROCESS_ALL_ACCESS,
-                        FALSE,
-                        pNotifyBuffer->ServiceStatus.dwProcessId);
-                if ( !hProcess ) {
-                        trace(L"Failed to open target process! (GetLastError=%lu)", GetLastError());
-                        break;
-                };
-
-                if ( !DuplicateContextHandles(GetCurrentProcess(), pNotifyBuffer->pContext, hAuxiliaryMutex, hProcess, &TargetContext) ) {
-                        trace(L"Failed to duplicate handles into target process."
-                                L"%p %p %p (GetLastError=%lu)",
-                                TargetContext.hMainMutex,
-                                TargetContext.hUnloadEvent,
-                                TargetContext.hAuxiliaryMutex,
-                                GetLastError());
-                        break;
-                };
-                InjectLibraryAndCreateRemoteThread(
-                        hProcess,
-                        PIMAGEBASE,
-                        StartAddress,
-                        &TargetContext,
-                        sizeof TargetContext);
+                if ( pNotifyBuffer->ServiceStatus.dwProcessId )
+                        wufuc_InjectLibrary(pNotifyBuffer->ServiceStatus.dwProcessId, (ContextHandles *)pNotifyBuffer->pContext);
                 break;
         case ERROR_SERVICE_MARKED_FOR_DELETE:
-                SetEvent((HANDLE)pNotifyBuffer->pContext);
+                SetEvent(((ContextHandles *)pNotifyBuffer->pContext)->hUnloadEvent);
                 break;
         }
         if ( pNotifyBuffer->pszServiceNames )
                 LocalFree((HLOCAL)pNotifyBuffer->pszServiceNames);
 }
 
-DWORD WINAPI StartAddress(LPVOID pParam)
+DWORD WINAPI ThreadStartCallback(LPVOID pParam)
 {
         ContextHandles ctx;
         SC_HANDLE hSCM;
@@ -80,12 +37,12 @@ DWORD WINAPI StartAddress(LPVOID pParam)
         }
         ctx = *(ContextHandles *)pParam;
         if ( !VirtualFree(pParam, 0, MEM_RELEASE) )
-                trace(L"Failed to free context parameter. pParam=%p GetLastError=%lu",
+                trace(L"Failed to free context parameter. (%p, GetLastError=%lu)",
                         pParam, GetLastError());
 
         // acquire child mutex, should be immediate.
-        if ( WaitForSingleObject(ctx.hAuxiliaryMutex, 5000) != WAIT_OBJECT_0 ) {
-                trace(L"Failed to acquire aux mutex within five seconds. hAuxiliaryMutex=%p", ctx.hAuxiliaryMutex);
+        if ( WaitForSingleObject(ctx.hChildMutex, 5000) != WAIT_OBJECT_0 ) {
+                trace(L"Failed to acquire aux mutex within five seconds. (%p)", ctx.hChildMutex);
                 goto close_handles;
         }
 
@@ -95,21 +52,21 @@ DWORD WINAPI StartAddress(LPVOID pParam)
                 goto release;
         }
 
-        dwProcessId = QueryServiceProcessId(hSCM, L"wuauserv");
+        dwProcessId = HeuristicServiceProcessIdByName(hSCM, L"wuauserv");
         CloseServiceHandle(hSCM);
         if ( dwProcessId != GetCurrentProcessId() ) {
-                trace(L"Injected into wrong process! CurrentProcessId=%lu wuauserv ProcessId=%lu",
-                        GetCurrentProcessId, dwProcessId);
+                trace(L"Injected into wrong process!", GetCurrentProcessId(), dwProcessId);
                 goto release;
         }
 
-        // hook IsDeviceServiceable
         g_pszWUServiceDll = RegGetValueAlloc(HKEY_LOCAL_MACHINE,
                 L"SYSTEM\\CurrentControlSet\\services\\wuauserv\\Parameters",
                 L"ServiceDll",
                 RRF_RT_REG_SZ,
                 NULL,
                 &cbData);
+
+        trace(L"Installing hooks...");
 
         DetourTransactionBegin();
         DetourUpdateThread(GetCurrentThread());
@@ -119,16 +76,32 @@ DWORD WINAPI StartAddress(LPVOID pParam)
         if ( g_pfnLoadLibraryExW )
                 DetourAttach(&(PVOID)g_pfnLoadLibraryExW, LoadLibraryExW_hook);
 
+        // hook IsDeviceServiceable
         if ( g_pszWUServiceDll ) {
                 hModule = GetModuleHandleW(g_pszWUServiceDll);
-                if ( hModule && FindIsDeviceServiceablePtr(hModule,
-                        &(PVOID)g_pfnIsDeviceServiceable) ) {
-
-                        DetourAttach(&(PVOID)g_pfnIsDeviceServiceable, IsDeviceServiceable_hook);
+                if ( hModule ) {
+                        if ( FindIDSFunctionPointer(hModule, &(PVOID)g_pfnIsDeviceServiceable) ) {
+                                trace(L"Matched pattern for %ls!IsDeviceServiceable. (%p)",
+                                        PathFindFileNameW(g_pszWUServiceDll),
+                                        g_pfnIsDeviceServiceable);
+                                DetourAttach(&(PVOID)g_pfnIsDeviceServiceable, IsDeviceServiceable_hook);
+                        } else {
+                                trace(L"No pattern matched!");
+                        }
+                } else {
+                        // assume wuaueng.dll hasn't been loaded yet, apply
+                        // RegQueryValueExW hook to fix incompatibility with
+                        // UpdatePack7R2 and other patches that work by
+                        // modifying the Windows Update ServiceDll path in the
+                        // registry.
+                        g_pfnRegQueryValueExW = DetourFindFunction("advapi.dll", "RegQueryValueExW");
+                        if ( g_pfnRegQueryValueExW )
+                                DetourAttach(&(PVOID)g_pfnRegQueryValueExW, RegQueryValueExW_hook);
                 }
-        }
-        DetourTransactionCommit();
 
+        }
+
+        DetourTransactionCommit();
 
         // wait for unload event or parent mutex to be abandoned.
         // for example if the user killed rundll32.exe with task manager.
@@ -136,30 +109,34 @@ DWORD WINAPI StartAddress(LPVOID pParam)
         // which point it becomes abandoned again.
         result = WaitForMultipleObjects(_countof(ctx.handles), ctx.handles, FALSE, INFINITE);
 
-        trace(L"Unloading!");
+        trace(L"Unload condition has been met.");
 
         // unhook
-        if ( g_pfnLoadLibraryExW || g_pfnIsDeviceServiceable ) {
+        if ( g_pfnLoadLibraryExW || g_pfnIsDeviceServiceable || g_pfnRegQueryValueExW) {
                 trace(L"Removing hooks...");
-                trace(L"DetourTransactionBegin %lu", DetourTransactionBegin());
-                trace(L"DetourUpdateThread %lu", DetourUpdateThread(GetCurrentThread()));
+                DetourTransactionBegin();
+                DetourUpdateThread(GetCurrentThread());
 
                 if ( g_pfnLoadLibraryExW )
-                        trace(L"DetourDetach LoadLibraryExW %lu", DetourDetach(&(PVOID)g_pfnLoadLibraryExW, LoadLibraryExW_hook));
+                        DetourDetach(&(PVOID)g_pfnLoadLibraryExW, LoadLibraryExW_hook);
 
                 if ( g_pfnIsDeviceServiceable )
-                        trace(L"DetourDetach IsDeviceServiceable %lu", DetourDetach(&(PVOID)g_pfnIsDeviceServiceable, IsDeviceServiceable_hook));
+                        DetourDetach(&(PVOID)g_pfnIsDeviceServiceable, IsDeviceServiceable_hook);
 
-                trace(L"DetourTransactionCommit %lu", DetourTransactionCommit());
+                if ( g_pfnRegQueryValueExW )
+                        DetourDetach(&(PVOID)g_pfnRegQueryValueExW, RegQueryValueExW_hook);
+
+                DetourTransactionCommit();
         }
         free(g_pszWUServiceDll);
 
 release:
-        ReleaseMutex(ctx.hAuxiliaryMutex);
+        ReleaseMutex(ctx.hChildMutex);
 close_handles:
-        CloseHandle(ctx.hAuxiliaryMutex);
-        CloseHandle(ctx.hMainMutex);
+        CloseHandle(ctx.hChildMutex);
+        CloseHandle(ctx.hParentMutex);
         CloseHandle(ctx.hUnloadEvent);
 unload:
+        trace(L"Freeing library and exiting main thread.");
         FreeLibraryAndExitThread(PIMAGEBASE, 0);
 }

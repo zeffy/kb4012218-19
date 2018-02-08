@@ -14,3 +14,5 @@ PVOID RegGetValueAlloc(
         DWORD dwFlags,
         LPDWORD pdwType,
         LPDWORD pcbData);
+PVOID NtQueryKeyAlloc(HANDLE KeyHandle, KEY_INFORMATION_CLASS KeyInformationClass, PULONG pResultLength);
+bool FileExistsExpandEnvironmentStrings(const wchar_t *path);

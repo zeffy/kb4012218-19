@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "hlpver.h"
 
-int FileInfoVerCompare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wBuild, WORD wRev)
+int ProductVersionCompare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wBuild, WORD wRev)
 {
         if ( HIWORD(pffi->dwProductVersionMS) < wMajor ) return -1;
         if ( HIWORD(pffi->dwProductVersionMS) > wMajor ) return 1;

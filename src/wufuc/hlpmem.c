@@ -1,10 +1,11 @@
 #include "stdafx.h"
+#include "hlpmisc.h"
 #include "hlpmem.h"
 #include "hlpver.h"
 #include "hooks.h"
-#include <sddl.h>
+#include "callbacks.h"
 
-bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
+bool FindIDSFunctionPointer(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
 {
         bool result = false;
         bool is_win7 = false;
@@ -21,13 +22,11 @@ bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
         MODULEINFO modinfo;
         size_t offset;
 
-        is_win7 = IsWindowsVersion(6, 1, 1);
-        if ( !is_win7 ) {
-                is_win81 = IsWindowsVersion(6, 3, 0);
-                if ( !is_win81 ) {
-                        trace(L"Unsupported operating system.");
-                        return result;
-                }
+        if ( !((is_win7 = IsWindowsVersion(6, 1, 1))
+                || (is_win81 = IsWindowsVersion(6, 3, 0))) ) {
+
+                trace(L"Unsupported operating system.");
+                return result;
         }
 
         ptl = GetVersionInfoFromHModuleAlloc(hModule, L"\\VarFileInfo\\Translation", &cbtl);
@@ -54,7 +53,7 @@ bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
                 // identify wuaueng.dll by its resource data
                 tmp = _wcsicmp(pInternalName, L"wuaueng.dll");
                 if ( tmp )
-                        trace(L"Module internal name does not match. pInternalName=%ls cbInternalName=%lu", pInternalName, cbInternalName);
+                        trace(L"Module internal name does not match. (%ls)", pInternalName);
                 free(pInternalName);
                 if ( tmp )
                         continue;
@@ -66,8 +65,8 @@ bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
                 }
 
                 // assure wuaueng.dll is at least the minimum supported version
-                tmp = ((is_win7 && FileInfoVerCompare(pffi, 7, 6, 7601, 23714) != -1)
-                        || (is_win81 && FileInfoVerCompare(pffi, 7, 9, 9600, 18621) != -1));
+                tmp = ((is_win7 && ProductVersionCompare(pffi, 7, 6, 7601, 23714) != -1)
+                        || (is_win81 && ProductVersionCompare(pffi, 7, 9, 9600, 18621) != -1));
                 free(pffi);
                 if ( !tmp ) {
                         trace(L"Module does not meet the minimum supported version.");
@@ -89,10 +88,7 @@ bool FindIsDeviceServiceablePtr(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
                 );
                 if ( offset != -1 ) {
                         *ppfnIsDeviceServiceable = (PVOID)((uint8_t *)modinfo.lpBaseOfDll + offset);
-                        trace(L"Found IsDeviceServiceable address: %p", *ppfnIsDeviceServiceable);
                         result = true;
-                } else {
-                        trace(L"IsDeviceServiceable function pattern not found.");
                 }
                 break;
         }
@@ -128,10 +124,9 @@ bool InjectLibraryAndCreateRemoteThread(
 
         Status = NtSuspendProcess(hProcess);
         if ( !NT_SUCCESS(Status) ) return result;
-        trace(L"Suspended process. hProcess=%p", hProcess);
 
         if ( pParam ) {
-                // this gets freed by pStartAddress
+                // this will be VirtualFree()'d by the function at pStartAddress
                 pBaseAddress = VirtualAllocEx(hProcess,
                         NULL,
                         cbParam,
@@ -143,7 +138,7 @@ bool InjectLibraryAndCreateRemoteThread(
                         goto vfree;
         }
         if ( InjectLibrary(hProcess, hModule, &hRemoteModule) ) {
-                trace(L"Injected library. hRemoteModule=%p", hRemoteModule);
+                trace(L"Injected library. (%p)", hRemoteModule);
 
                 hThread = CreateRemoteThread(hProcess,
                         NULL,
@@ -154,7 +149,6 @@ bool InjectLibraryAndCreateRemoteThread(
                         NULL);
 
                 if ( hThread ) {
-                        trace(L"Created remote thread. hThread=%p", hThread);
                         CloseHandle(hThread);
                         result = true;
                 }
@@ -173,9 +167,6 @@ bool InjectLibrary(HANDLE hProcess, HMODULE hModule, HMODULE *phRemoteModule)
 
         nLength = GetModuleFileNameW(hModule, Filename, _countof(Filename));
         if ( nLength ) {
-                trace(L"Got module filename for local module. "
-                        L"hModule=%p Filename=%ls nLength=%lu",
-                        hModule, Filename, nLength);
                 return InjectLibraryByFilename(hProcess,
                         Filename,
                         nLength,
@@ -200,13 +191,11 @@ bool InjectLibraryByFilename(
 
         Status = NtSuspendProcess(hProcess);
         if ( !NT_SUCCESS(Status) ) return result;
-        trace(L"Suspended process. hProcess=%p", hProcess);
 
         dwProcessId = GetProcessId(hProcess);
 
         hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
         if ( !hSnapshot ) goto resume;
-        trace(L"Created TH32 module snapshot. dwProcessId=%lu", dwProcessId);
 
         *phRemoteModule = GetRemoteHModuleFromTh32ModuleSnapshot(hSnapshot,
                 pLibFilename);
@@ -224,13 +213,9 @@ bool InjectLibraryByFilename(
                 PAGE_READWRITE);
 
         if ( !pBaseAddress ) goto resume;
-        trace(L"Allocated virtual memory in process. hProcess=%p pBaseAddress=%p nSize=%Iu",
-                hProcess, pBaseAddress, nSize);
 
         if ( !WriteProcessMemory(hProcess, pBaseAddress, pLibFilename, nSize, NULL) )
                 goto vfree;
-        trace(L"Wrote to process memory. hProcess=%p pBaseAddress=%p pLibFileName=%.*ls nSize=%Iu",
-                hProcess, pBaseAddress, cchLibFilename, pLibFilename, nSize);
 
         hThread = CreateRemoteThread(hProcess,
                 NULL,
@@ -240,10 +225,8 @@ bool InjectLibraryByFilename(
                 0,
                 NULL);
         if ( !hThread ) goto vfree;
-        trace(L"Created remote thread. hThread=%p", hThread);
 
         WaitForSingleObject(hThread, INFINITE);
-        trace(L"Created thread finished running. hThread=%p", hThread);
 
         if ( sizeof *phRemoteModule > sizeof(DWORD) ) {
                 hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
@@ -253,13 +236,51 @@ bool InjectLibraryByFilename(
                                 pLibFilename);
 
                         CloseHandle(hSnapshot);
-                        result = !!*phRemoteModule;
+                        result = *phRemoteModule != NULL;
                 }
         } else {
-                result = !!GetExitCodeThread(hThread, (LPDWORD)phRemoteModule);
+                result = GetExitCodeThread(hThread, (LPDWORD)phRemoteModule) != FALSE;
         }
         CloseHandle(hThread);
 vfree:  VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
 resume: NtResumeProcess(hProcess);
+        return result;
+}
+
+bool wufuc_InjectLibrary(DWORD dwProcessId, ContextHandles *pContext)
+{
+        bool result = false;
+        HANDLE hProcess;
+        wchar_t MutexName[44];
+        HANDLE hChildMutex;
+        HANDLE hSrcProcess;
+        ContextHandles param = { 0 };
+
+        if ( swprintf_s(MutexName, _countof(MutexName), L"Global\\%08x-7132-44a8-be15-56698979d2f3", dwProcessId) == -1 ) {
+                trace(L"Failed to print mutex name to string! (%lu)", dwProcessId);
+                return result;
+        }
+        if ( !InitializeMutex(false, MutexName, &hChildMutex) ) {
+                return result;
+        }
+        hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcessId);
+
+        if ( !hProcess ) {
+                trace(L"Failed to open target process! (GetLastError=%lu)", GetLastError());
+                goto close_mutex;
+        };
+        hSrcProcess = GetCurrentProcess();
+
+        if ( DuplicateHandle(hSrcProcess, pContext->hParentMutex, hProcess, &param.hParentMutex, SYNCHRONIZE, FALSE, 0)
+                && DuplicateHandle(hSrcProcess, pContext->hUnloadEvent, hProcess, &param.hUnloadEvent, SYNCHRONIZE, FALSE, 0)
+                && DuplicateHandle(hSrcProcess, hChildMutex, hProcess, &param.hChildMutex, 0, FALSE, DUPLICATE_SAME_ACCESS) ) {
+
+                InjectLibraryAndCreateRemoteThread(hProcess, PIMAGEBASE, ThreadStartCallback, &param, sizeof param);
+        } else {
+                trace(L"Failed to duplicate context handles! (GetLastError=%lu", GetLastError());
+        }
+        CloseHandle(hProcess);
+close_mutex:
+        CloseHandle(hChildMutex);
         return result;
 }
