@@ -35,5 +35,7 @@ after_build:
     7z a "%BUILD_ZIPFILE%" "..\wufuc_setup_bat"
 
     7z rn "%BUILD_ZIPFILE%" "wufuc_setup_bat" "%APPVEYOR_PROJECT_NAME%"
+
+    7z d "%BUILD_ZIPFILE%" "%APPVEYOR_PROJECT_NAME%\.gitignore"
 artifacts:
   - path: '*.zip'
