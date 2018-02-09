@@ -22,6 +22,7 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
         LPWSTR fname;
         const WCHAR realpath[] = L"%systemroot%\\system32\\wuaueng.dll";
         wchar_t *expandedpath;
+        DWORD cchLength;
 
         // save original buffer size
         if ( lpData && lpcbData )
@@ -57,12 +58,11 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
                         || !_wcsicmp(fname, L"WuaCpuFix64.dll") // WuaCpuFix
                         || !_wcsicmp(fname, L"WuaCpuFix.dll")) ) {
 
-                        expandedpath = ExpandEnvironmentStringsAlloc(realpath);
+                        expandedpath = ExpandEnvironmentStringsAlloc(realpath, &cchLength);
 
                         trace(L"Fixed path to wuauserv ServiceDll: %ls -> %ls", fname, PathFindFileNameW(expandedpath));
-
                         if ( SUCCEEDED(StringCbCopyW(pBuffer, MaximumLength, expandedpath)) )
-                                *lpcbData = sizeof realpath;
+                                *lpcbData = cchLength * (sizeof *expandedpath);
                         free(expandedpath);
                 }
         }

@@ -21,4 +21,4 @@ LPBYTE RegQueryValueExAlloc(
         LPDWORD pType,
         LPDWORD pcbData);
 PVOID NtQueryKeyAlloc(HANDLE KeyHandle, KEY_INFORMATION_CLASS KeyInformationClass, PULONG pResultLength);
-LPWSTR ExpandEnvironmentStringsAlloc(LPCWSTR src);
+LPWSTR ExpandEnvironmentStringsAlloc(LPCWSTR src, LPDWORD pcchLength);

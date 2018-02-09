@@ -93,7 +93,7 @@ LPBYTE RegQueryValueExAlloc(
         if ( RegQueryValueExW(hSubKey, pValueName, NULL, pType, result, &cbData) != ERROR_SUCCESS )
                 return result;
 
-        length = cbData + sizeof(WCHAR); // make sure it is null-terminated
+        length = cbData + (sizeof UNICODE_NULL * 2);
         result = malloc(length);
 
         if ( !result ) return result;
@@ -132,9 +132,9 @@ PVOID NtQueryKeyAlloc(HANDLE KeyHandle, KEY_INFORMATION_CLASS KeyInformationClas
         return result;
 }
 
-LPWSTR ExpandEnvironmentStringsAlloc(LPCWSTR src)
+LPWSTR ExpandEnvironmentStringsAlloc(LPCWSTR src, LPDWORD pcchLength)
 {
-        wchar_t *result;
+        LPWSTR result;
         DWORD buffersize;
         DWORD size;
 
@@ -144,6 +144,8 @@ LPWSTR ExpandEnvironmentStringsAlloc(LPCWSTR src)
         if ( !size || size > buffersize ) {
                 free(result);
                 result = NULL;
+        } else if ( pcchLength ) {
+                *pcchLength = buffersize;
         }
         return result;
 }
