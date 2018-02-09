@@ -33,7 +33,8 @@ LPQUERY_SERVICE_CONFIGW QueryServiceConfigAlloc(
                 result = malloc(cbBytesNeeded);
                 if ( result ) {
                         if ( QueryServiceConfigW(hService, result, cbBytesNeeded, &cbBytesNeeded) ) {
-                                *pcbBufSize = cbBytesNeeded;
+                                if ( pcbBufSize )
+                                        *pcbBufSize = cbBytesNeeded;
                         } else {
                                 free(result);
                                 result = NULL;
@@ -53,10 +54,8 @@ bool QueryServiceStatusProcessInfoByName(
         DWORD cbBytesNeeded;
 
         hService = OpenServiceW(hSCM, pServiceName, SERVICE_QUERY_STATUS);
-        if ( !hService ) {
-                trace(L"Failed to open service %ls! (GetLastError=%ul)", pServiceName, GetLastError());
+        if ( !hService )
                 return result;
-        }
 
         result = !!QueryServiceStatusEx(hService,
                 SC_STATUS_PROCESS_INFO,
@@ -119,12 +118,11 @@ DWORD QueryServiceProcessIdByName(SC_HANDLE hSCM, const wchar_t *pServiceName)
 DWORD HeuristicServiceGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupNameSearch)
 {
         wchar_t *pData;
-        DWORD cbData;
         DWORD result = 0;
         DWORD dwProcessId;
         DWORD cbBufSize;
         LPQUERY_SERVICE_CONFIGW pServiceConfig;
-        bool success;
+        bool success = false;
         LPWSTR pGroupName;
         HLOCAL hMem;
 
@@ -133,27 +131,25 @@ DWORD HeuristicServiceGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupNameSe
                 pGroupNameSearch,
                 RRF_RT_REG_MULTI_SZ,
                 NULL,
-                &cbData);
+                NULL);
 
         if ( !pData ) return result;
 
         for ( wchar_t *pName = pData; *pName; pName += wcslen(pName) + 1 ) {
                 dwProcessId = QueryServiceProcessIdByName(hSCM, pName);
-                trace(L"pName=%ls dwProcessId=%lu", pName, dwProcessId);
                 if ( !dwProcessId ) continue;
 
                 pServiceConfig = QueryServiceConfigByNameAlloc(hSCM, pName, &cbBufSize);
                 if ( !pServiceConfig ) continue;
 
-                success = QueryServiceGroupName(pServiceConfig, &pGroupName, &hMem);
-                free(pServiceConfig);
-                if ( !success )
-                        continue;
+                if ( pServiceConfig->dwServiceType == SERVICE_WIN32_SHARE_PROCESS
+                        && QueryServiceGroupName(pServiceConfig, &pGroupName, &hMem) ) {
 
-                success = !_wcsicmp(pGroupNameSearch, pGroupName);
-                LocalFree(hMem);
+                        success = !_wcsicmp(pGroupNameSearch, pGroupName);
+                        LocalFree(hMem);
+                }
+                free(pServiceConfig);
                 if ( success ) {
-                        trace(L"Found PID: %lu", dwProcessId);
                         result = dwProcessId;
                         break;
                 }
@@ -168,13 +164,12 @@ DWORD HeuristicServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService)
         LPQUERY_SERVICE_CONFIGW pServiceConfig;
         LPWSTR pGroupName;
         HLOCAL hMem;
-        DWORD cbBufSize;
 
         result = QueryServiceProcessId(hSCM, hService);
         if ( result )
                 return result;
 
-        pServiceConfig = QueryServiceConfigAlloc(hSCM, hService, &cbBufSize);
+        pServiceConfig = QueryServiceConfigAlloc(hSCM, hService, NULL);
         if ( pServiceConfig ) {
                 switch ( pServiceConfig->dwServiceType ) {
                 case SERVICE_WIN32_OWN_PROCESS:
@@ -190,12 +185,12 @@ DWORD HeuristicServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService)
                         if ( QueryServiceGroupName(pServiceConfig, &pGroupName, &hMem) ) {
                                 result = HeuristicServiceGroupProcessId(hSCM, pGroupName);
                                 LocalFree(hMem);
-                                return result;
                         }
                         break;
                 }
                 free(pServiceConfig);
         }
+        return result;
 }
 
 DWORD HeuristicServiceProcessIdByName(SC_HANDLE hSCM, const wchar_t *pServiceName)

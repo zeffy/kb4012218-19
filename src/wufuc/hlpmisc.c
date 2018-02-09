@@ -2,7 +2,7 @@
 #include "hlpmisc.h"
 #include <sddl.h>
 
-bool InitializeMutex(bool InitialOwner, const wchar_t *pMutexName, HANDLE *phMutex)
+bool InitializeMutex(bool InitialOwner, LPCWSTR pMutexName, HANDLE *phMutex)
 {
         HANDLE hMutex;
 
@@ -21,10 +21,10 @@ bool InitializeMutex(bool InitialOwner, const wchar_t *pMutexName, HANDLE *phMut
 }
 
 bool CreateEventWithStringSecurityDescriptor(
-        const wchar_t *pStringSecurityDescriptor,
+        LPCWSTR pStringSecurityDescriptor,
         bool ManualReset,
         bool InitialState,
-        const wchar_t *pName,
+        LPCWSTR pName,
         HANDLE *phEvent)
 {
         SECURITY_ATTRIBUTES sa = { sizeof sa };
@@ -47,8 +47,8 @@ bool CreateEventWithStringSecurityDescriptor(
 
 PVOID RegGetValueAlloc(
         HKEY hkey,
-        const wchar_t *pSubKey,
-        const wchar_t *pValue,
+        LPCWSTR pSubKey,
+        LPCWSTR pValue,
         DWORD dwFlags,
         LPDWORD pdwType,
         LPDWORD pcbData)
@@ -63,7 +63,45 @@ PVOID RegGetValueAlloc(
         if ( !result ) return result;
 
         if ( RegGetValueW(hkey, pSubKey, pValue, dwFlags, pdwType, result, &cbData) == ERROR_SUCCESS ) {
-                *pcbData = cbData;
+                if ( pcbData )
+                        *pcbData = cbData;
+        } else {
+                free(result);
+                result = NULL;
+        }
+        return result;
+}
+
+LPBYTE RegQueryValueExAlloc(
+        HKEY hKey,
+        LPCWSTR pSubKey,
+        LPCWSTR pValueName,
+        LPDWORD pType,
+        LPDWORD pcbData)
+{
+        HKEY hSubKey;
+        DWORD cbData = 0;
+        size_t length;
+        LPBYTE result = NULL;
+
+        if ( pSubKey && *pSubKey ) {
+                if ( RegOpenKeyW(hKey, pSubKey, &hSubKey) != ERROR_SUCCESS )
+                        return result;
+        } else {
+                hSubKey = hKey;
+        }
+        if ( RegQueryValueExW(hSubKey, pValueName, NULL, pType, result, &cbData) != ERROR_SUCCESS )
+                return result;
+
+        length = cbData + sizeof(WCHAR); // make sure it is null-terminated
+        result = malloc(length);
+
+        if ( !result ) return result;
+        ZeroMemory(result, length);
+
+        if ( RegQueryValueExW(hSubKey, pValueName, NULL, pType, result, &cbData) == ERROR_SUCCESS ) {
+                if ( pcbData )
+                        *pcbData = cbData;
         } else {
                 free(result);
                 result = NULL;
@@ -94,20 +132,18 @@ PVOID NtQueryKeyAlloc(HANDLE KeyHandle, KEY_INFORMATION_CLASS KeyInformationClas
         return result;
 }
 
-
-bool FileExistsExpandEnvironmentStrings(const wchar_t *path)
+LPWSTR ExpandEnvironmentStringsAlloc(LPCWSTR src)
 {
-        bool result;
-        LPWSTR dst;
+        wchar_t *result;
         DWORD buffersize;
         DWORD size;
 
-        buffersize = ExpandEnvironmentStringsW(path, NULL, 0);
-        dst = calloc(buffersize, sizeof *dst);
-        size = ExpandEnvironmentStringsW(path, dst, buffersize);
-        if ( !size || size > buffersize )
-                return false;
-        result = PathFileExistsW(dst);
-        free(dst);
+        buffersize = ExpandEnvironmentStringsW(src, NULL, 0);
+        result = calloc(buffersize, sizeof *result);
+        size = ExpandEnvironmentStringsW(src, result, buffersize);
+        if ( !size || size > buffersize ) {
+                free(result);
+                result = NULL;
+        }
         return result;
 }

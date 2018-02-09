@@ -21,13 +21,19 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
         int pos;
         LPWSTR fname;
         const WCHAR realpath[] = L"%systemroot%\\system32\\wuaueng.dll";
+        wchar_t *expandedpath;
 
         // save original buffer size
         if ( lpData && lpcbData )
                 MaximumLength = *lpcbData;
         result = g_pfnRegQueryValueExW(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
 
-        if ( result != ERROR_SUCCESS || !MaximumLength || !lpValueName || _wcsicmp(lpValueName, L"ServiceDll") )
+
+        if ( result != ERROR_SUCCESS 
+                || !MaximumLength 
+                || !lpValueName
+                || (lpType && *lpType != REG_EXPAND_SZ)
+                || _wcsicmp(lpValueName, L"ServiceDll") )
                 return result;
 
         pBuffer = (PWCH)lpData;
@@ -36,22 +42,28 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
         pkni = NtQueryKeyAlloc((HANDLE)hKey, KeyNameInformation, &ResultLength);
         if ( !pkni )
                 return result;
-
         NameCount = pkni->NameLength / sizeof *pkni->Name;
+
         // change key name to lower-case because there is no case-insensitive version of _snwscanf_s
-        if ( !_wcslwr_s(pkni->Name, NameCount)
-                && _snwscanf_s(pkni->Name, NameCount, L"\\registry\\machine\\system\\controlset%03d\\services\\wuauserv\\parameters%n", &current, &pos) == 1
+        for ( size_t i = 0; i < NameCount; i++ )
+                pkni->Name[i] = towlower(pkni->Name[i]);
+
+        if ( _snwscanf_s(pkni->Name, NameCount, L"\\registry\\machine\\system\\controlset%03d\\services\\wuauserv\\parameters%n", &current, &pos) == 1
                 && pos == NameCount ) {
 
                 fname = PathFindFileNameW(pBuffer);
 
                 if ( (!_wcsicmp(fname, L"wuaueng2.dll") // UpdatePack7R2
                         || !_wcsicmp(fname, L"WuaCpuFix64.dll") // WuaCpuFix
-                        || !_wcsicmp(fname, L"WuaCpuFix.dll"))
-                        && FileExistsExpandEnvironmentStrings(realpath)
-                        && SUCCEEDED(StringCbCopyW(pBuffer, MaximumLength, realpath)) ) {
+                        || !_wcsicmp(fname, L"WuaCpuFix.dll")) ) {
 
-                        *lpcbData = sizeof realpath;
+                        expandedpath = ExpandEnvironmentStringsAlloc(realpath);
+
+                        trace(L"Fixed path to wuauserv ServiceDll: %ls -> %ls", fname, PathFindFileNameW(expandedpath));
+
+                        if ( SUCCEEDED(StringCbCopyW(pBuffer, MaximumLength, expandedpath)) )
+                                *lpcbData = sizeof realpath;
+                        free(expandedpath);
                 }
         }
         free(pkni);

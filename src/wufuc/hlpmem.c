@@ -138,8 +138,6 @@ bool InjectLibraryAndCreateRemoteThread(
                         goto vfree;
         }
         if ( InjectLibrary(hProcess, hModule, &hRemoteModule) ) {
-                trace(L"Injected library. (%p)", hRemoteModule);
-
                 hThread = CreateRemoteThread(hProcess,
                         NULL,
                         0,
@@ -275,7 +273,8 @@ bool wufuc_InjectLibrary(DWORD dwProcessId, ContextHandles *pContext)
                 && DuplicateHandle(hSrcProcess, pContext->hUnloadEvent, hProcess, &param.hUnloadEvent, SYNCHRONIZE, FALSE, 0)
                 && DuplicateHandle(hSrcProcess, hChildMutex, hProcess, &param.hChildMutex, 0, FALSE, DUPLICATE_SAME_ACCESS) ) {
 
-                InjectLibraryAndCreateRemoteThread(hProcess, PIMAGEBASE, ThreadStartCallback, &param, sizeof param);
+                if ( InjectLibraryAndCreateRemoteThread(hProcess, PIMAGEBASE, ThreadStartCallback, &param, sizeof param) )
+                        trace(L"Injected into process. (%lu)", dwProcessId);
         } else {
                 trace(L"Failed to duplicate context handles! (GetLastError=%lu", GetLastError());
         }
