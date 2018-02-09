@@ -94,7 +94,7 @@ DWORD WINAPI ThreadStartCallback(LPVOID pParam)
         str = (LPWSTR)RegQueryValueExAlloc(HKEY_LOCAL_MACHINE,
                 L"SYSTEM\\CurrentControlSet\\services\\wuauserv\\Parameters",
                 L"ServiceDll", NULL, NULL);
-        g_pszWUServiceDll = ExpandEnvironmentStringsAlloc(str);
+        g_pszWUServiceDll = ExpandEnvironmentStringsAlloc(str, NULL);
         free(str);
 
         DetourTransactionBegin();
