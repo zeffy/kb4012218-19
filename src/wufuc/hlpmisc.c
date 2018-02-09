@@ -15,7 +15,8 @@ bool InitializeMutex(bool InitialOwner, LPCWSTR pMutexName, HANDLE *phMutex)
                 *phMutex = hMutex;
                 return true;
         } else {
-                trace(L"Failed to create mutex: %ls (GetLastError=%ld)", pMutexName, GetLastError());
+                trace(L"Failed to create mutex: %ls (GetLastError=%ld)",
+                        pMutexName, GetLastError());
         }
         return false;
 }
@@ -109,7 +110,10 @@ LPBYTE RegQueryValueExAlloc(
         return result;
 }
 
-PVOID NtQueryKeyAlloc(HANDLE KeyHandle, KEY_INFORMATION_CLASS KeyInformationClass, PULONG pResultLength)
+PVOID NtQueryKeyAlloc(
+        HANDLE KeyHandle,
+        KEY_INFORMATION_CLASS KeyInformationClass,
+        PULONG pResultLength)
 {
         NTSTATUS Status;
         ULONG ResultLength;

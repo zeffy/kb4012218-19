@@ -66,7 +66,10 @@ bool QueryServiceStatusProcessInfoByName(
         return result;
 }
 
-bool QueryServiceGroupName(const LPQUERY_SERVICE_CONFIGW pServiceConfig, LPWSTR *pGroupName, HLOCAL *hMem)
+bool QueryServiceGroupName(
+        const LPQUERY_SERVICE_CONFIGW pServiceConfig,
+        LPWSTR *pGroupName,
+        HLOCAL *hMem)
 {
         bool result = false;
         int NumArgs;

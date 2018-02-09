@@ -12,7 +12,10 @@ bool QueryServiceStatusProcessInfoByName(
         SC_HANDLE hSCM,
         const wchar_t *pServiceName,
         LPSERVICE_STATUS_PROCESS pServiceStatus);
-bool QueryServiceGroupName(const LPQUERY_SERVICE_CONFIGW pServiceConfig, LPWSTR *pGroupName, HLOCAL *hMem);
+bool QueryServiceGroupName(
+        const LPQUERY_SERVICE_CONFIGW pServiceConfig,
+        LPWSTR *pGroupName,
+        HLOCAL *hMem);
 DWORD QueryServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService);
 DWORD QueryServiceProcessIdByName(SC_HANDLE hSCM, const wchar_t *pServiceName);
 DWORD HeuristicServiceGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupName);

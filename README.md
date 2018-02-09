@@ -1,7 +1,7 @@
 # wufuc
 [![Donate Bitcoin](https://cdn.rawgit.com/zeffy/wufuc/badges/bitcoin.svg)](https://admin.gear.mycelium.com/gateways/3554/orders/new) [![AppVeyor Builds](https://img.shields.io/appveyor/ci/zeffy/wufuc.svg?logo=appveyor&style=flat-square)][AppVeyor] [![Chat on Telegram](https://cdn.rawgit.com/zeffy/wufuc/badges/telegram.svg)](https://t.me/joinchat/HEo6LUvV_83O92WzbYXLeQ) [![All Releases](https://img.shields.io/github/downloads/zeffy/wufuc/total.svg?style=flat-square)][Latest]
 
-This document is also available in [简体中文], [繁体中文], [русский], [Español] and [more...](https://github.com/zeffy/wufuc/wiki)
+[:de:] [:es:] [:fr:] [:it:] [:hungary:] [:brazil:] [:ru:] [:cn:] [:taiwan:]
 
 Disables the "Unsupported Hardware" message in Windows Update, and allows you to continue installing updates on Windows 7 and 8.1 systems with Intel Kaby Lake, AMD Ryzen, or other unsupported processors.
 
@@ -108,7 +108,12 @@ Advanced Installer's intuitive and friendly user interface allowed me to quickly
 
 [Latest]: https://github.com/zeffy/wufuc/releases/latest
 [AppVeyor]: https://ci.appveyor.com/project/zeffy/wufuc
-[简体中文]: https://github.com/zeffy/wufuc/wiki/README-(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
-[繁体中文]: https://github.com/zeffy/wufuc/wiki/README-(%E7%B9%81%E9%AB%94%E4%B8%AD%E6%96%87)
-[русский]: https://github.com/zeffy/wufuc/wiki/README-(%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
-[Español]: https://github.com/zeffy/wufuc/wiki/README-(Espa%C3%B1ol)
+[:de:]: https://github.com/zeffy/wufuc/wiki/README-(Deutsch)
+[:es:]: https://github.com/zeffy/wufuc/wiki/README-(Espa%C3%B1ol)
+[:fr:]: https://github.com/zeffy/wufuc/wiki/README-(Fran%C3%A7ais)
+[:it:]: https://github.com/zeffy/wufuc/wiki/README-(Italiano)
+[:hungary:]: https://github.com/zeffy/wufuc/wiki/README-(Magyar)
+[:brazil:]: https://github.com/zeffy/wufuc/wiki/README-(Portugu%C3%AAs%20Brasileiro)
+[:ru:]: https://github.com/zeffy/wufuc/wiki/README-(%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
+[:cn:]: https://github.com/zeffy/wufuc/wiki/README-(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
+[:taiwan:]: https://github.com/zeffy/wufuc/wiki/README-(%E7%B9%81%E9%AB%94%E4%B8%AD%E6%96%87)

@@ -254,7 +254,9 @@ bool wufuc_InjectLibrary(DWORD dwProcessId, ContextHandles *pContext)
         HANDLE hSrcProcess;
         ContextHandles param = { 0 };
 
-        if ( swprintf_s(MutexName, _countof(MutexName), L"Global\\%08x-7132-44a8-be15-56698979d2f3", dwProcessId) == -1 ) {
+        if ( swprintf_s(MutexName, _countof(MutexName), 
+                L"Global\\%08x-7132-44a8-be15-56698979d2f3", dwProcessId) == -1 ) {
+
                 trace(L"Failed to print mutex name to string! (%lu)", dwProcessId);
                 return result;
         }
