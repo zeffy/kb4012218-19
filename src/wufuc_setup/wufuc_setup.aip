@@ -16,10 +16,10 @@
     <ROW Property="AiPreventAutoPin" Value="System.AppUserModel.ExcludeFromShowInNewInstall"/>
     <ROW Property="MSIFASTINSTALL" MultiBuildValue="x64Build:6#x86Build:6"/>
     <ROW Property="Manufacturer" Value="zeffy"/>
-    <ROW Property="ProductCode" Value="1027:{CC613AA5-4798-4054-9EEA-8B2A6D1B4CDA} 1028:{881771C0-B2C4-4897-846E-851B21C0BEF1} 1031:{30490585-E9E0-4633-BD6E-66B68097A7FB} 1033:{4976F3F2-3569-4E88-8A1A-3D6FCEC947A4} 1035:{5F8FF584-8EB1-4AAF-82C2-EE3E08B7BEF7} 1036:{0695BA7A-AB4E-41C4-9127-B6EAF1DE0912} 1038:{5F460401-33EE-478D-B475-CEEDDF731908} 1040:{BCC3B19F-A2D2-401A-887B-93316C14A3F5} 1041:{FF7E9BF0-2D0E-48EC-BDA3-630AA17A24BF} 1042:{9ED2A3FA-C04A-4A3A-A8C4-99A25E1DBC4A} 1043:{E2BE0759-232C-4F04-87AB-F84016709765} 1045:{0D4669C1-6725-4368-9136-560194D8C3AD} 1046:{2D99527C-3056-4C91-A65B-8A2A6516723D} 1049:{9E7DF8DE-7227-4E04-8FC8-F8AAA5FE0272} 1060:{1F6C1D7A-15A4-4337-B463-F4DC4BD269F5} 2052:{EE224C8E-5F27-4EAC-B323-3664338025D6} 2070:{019D2F24-689D-4FD7-AD46-E4103B24F9BE} 3082:{61176E8B-FB9E-4DD0-8D6F-938984047B69} " Type="16"/>
+    <ROW Property="ProductCode" Value="1027:{F4D292D2-CE8F-4908-80AF-CB48B3E560CF} 1028:{66D6B564-B289-4F83-98E0-4296CDE37CB9} 1031:{F4662CF2-7D9F-4370-B45F-ADB021733AF9} 1033:{0DAE2218-2FB5-4AD0-9558-FA2F1B1E5ABF} 1035:{7A1DE4CB-ED5F-4EA0-B262-137BB5CDF2BF} 1036:{B2D2636D-2170-457A-A876-051F227DEEA2} 1038:{9D2917A0-8F1E-4E0F-AE62-1938BD4CED0E} 1040:{3BD98571-9F20-44F8-9162-62D664860999} 1041:{64C167D2-432B-4B82-B5AF-AF795C78F4A1} 1042:{8EAAC0A1-89E3-46B8-B101-E149E87F04F4} 1043:{8AB22455-426B-4757-B640-30729411FD11} 1045:{1CC402B6-02FD-4E14-BE66-10A12FA99106} 1046:{9E7919D2-D6AF-4864-A6C3-028F759BF307} 1049:{8FA26981-B9FF-4505-B547-4EFA9B5241C8} 1060:{3992ECFB-F774-49FE-8B7A-9C2F7B52B271} 2052:{75CEB203-1CE4-4B6F-A9DF-18D8B902C6B8} 2070:{8B6326BE-B5FE-46F3-BD61-1AC95EB0C1CA} 3082:{D564C11C-4870-43C1-BD62-F71DFC45FBF2} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="wufuc"/>
-    <ROW Property="ProductVersion" Value="0.9.999.0" Type="32" TargetFile="wufuc64.dll"/>
+    <ROW Property="ProductVersion" Value="1.0.0.0" Type="32" TargetFile="wufuc64.dll"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{4C52972C-251E-4D1B-AD09-EAA765719DCC}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="x64Build:Windows 9x/ME#x86Build:Windows 9x/ME" ValueLocId="-"/>
@@ -52,9 +52,9 @@
     <ROW Component="wufuc64.dll" ComponentId="{0407D471-998A-4FD3-BC2D-72EE56FBEEF4}" Directory_="APPDIR" Attributes="256" KeyPath="wufuc64.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation SHORTCUTDIR X64FeatureItems X86FeatureItems"/>
-    <ROW Feature="X64Feature" Feature_Parent="MainFeature" Title="X64Feature" Display="0" Level="1" Directory_="APPDIR" Attributes="0" Components="wufuc64.dll" Builds="x64Build"/>
-    <ROW Feature="X86Feature" Feature_Parent="MainFeature" Title="X86Feature" Display="0" Level="1" Directory_="APPDIR" Attributes="0" Components="wufuc32.dll" Builds="x86Build"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="ProductInformation SHORTCUTDIR"/>
+    <ROW Feature="X64Feature" Feature_Parent="MainFeature" Title="X64Feature" Display="0" Level="1" Directory_="APPDIR" Attributes="0" Components="X64FeatureItems wufuc64.dll" Builds="x64Build"/>
+    <ROW Feature="X86Feature" Feature_Parent="MainFeature" Title="X86Feature" Display="0" Level="1" Directory_="APPDIR" Attributes="0" Components="X86FeatureItems wufuc32.dll" Builds="x86Build"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
@@ -158,6 +158,8 @@
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH_ORIGINAL" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[~]"/>
     <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="[~]"/>
+    <ROW Action="AI_DATA_SETTER_2" Type="51" Source="StopWindowsUpdateService" Target="wuauserv"/>
+    <ROW Action="AI_DATA_SETTER_3" Type="51" Source="StartWindowsUpdateService" Target="wuauserv"/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
     <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
@@ -182,13 +184,15 @@
     <ROW Action="AI_XmlRemove" Type="11265" Source="xmlCfg.dll" Target="OnXmlRemove" WithoutSeq="true"/>
     <ROW Action="AI_XmlRollback" Type="11521" Source="xmlCfg.dll" Target="OnXmlRollback" WithoutSeq="true"/>
     <ROW Action="AI_XmlUninstall" Type="1" Source="xmlCfg.dll" Target="OnXmlUninstall" AdditionalSeq="AI_DATA_SETTER_1"/>
-    <ROW Action="AdvancedInstallerHelper.dll" Type="1" Source="AdvancedInstallerHelper.dll" Target="UnloadCustomAction"/>
+    <ROW Action="AdvancedInstallerHelper.dll" Type="3073" Source="AdvancedInstallerHelper.dll" Target="UnloadCustomAction"/>
     <ROW Action="CreateScheduledTask" Type="3074" Source="viewer.exe" Target="/HideWindow schtasks.exe /Create /XML &quot;[APPDIR]wufuc_ScheduledTask.xml&quot; /TN &quot;[wufuc_TaskName]&quot; /F" Options="1"/>
     <ROW Action="DeleteScheduledTask" Type="3138" Source="viewer.exe" Target="/HideWindow schtasks.exe /Delete /TN &quot;[wufuc_TaskName]&quot; /F" Options="1"/>
     <ROW Action="RunScheduledTask" Type="3074" Source="viewer.exe" Target="/HideWindow schtasks.exe /Run /TN &quot;[wufuc_TaskName]&quot;" Options="1"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="x64Build:[ProgramFiles64Folder]\[ProductName]#x86Build:[ProgramFilesFolder]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+    <ROW Action="StartWindowsUpdateService" Type="3073" Source="aicustact.dll" Target="StartWinService" Options="1" AdditionalSeq="AI_DATA_SETTER_3"/>
+    <ROW Action="StopWindowsUpdateService" Type="3073" Source="aicustact.dll" Target="StopWinService" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="msiexec.exe" SourcePath="C:\Windows\System32\msiexec.exe" Index="0"/>
@@ -217,9 +221,13 @@
     <ROW Action="AI_XmlUninstall" Condition="(REMOVE)" Sequence="3102"/>
     <ROW Action="AI_DATA_SETTER_1" Condition="(REMOVE)" Sequence="3101"/>
     <ROW Action="CreateScheduledTask" Condition="( ( NOT Installed ) OR ( Installed AND REMOVE &lt;&gt; &quot;ALL&quot; AND AI_INSTALL_MODE &lt;&gt; &quot;Remove&quot; ) )" Sequence="5826"/>
-    <ROW Action="RunScheduledTask" Condition="( ( NOT Installed ) OR ( Installed AND REMOVE &lt;&gt; &quot;ALL&quot; AND AI_INSTALL_MODE &lt;&gt; &quot;Remove&quot; ) )" Sequence="6401"/>
-    <ROW Action="DeleteScheduledTask" Sequence="3601"/>
-    <ROW Action="AdvancedInstallerHelper.dll" Sequence="1399"/>
+    <ROW Action="DeleteScheduledTask" Sequence="3603"/>
+    <ROW Action="AdvancedInstallerHelper.dll" Sequence="1601"/>
+    <ROW Action="StopWindowsUpdateService" Sequence="3602"/>
+    <ROW Action="AI_DATA_SETTER_2" Sequence="3601"/>
+    <ROW Action="StartWindowsUpdateService" Sequence="6402"/>
+    <ROW Action="AI_DATA_SETTER_3" Sequence="6401"/>
+    <ROW Action="RunScheduledTask" Condition="( ( NOT Installed ) OR ( Installed AND REMOVE &lt;&gt; &quot;ALL&quot; AND AI_INSTALL_MODE &lt;&gt; &quot;Remove&quot; ) )" Sequence="5827"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
