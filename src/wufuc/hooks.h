@@ -5,11 +5,12 @@ typedef LSTATUS(WINAPI *LPFN_REGQUERYVALUEEXW)(HKEY, LPCWSTR, LPDWORD, LPDWORD, 
 typedef HMODULE(WINAPI *LPFN_LOADLIBRARYEXW)(LPCWSTR, HANDLE, DWORD);
 typedef BOOL(WINAPI *LPFN_ISDEVICESERVICEABLE)(void);
 
-extern LPWSTR g_pszWUServiceDll;
+extern wchar_t *g_pszWUServiceDll;
 
 extern LPFN_REGQUERYVALUEEXW g_pfnRegQueryValueExW;
 extern LPFN_LOADLIBRARYEXW g_pfnLoadLibraryExW;
 extern LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceable;
+extern LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceableLastKnown;
 
 LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData);
 HMODULE WINAPI LoadLibraryExW_hook(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFlags);

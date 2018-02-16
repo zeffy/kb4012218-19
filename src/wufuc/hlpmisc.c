@@ -2,7 +2,7 @@
 #include "hlpmisc.h"
 #include <sddl.h>
 
-bool InitializeMutex(bool InitialOwner, LPCWSTR pMutexName, HANDLE *phMutex)
+bool InitializeMutex(bool InitialOwner, const wchar_t *pMutexName, HANDLE *phMutex)
 {
         HANDLE hMutex;
 
@@ -22,10 +22,10 @@ bool InitializeMutex(bool InitialOwner, LPCWSTR pMutexName, HANDLE *phMutex)
 }
 
 bool CreateEventWithStringSecurityDescriptor(
-        LPCWSTR pStringSecurityDescriptor,
+        const wchar_t *pStringSecurityDescriptor,
         bool ManualReset,
         bool InitialState,
-        LPCWSTR pName,
+        const wchar_t *pName,
         HANDLE *phEvent)
 {
         SECURITY_ATTRIBUTES sa = { sizeof sa };
@@ -48,8 +48,8 @@ bool CreateEventWithStringSecurityDescriptor(
 
 PVOID RegGetValueAlloc(
         HKEY hkey,
-        LPCWSTR pSubKey,
-        LPCWSTR pValue,
+        const wchar_t *pSubKey,
+        const wchar_t *pValue,
         DWORD dwFlags,
         LPDWORD pdwType,
         LPDWORD pcbData)
@@ -75,8 +75,8 @@ PVOID RegGetValueAlloc(
 
 LPBYTE RegQueryValueExAlloc(
         HKEY hKey,
-        LPCWSTR pSubKey,
-        LPCWSTR pValueName,
+        const wchar_t *pSubKey,
+        const wchar_t *pValueName,
         LPDWORD pType,
         LPDWORD pcbData)
 {
@@ -136,9 +136,9 @@ PVOID NtQueryKeyAlloc(
         return result;
 }
 
-LPWSTR ExpandEnvironmentStringsAlloc(LPCWSTR src, LPDWORD pcchLength)
+wchar_t *ExpandEnvironmentStringsAlloc(const wchar_t *src, LPDWORD pcchLength)
 {
-        LPWSTR result;
+        wchar_t *result;
         DWORD buffersize;
         DWORD size;
 

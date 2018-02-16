@@ -14,7 +14,7 @@ int ProductVersionCompare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD
         return 0;
 }
 
-bool GetVersionInfoFromHModule(HMODULE hModule, LPCWSTR pszSubBlock, LPVOID pData, PUINT pcbData)
+bool GetVersionInfoFromHModule(HMODULE hModule, const wchar_t *pszSubBlock, LPVOID pData, PUINT pcbData)
 {
         bool result = false;
         UINT cbData;
@@ -68,7 +68,7 @@ cleanup:
         return result;
 }
 
-LPVOID GetVersionInfoFromHModuleAlloc(HMODULE hModule, LPCWSTR pszSubBlock, PUINT pcbData)
+LPVOID GetVersionInfoFromHModuleAlloc(HMODULE hModule, const wchar_t *pszSubBlock, PUINT pcbData)
 {
         UINT cbData = 0;
         LPVOID result = NULL;

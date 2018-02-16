@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
+#include <share.h>
 
 #include <strsafe.h>
 #include <shellapi.h>

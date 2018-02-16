@@ -1,17 +1,18 @@
 #include "stdafx.h"
-#include "hooks.h"
-#include "hlpmisc.h"
 #include "hlpmem.h"
+#include "hlpmisc.h"
+#include "hooks.h"
 
-LPWSTR g_pszWUServiceDll;
+wchar_t *g_pszWUServiceDll;
 
 LPFN_REGQUERYVALUEEXW g_pfnRegQueryValueExW;
 LPFN_LOADLIBRARYEXW g_pfnLoadLibraryExW;
 LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceable;
+LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceableLastKnown;
 
 LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
 {
-        PWCH pBuffer;
+        wchar_t *pBuffer;
         DWORD MaximumLength = 0;
         LSTATUS result;
         ULONG ResultLength;
@@ -19,8 +20,8 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
         size_t NameCount;
         int current;
         int pos;
-        LPWSTR fname;
-        const WCHAR realpath[] = L"%systemroot%\\system32\\wuaueng.dll";
+        wchar_t *fname;
+        const wchar_t realpath[] = L"%systemroot%\\system32\\wuaueng.dll";
         wchar_t *expandedpath;
         DWORD cchLength;
 
@@ -30,8 +31,8 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
         result = g_pfnRegQueryValueExW(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
 
 
-        if ( result != ERROR_SUCCESS 
-                || !MaximumLength 
+        if ( result != ERROR_SUCCESS
+                || !MaximumLength
                 || !lpValueName
                 || (lpType && *lpType != REG_EXPAND_SZ)
                 || _wcsicmp(lpValueName, L"ServiceDll") )
@@ -59,11 +60,15 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
                         || !_wcsicmp(fname, L"WuaCpuFix.dll")) ) {
 
                         expandedpath = ExpandEnvironmentStringsAlloc(realpath, &cchLength);
-
-                        trace(L"Fixed path to wuauserv ServiceDll: %ls -> %ls", fname, PathFindFileNameW(expandedpath));
-                        if ( SUCCEEDED(StringCbCopyW(pBuffer, MaximumLength, expandedpath)) )
-                                *lpcbData = cchLength * (sizeof *expandedpath);
-                        free(expandedpath);
+                        if ( expandedpath ) {
+                                if ( PathFileExistsW(expandedpath)
+                                        && SUCCEEDED(StringCbCopyW(pBuffer, MaximumLength, expandedpath)) ) {
+                                        
+                                        *lpcbData = cchLength * (sizeof *expandedpath);
+                                        trace(L"Fixed path to Windows Update service library.");
+                                }
+                                free(expandedpath);
+                        }
                 }
         }
         free(pkni);
@@ -79,9 +84,10 @@ HMODULE WINAPI LoadLibraryExW_hook(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFla
         trace(L"Loaded library: %ls (%p)", lpFileName, result);
 
         if ( g_pszWUServiceDll
-                && !_wcsicmp(lpFileName, g_pszWUServiceDll) ) {
+                && (!_wcsicmp(lpFileName, g_pszWUServiceDll)
+                        || !_wcsicmp(lpFileName, PathFindFileNameW(g_pszWUServiceDll))) ) {
 
-                if ( FindIDSFunctionPointer(result, &(PVOID)g_pfnIsDeviceServiceable) ) {
+                if ( FindIDSFunctionAddress(result, &(PVOID)g_pfnIsDeviceServiceable) ) {
                         trace(L"Matched pattern for %ls!IsDeviceServiceable. (%p)",
                                 PathFindFileNameW(lpFileName),
                                 g_pfnIsDeviceServiceable);

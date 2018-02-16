@@ -1,15 +1,12 @@
 #include "stdafx.h"
 #include "callbacks.h"
-#include "hooks.h"
-#include "hlpmisc.h"
 #include "hlpmem.h"
+#include "hlpmisc.h"
 #include "hlpsvc.h"
+#include "hooks.h"
 
 VOID CALLBACK ServiceNotifyCallback(PSERVICE_NOTIFYW pNotifyBuffer)
 {
-        trace(L"Enter service notify callback. (NotifyStatus=%ld ServiceStatus=%ld)",
-                pNotifyBuffer->dwNotificationStatus, pNotifyBuffer->ServiceStatus);
-
         switch ( pNotifyBuffer->dwNotificationStatus ) {
         case ERROR_SUCCESS:
                 if ( pNotifyBuffer->ServiceStatus.dwProcessId )
@@ -25,7 +22,29 @@ VOID CALLBACK ServiceNotifyCallback(PSERVICE_NOTIFYW pNotifyBuffer)
                 LocalFree((HLOCAL)pNotifyBuffer->pszServiceNames);
 }
 
-DWORD WINAPI ThreadStartCallback(LPVOID pParam)
+DWORD WINAPI PipeLoopThreadCallback(LPVOID pParam)
+{
+        HANDLE hPipe = (HANDLE)pParam;
+        BOOL fSuccess;
+        wchar_t  chBuf[512];
+        while (true) {
+                // Read from the pipe. 
+
+                fSuccess = ReadFile(
+                        hPipe,    // pipe handle 
+                        chBuf,    // buffer to receive reply 
+                        BUFSIZE * sizeof(wchar_t),  // size of buffer 
+                        &cbRead,  // number of bytes read 
+                        NULL);    // not overlapped 
+
+                if ( !fSuccess && GetLastError() != ERROR_MORE_DATA )
+                        break;;
+
+                _tprintf(TEXT("\"%s\"\n"), chBuf);
+        } 
+}
+
+DWORD WINAPI StartThreadCallback(LPVOID pParam)
 {
         ContextHandles ctx;
         SC_HANDLE hSCM;
@@ -33,8 +52,9 @@ DWORD WINAPI ThreadStartCallback(LPVOID pParam)
         DWORD dwProcessId;
         LPQUERY_SERVICE_CONFIGW pServiceConfig;
         DWORD dwServiceType;
-        LPWSTR str;
+        wchar_t *str;
         HMODULE hModule;
+        wchar_t Filename[MAX_PATH];
         DWORD result;
 
         // get mutex and unload event handles from virtual memory
@@ -55,7 +75,7 @@ DWORD WINAPI ThreadStartCallback(LPVOID pParam)
 
         hSCM = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
         if ( !hSCM ) {
-                trace(L"Failed to open SCM. (GetLastError=%ul)", GetLastError());
+                trace(L"Failed to open SCM. (GetLastError=%lu)", GetLastError());
                 goto release;
         }
 
@@ -91,7 +111,7 @@ DWORD WINAPI ThreadStartCallback(LPVOID pParam)
 
         // query the ServiceDll path after applying our compat hook so that it
         // is correct
-        str = (LPWSTR)RegQueryValueExAlloc(HKEY_LOCAL_MACHINE,
+        str = (wchar_t *)RegQueryValueExAlloc(HKEY_LOCAL_MACHINE,
                 L"SYSTEM\\CurrentControlSet\\services\\wuauserv\\Parameters",
                 L"ServiceDll", NULL, NULL);
         g_pszWUServiceDll = ExpandEnvironmentStringsAlloc(str, NULL);
@@ -105,9 +125,8 @@ DWORD WINAPI ThreadStartCallback(LPVOID pParam)
                 DetourAttach(&(PVOID)g_pfnLoadLibraryExW, LoadLibraryExW_hook);
 
         if ( g_pszWUServiceDll ) {
-                hModule = GetModuleHandleW(g_pszWUServiceDll);
-                if ( hModule ) {
-                        if ( FindIDSFunctionPointer(hModule, &(PVOID)g_pfnIsDeviceServiceable) ) {
+                if ( GetModuleHandleExW(0, g_pszWUServiceDll, &hModule) ) {
+                        if ( FindIDSFunctionAddress(hModule, &(PVOID)g_pfnIsDeviceServiceable) ) {
                                 trace(L"Matched pattern for %ls!IsDeviceServiceable. (%p)",
                                         PathFindFileNameW(g_pszWUServiceDll),
                                         g_pfnIsDeviceServiceable);
@@ -115,6 +134,7 @@ DWORD WINAPI ThreadStartCallback(LPVOID pParam)
                         } else {
                                 trace(L"No pattern matched!");
                         }
+                        FreeLibrary(hModule);
                 }
 
         }
@@ -125,7 +145,6 @@ DWORD WINAPI ThreadStartCallback(LPVOID pParam)
         // intentionally leave parent mutex open until this thread ends, at
         // which point it becomes abandoned again.
         result = WaitForMultipleObjects(_countof(ctx.handles), ctx.handles, FALSE, INFINITE);
-
         trace(L"Unload condition has been met.");
 
         // unhook
@@ -137,9 +156,19 @@ DWORD WINAPI ThreadStartCallback(LPVOID pParam)
                 if ( g_pfnLoadLibraryExW )
                         DetourDetach(&(PVOID)g_pfnLoadLibraryExW, LoadLibraryExW_hook);
 
-                if ( g_pfnIsDeviceServiceable )
-                        DetourDetach(&(PVOID)g_pfnIsDeviceServiceable, IsDeviceServiceable_hook);
+                // check to see if the last known address of IsDeviceServiceable
+                // is still in the address space of wuaueng.dll before 
+                // attempting to unhook the function.
+                if ( g_pfnIsDeviceServiceable
+                        && GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+                        (LPWSTR)g_pfnIsDeviceServiceableLastKnown, &hModule) ) {
 
+                        if ( GetModuleFileNameW(hModule, Filename, _countof(Filename))
+                                && (!_wcsicmp(Filename, g_pszWUServiceDll)
+                                        || !_wcsicmp(Filename, PathFindFileNameW(g_pszWUServiceDll))) )
+                                DetourDetach(&(PVOID)g_pfnIsDeviceServiceable, IsDeviceServiceable_hook);
+                        FreeLibrary(hModule);
+                }
                 if ( g_pfnRegQueryValueExW )
                         DetourDetach(&(PVOID)g_pfnRegQueryValueExW, RegQueryValueExW_hook);
 
@@ -151,8 +180,10 @@ release:
         ReleaseMutex(ctx.hChildMutex);
 close_handles:
         CloseHandle(ctx.hChildMutex);
-        CloseHandle(ctx.hParentMutex);
         CloseHandle(ctx.hUnloadEvent);
+        CloseHandle(ctx.hParentMutex);
+        if ( g_hTracingMutex )
+                CloseHandle(g_hTracingMutex);
 unload:
         trace(L"Freeing library and exiting main thread.");
         FreeLibraryAndExitThread(PIMAGEBASE, 0);

@@ -14,7 +14,7 @@ bool QueryServiceStatusProcessInfoByName(
         LPSERVICE_STATUS_PROCESS pServiceStatus);
 bool QueryServiceGroupName(
         const LPQUERY_SERVICE_CONFIGW pServiceConfig,
-        LPWSTR *pGroupName,
+        wchar_t **pGroupName,
         HLOCAL *hMem);
 DWORD QueryServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService);
 DWORD QueryServiceProcessIdByName(SC_HANDLE hSCM, const wchar_t *pServiceName);

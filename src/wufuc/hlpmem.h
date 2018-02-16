@@ -27,7 +27,7 @@ typedef struct
         WORD wCodePage;
 } LANGANDCODEPAGE, *PLANGANDCODEPAGE;
 
-bool FindIDSFunctionPointer(HMODULE hModule, PVOID *ppfnIsDeviceServiceable);
+bool FindIDSFunctionAddress(HMODULE hModule, PVOID *ppfnIsDeviceServiceable);
 HANDLE GetRemoteHModuleFromTh32ModuleSnapshot(HANDLE hSnapshot, const wchar_t *pLibFileName);
 bool InjectLibraryAndCreateRemoteThread(
         HANDLE hProcess,

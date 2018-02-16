@@ -68,12 +68,12 @@ bool QueryServiceStatusProcessInfoByName(
 
 bool QueryServiceGroupName(
         const LPQUERY_SERVICE_CONFIGW pServiceConfig,
-        LPWSTR *pGroupName,
+        wchar_t **pGroupName,
         HLOCAL *hMem)
 {
         bool result = false;
         int NumArgs;
-        LPWSTR *argv;
+        wchar_t **argv;
 
         argv = CommandLineToArgvW(pServiceConfig->lpBinaryPathName, &NumArgs);
         if ( argv ) {
@@ -126,7 +126,7 @@ DWORD HeuristicServiceGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupNameSe
         DWORD cbBufSize;
         LPQUERY_SERVICE_CONFIGW pServiceConfig;
         bool success = false;
-        LPWSTR pGroupName;
+        wchar_t *pGroupName;
         HLOCAL hMem;
 
         pData = RegGetValueAlloc(HKEY_LOCAL_MACHINE,
@@ -165,7 +165,7 @@ DWORD HeuristicServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService)
 {
         DWORD result = 0;
         LPQUERY_SERVICE_CONFIGW pServiceConfig;
-        LPWSTR pGroupName;
+        wchar_t *pGroupName;
         HLOCAL hMem;
 
         result = QueryServiceProcessId(hSCM, hService);

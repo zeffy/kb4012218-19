@@ -1,11 +1,11 @@
 #include "stdafx.h"
-#include "hlpmisc.h"
+#include "callbacks.h"
 #include "hlpmem.h"
+#include "hlpmisc.h"
 #include "hlpver.h"
 #include "hooks.h"
-#include "callbacks.h"
 
-bool FindIDSFunctionPointer(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
+bool FindIDSFunctionAddress(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
 {
         bool result = false;
         bool is_win7 = false;
@@ -61,23 +61,26 @@ bool FindIDSFunctionPointer(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
                 pffi = GetVersionInfoFromHModuleAlloc(hModule, L"\\", &cbffi);
                 if ( !pffi ) {
                         trace(L"Failed to allocate version information from hmodule.");
-                        continue;
+                        break;
                 }
+                trace(L"Windows Update Agent version: %hu.%hu.%hu.%hu",
+                        HIWORD(pffi->dwProductVersionMS),
+                        LOWORD(pffi->dwProductVersionMS),
+                        HIWORD(pffi->dwProductVersionLS),
+                        LOWORD(pffi->dwProductVersionLS));
 
                 // assure wuaueng.dll is at least the minimum supported version
                 tmp = ((is_win7 && ProductVersionCompare(pffi, 7, 6, 7601, 23714) != -1)
                         || (is_win81 && ProductVersionCompare(pffi, 7, 9, 9600, 18621) != -1));
                 free(pffi);
                 if ( !tmp ) {
-                        trace(L"Module does not meet the minimum supported version.");
-                        continue;
+                        trace(L"Windows Update Agent does not meet the minimum supported version.");
+                        break;
                 }
-
                 if ( !GetModuleInformation(hProcess, hModule, &modinfo, sizeof modinfo) )
                         break;
 
-                offset = patternfind(modinfo.lpBaseOfDll,
-                        modinfo.SizeOfImage,
+                offset = patternfind(modinfo.lpBaseOfDll, modinfo.SizeOfImage,
 #ifdef _WIN64
                         "FFF3 4883EC?? 33DB 391D???????? 7508 8B05????????"
 #else
@@ -87,7 +90,8 @@ bool FindIDSFunctionPointer(HMODULE hModule, PVOID *ppfnIsDeviceServiceable)
 #endif
                 );
                 if ( offset != -1 ) {
-                        *ppfnIsDeviceServiceable = (PVOID)((uint8_t *)modinfo.lpBaseOfDll + offset);
+                        g_pfnIsDeviceServiceableLastKnown = (PVOID)((uint8_t *)modinfo.lpBaseOfDll + offset);
+                        *ppfnIsDeviceServiceable = g_pfnIsDeviceServiceableLastKnown;
                         result = true;
                 }
                 break;
@@ -254,7 +258,7 @@ bool wufuc_InjectLibrary(DWORD dwProcessId, ContextHandles *pContext)
         HANDLE hSrcProcess;
         ContextHandles param = { 0 };
 
-        if ( swprintf_s(MutexName, _countof(MutexName), 
+        if ( swprintf_s(MutexName, _countof(MutexName),
                 L"Global\\%08x-7132-44a8-be15-56698979d2f3", dwProcessId) == -1 ) {
 
                 trace(L"Failed to print mutex name to string! (%lu)", dwProcessId);
