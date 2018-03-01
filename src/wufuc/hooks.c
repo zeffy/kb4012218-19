@@ -1,14 +1,16 @@
 #include "stdafx.h"
-#include "hlpmem.h"
-#include "hlpmisc.h"
+
 #include "hooks.h"
+#include "log.h"
+#include "registryhelper.h"
+#include "context.h"
+#include "wufuc.h"
 
 wchar_t *g_pszWUServiceDll;
 
 LPFN_REGQUERYVALUEEXW g_pfnRegQueryValueExW;
 LPFN_LOADLIBRARYEXW g_pfnLoadLibraryExW;
 LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceable;
-LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceableLastKnown;
 
 LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData)
 {
@@ -38,10 +40,10 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
                 || _wcsicmp(lpValueName, L"ServiceDll") )
                 return result;
 
-        pBuffer = (PWCH)lpData;
+        pBuffer = (wchar_t *)lpData;
 
         // get name of registry key being queried
-        pkni = NtQueryKeyAlloc((HANDLE)hKey, KeyNameInformation, &ResultLength);
+        pkni = reg_query_key_alloc((HANDLE)hKey, KeyNameInformation, &ResultLength);
         if ( !pkni )
                 return result;
         NameCount = pkni->NameLength / sizeof *pkni->Name;
@@ -59,7 +61,7 @@ LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpR
                         || !_wcsicmp(fname, L"WuaCpuFix64.dll") // WuaCpuFix
                         || !_wcsicmp(fname, L"WuaCpuFix.dll")) ) {
 
-                        expandedpath = ExpandEnvironmentStringsAlloc(realpath, &cchLength);
+                        expandedpath = env_expand_strings_alloc(realpath, &cchLength);
                         if ( expandedpath ) {
                                 if ( PathFileExistsW(expandedpath)
                                         && SUCCEEDED(StringCbCopyW(pBuffer, MaximumLength, expandedpath)) ) {
@@ -87,18 +89,7 @@ HMODULE WINAPI LoadLibraryExW_hook(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFla
                 && (!_wcsicmp(lpFileName, g_pszWUServiceDll)
                         || !_wcsicmp(lpFileName, PathFindFileNameW(g_pszWUServiceDll))) ) {
 
-                if ( FindIDSFunctionAddress(result, &(PVOID)g_pfnIsDeviceServiceable) ) {
-                        trace(L"Matched pattern for %ls!IsDeviceServiceable. (%p)",
-                                PathFindFileNameW(lpFileName),
-                                g_pfnIsDeviceServiceable);
-
-                        DetourTransactionBegin();
-                        DetourUpdateThread(GetCurrentThread());
-                        DetourAttach(&(PVOID)g_pfnIsDeviceServiceable, IsDeviceServiceable_hook);
-                        DetourTransactionCommit();
-                } else if ( !g_pfnIsDeviceServiceable ) {
-                        trace(L"No pattern matched!");
-                }
+                wufuc_hook(result);
         }
         return result;
 }

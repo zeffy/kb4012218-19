@@ -20,24 +20,28 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="callbacks.h" />
-    <ClInclude Include="hlpmem.h" />
-    <ClInclude Include="hlpmisc.h" />
-    <ClInclude Include="hlpsvc.h" />
-    <ClInclude Include="hlpver.h" />
+    <ClInclude Include="context.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="modulehelper.h" />
+    <ClInclude Include="registryhelper.h" />
+    <ClInclude Include="servicehelper.h" />
+    <ClInclude Include="versionhelper.h" />
     <ClInclude Include="hooks.h" />
     <ClInclude Include="patternfind.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="tracing.h" />
+    <ClInclude Include="wufuc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="callbacks.c" />
+    <ClCompile Include="context.c" />
     <ClCompile Include="dllmain.c" />
-    <ClCompile Include="hlpmem.c" />
-    <ClCompile Include="hlpmisc.c" />
-    <ClCompile Include="hlpsvc.c" />
-    <ClCompile Include="hlpver.c" />
+    <ClCompile Include="modulehelper.c" />
+    <ClCompile Include="registryhelper.c" />
+    <ClCompile Include="servicehelper.c" />
+    <ClCompile Include="versionhelper.c" />
     <ClCompile Include="hooks.c" />
+    <ClCompile Include="log.c" />
     <ClCompile Include="patternfind.c" />
     <ClCompile Include="stdafx.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -46,7 +50,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="rundll32.c" />
-    <ClCompile Include="tracing.c" />
+    <ClCompile Include="wufuc.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
@@ -115,8 +119,8 @@
     <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\lib\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\minhook;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\lib\minhook;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -124,26 +128,26 @@
     <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\lib\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\minhook;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\lib\minhook;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)bin\$(Configuration)\$(PlatformShortName)\</OutDir>
-    <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
+    <IntDir>$(ProjectDir)obj\$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\lib\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\minhook;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\lib\minhook;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)bin\$(Configuration)\$(PlatformShortName)\</OutDir>
-    <IntDir>$(ProjectDir)$(BaseIntermediateOutputPath)$(Configuration)\$(PlatformShortName)\</IntDir>
+    <IntDir>$(ProjectDir)obj\$(Configuration)\$(PlatformShortName)\</IntDir>
     <TargetName>$(ProjectName)$(PlatformArchitecture)</TargetName>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\lib\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\inc\phnt;$(SolutionDir)..\inc\minhook;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\lib\minhook;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -162,7 +166,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>version.lib;Shlwapi.lib;detours.X86.MTd.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Shlwapi.lib;libMinHook.x86.MTd.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>X86;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -185,7 +189,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>version.lib;Shlwapi.lib;detours.X64.MTd.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Shlwapi.lib;libMinHook.x64.MTd.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -216,7 +220,7 @@
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
-      <AdditionalDependencies>version.lib;Shlwapi.lib;detours.X86.MT.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Shlwapi.lib;libMinHook.x86.MT.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
       <SetChecksum>true</SetChecksum>
     </Link>
     <ResourceCompile>
@@ -253,7 +257,7 @@ copy /Y "$(TargetPath)" "$(SolutionDir)wufuc_setup\"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>version.lib;Shlwapi.lib;detours.X64.MT.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;Shlwapi.lib;libMinHook.x64.MT.lib;%(AdditionalDependencies);ntdll.lib</AdditionalDependencies>
       <SetChecksum>true</SetChecksum>
     </Link>
     <ResourceCompile>

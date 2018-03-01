@@ -10,7 +10,10 @@ extern wchar_t *g_pszWUServiceDll;
 extern LPFN_REGQUERYVALUEEXW g_pfnRegQueryValueExW;
 extern LPFN_LOADLIBRARYEXW g_pfnLoadLibraryExW;
 extern LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceable;
-extern LPFN_ISDEVICESERVICEABLE g_pfnIsDeviceServiceableLastKnown;
+
+extern PVOID g_ptRegQueryValueExW;
+extern PVOID g_ptLoadLibraryExW;
+extern PVOID g_ptIsDeviceServiceable;
 
 LSTATUS WINAPI RegQueryValueExW_hook(HKEY hKey, LPCWSTR lpValueName, LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbData);
 HMODULE WINAPI LoadLibraryExW_hook(LPCWSTR lpFileName, HANDLE hFile, DWORD dwFlags);

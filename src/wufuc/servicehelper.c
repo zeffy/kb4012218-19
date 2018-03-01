@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "hlpmisc.h"
-#include "hlpsvc.h"
+#include "servicehelper.h"
+#include "registryhelper.h"
 
-LPQUERY_SERVICE_CONFIGW QueryServiceConfigByNameAlloc(
+LPQUERY_SERVICE_CONFIGW svc_query_config_by_name_alloc(
         SC_HANDLE hSCM,
         const wchar_t *pServiceName,
         LPDWORD pcbBufSize)
@@ -13,13 +13,13 @@ LPQUERY_SERVICE_CONFIGW QueryServiceConfigByNameAlloc(
         hService = OpenServiceW(hSCM, pServiceName, SERVICE_QUERY_CONFIG);
         if ( !hService ) return result;
 
-        result = QueryServiceConfigAlloc(hSCM, hService, pcbBufSize);
+        result = svc_query_config_alloc(hSCM, hService, pcbBufSize);
 
         CloseServiceHandle(hService);
         return result;
 }
 
-LPQUERY_SERVICE_CONFIGW QueryServiceConfigAlloc(
+LPQUERY_SERVICE_CONFIGW svc_query_config_alloc(
         SC_HANDLE hSCM,
         SC_HANDLE hService,
         LPDWORD pcbBufSize)
@@ -44,7 +44,7 @@ LPQUERY_SERVICE_CONFIGW QueryServiceConfigAlloc(
         return result;
 }
 
-bool QueryServiceStatusProcessInfoByName(
+bool svc_query_process_info_by_name(
         SC_HANDLE hSCM,
         const wchar_t *pServiceName,
         LPSERVICE_STATUS_PROCESS pServiceStatus)
@@ -66,7 +66,7 @@ bool QueryServiceStatusProcessInfoByName(
         return result;
 }
 
-bool QueryServiceGroupName(
+bool svc_query_group_name(
         const LPQUERY_SERVICE_CONFIGW pServiceConfig,
         wchar_t **pGroupName,
         HLOCAL *hMem)
@@ -92,7 +92,7 @@ bool QueryServiceGroupName(
         return false;
 }
 
-DWORD QueryServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService)
+DWORD svc_query_process_id(SC_HANDLE hSCM, SC_HANDLE hService)
 {
         DWORD result = 0;
         SERVICE_STATUS_PROCESS ServiceStatus;
@@ -109,16 +109,16 @@ DWORD QueryServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService)
         return result;
 }
 
-DWORD QueryServiceProcessIdByName(SC_HANDLE hSCM, const wchar_t *pServiceName)
+DWORD svc_query_process_id_by_name(SC_HANDLE hSCM, const wchar_t *pServiceName)
 {
         SERVICE_STATUS_PROCESS ServiceStatusProcess;
 
-        if ( QueryServiceStatusProcessInfoByName(hSCM, pServiceName, &ServiceStatusProcess) )
+        if ( svc_query_process_info_by_name(hSCM, pServiceName, &ServiceStatusProcess) )
                 return ServiceStatusProcess.dwProcessId;
         return 0;
 }
 
-DWORD HeuristicServiceGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupNameSearch)
+DWORD svc_heuristic_group_process_id(SC_HANDLE hSCM, const wchar_t *pGroupNameSearch)
 {
         wchar_t *pData;
         DWORD result = 0;
@@ -129,7 +129,7 @@ DWORD HeuristicServiceGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupNameSe
         wchar_t *pGroupName;
         HLOCAL hMem;
 
-        pData = RegGetValueAlloc(HKEY_LOCAL_MACHINE,
+        pData = reg_get_value_alloc(HKEY_LOCAL_MACHINE,
                 L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Svchost",
                 pGroupNameSearch,
                 RRF_RT_REG_MULTI_SZ,
@@ -139,14 +139,14 @@ DWORD HeuristicServiceGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupNameSe
         if ( !pData ) return result;
 
         for ( wchar_t *pName = pData; *pName; pName += wcslen(pName) + 1 ) {
-                dwProcessId = QueryServiceProcessIdByName(hSCM, pName);
+                dwProcessId = svc_query_process_id_by_name(hSCM, pName);
                 if ( !dwProcessId ) continue;
 
-                pServiceConfig = QueryServiceConfigByNameAlloc(hSCM, pName, &cbBufSize);
+                pServiceConfig = svc_query_config_by_name_alloc(hSCM, pName, &cbBufSize);
                 if ( !pServiceConfig ) continue;
 
                 if ( pServiceConfig->dwServiceType == SERVICE_WIN32_SHARE_PROCESS
-                        && QueryServiceGroupName(pServiceConfig, &pGroupName, &hMem) ) {
+                        && svc_query_group_name(pServiceConfig, &pGroupName, &hMem) ) {
 
                         success = !_wcsicmp(pGroupNameSearch, pGroupName);
                         LocalFree(hMem);
@@ -161,18 +161,18 @@ DWORD HeuristicServiceGroupProcessId(SC_HANDLE hSCM, const wchar_t *pGroupNameSe
         return result;
 }
 
-DWORD HeuristicServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService)
+DWORD svc_heuristic_process_id(SC_HANDLE hSCM, SC_HANDLE hService)
 {
         DWORD result = 0;
         LPQUERY_SERVICE_CONFIGW pServiceConfig;
         wchar_t *pGroupName;
         HLOCAL hMem;
 
-        result = QueryServiceProcessId(hSCM, hService);
+        result = svc_query_process_id(hSCM, hService);
         if ( result )
                 return result;
 
-        pServiceConfig = QueryServiceConfigAlloc(hSCM, hService, NULL);
+        pServiceConfig = svc_query_config_alloc(hSCM, hService, NULL);
         if ( pServiceConfig ) {
                 switch ( pServiceConfig->dwServiceType ) {
                 case SERVICE_WIN32_OWN_PROCESS:
@@ -185,8 +185,8 @@ DWORD HeuristicServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService)
                         // process, it is possible to "guess" which svchost.exe
                         // it will eventually be loaded into by finding other
                         // services in the same group that are already running.
-                        if ( QueryServiceGroupName(pServiceConfig, &pGroupName, &hMem) ) {
-                                result = HeuristicServiceGroupProcessId(hSCM, pGroupName);
+                        if ( svc_query_group_name(pServiceConfig, &pGroupName, &hMem) ) {
+                                result = svc_heuristic_group_process_id(hSCM, pGroupName);
                                 LocalFree(hMem);
                         }
                         break;
@@ -196,13 +196,13 @@ DWORD HeuristicServiceProcessId(SC_HANDLE hSCM, SC_HANDLE hService)
         return result;
 }
 
-DWORD HeuristicServiceProcessIdByName(SC_HANDLE hSCM, const wchar_t *pServiceName)
+DWORD svc_heuristic_process_id_by_name(SC_HANDLE hSCM, const wchar_t *pServiceName)
 {
         DWORD result = 0;
         SC_HANDLE hService;
 
         hService = OpenServiceW(hSCM, pServiceName, SERVICE_QUERY_STATUS | SERVICE_QUERY_CONFIG);
-        result = HeuristicServiceProcessId(hSCM, hService);
+        result = svc_heuristic_process_id(hSCM, hService);
         CloseServiceHandle(hService);
         return result;
 

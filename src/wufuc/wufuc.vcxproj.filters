@@ -21,9 +21,6 @@
     <ClInclude Include="hooks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tracing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -33,16 +30,25 @@
     <ClInclude Include="patternfind.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hlpmem.h">
+    <ClInclude Include="context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hlpmisc.h">
+    <ClInclude Include="versionhelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hlpsvc.h">
+    <ClInclude Include="servicehelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hlpver.h">
+    <ClInclude Include="registryhelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wufuc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="modulehelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,9 +62,6 @@
     <ClCompile Include="hooks.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tracing.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="rundll32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -68,16 +71,25 @@
     <ClCompile Include="patternfind.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hlpsvc.c">
+    <ClCompile Include="context.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hlpmem.c">
+    <ClCompile Include="servicehelper.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hlpver.c">
+    <ClCompile Include="versionhelper.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hlpmisc.c">
+    <ClCompile Include="registryhelper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wufuc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="log.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="modulehelper.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

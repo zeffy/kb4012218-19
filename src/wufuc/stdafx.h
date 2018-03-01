@@ -27,10 +27,6 @@
 #include <Psapi.h>
 #include <TlHelp32.h>
 
-#include <detours.h>
-#include "patternfind.h"
-#include "tracing.h"
-
 extern IMAGE_DOS_HEADER __ImageBase;
 #define PIMAGEBASE ((HMODULE)&__ImageBase)
 

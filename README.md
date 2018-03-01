@@ -103,8 +103,9 @@ Advanced Installer's intuitive and friendly user interface allowed me to quickly
 
 ## Special thanks
 
-- Wen Jia Liu ([@wj32](https://github.com/wj32)) for his awesome program [Process Hacker](https://github.com/processhacker2/processhacker) which has been absolutely instrumental in the development of wufuc, and also for his [`phnt`](https://github.com/processhacker2/processhacker/tree/master/phnt) headers.
+- Wen Jia Liu ([@wj32](https://github.com/wj32)) for his awesome program [Process Hacker](https://github.com/processhacker2/processhacker), and also for his [`phnt` headers](https://github.com/processhacker2/processhacker/tree/master/phnt).
 - Duncan Ogilvie ([@mrexodia](https://github.com/mrexodia)) for his [`patternfind.cpp`](https://github.com/x64dbg/x64dbg/blob/development/src/dbg/patternfind.cpp) algorithm from [x64dbg](https://github.com/x64dbg/x64dbg).
+- Tsuda Kageyu ([@TsudaKageyu](https://github.com/TsudaKageyu)) for his excellent [minhook](https://github.com/TsudaKageyu/minhook) library.
 
 [Latest]: https://github.com/zeffy/wufuc/releases/latest
 [AppVeyor]: https://ci.appveyor.com/project/zeffy/wufuc

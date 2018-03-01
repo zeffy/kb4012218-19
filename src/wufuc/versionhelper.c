@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "hlpver.h"
+#include "versionhelper.h"
 
-int ProductVersionCompare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wBuild, WORD wRev)
+int ver_compare_product_version(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD wBuild, WORD wRev)
 {
         if ( HIWORD(pffi->dwProductVersionMS) < wMajor ) return -1;
         if ( HIWORD(pffi->dwProductVersionMS) > wMajor ) return 1;
@@ -14,7 +14,7 @@ int ProductVersionCompare(VS_FIXEDFILEINFO *pffi, WORD wMajor, WORD wMinor, WORD
         return 0;
 }
 
-bool GetVersionInfoFromHModule(HMODULE hModule, const wchar_t *pszSubBlock, LPVOID pData, PUINT pcbData)
+bool ver_get_version_info_from_hmodule(HMODULE hModule, const wchar_t *pszSubBlock, LPVOID pData, PUINT pcbData)
 {
         bool result = false;
         UINT cbData;
@@ -44,8 +44,9 @@ bool GetVersionInfoFromHModule(HMODULE hModule, const wchar_t *pszSubBlock, LPVO
         if ( !pRes ) return result;
 
         pCopy = malloc(dwSize);
-        if ( !pCopy
-                || memcpy_s(pCopy, dwSize, pRes, dwSize)
+        if ( !pCopy ) return result;
+
+        if ( memcpy_s(pCopy, dwSize, pRes, dwSize)
                 || !VerQueryValueW(pCopy, pszSubBlock, &pBuffer, &uLen) )
                 goto cleanup;
 
@@ -68,18 +69,18 @@ cleanup:
         return result;
 }
 
-LPVOID GetVersionInfoFromHModuleAlloc(HMODULE hModule, const wchar_t *pszSubBlock, PUINT pcbData)
+LPVOID ver_get_version_info_from_hmodule_alloc(HMODULE hModule, const wchar_t *pszSubBlock, PUINT pcbData)
 {
         UINT cbData = 0;
         LPVOID result = NULL;
 
-        if ( !GetVersionInfoFromHModule(hModule, pszSubBlock, NULL, &cbData) )
+        if ( !ver_get_version_info_from_hmodule(hModule, pszSubBlock, NULL, &cbData) )
                 return result;
 
         result = malloc(cbData);
         if ( !result ) return result;
 
-        if ( GetVersionInfoFromHModule(hModule, pszSubBlock, result, &cbData) ) {
+        if ( ver_get_version_info_from_hmodule(hModule, pszSubBlock, result, &cbData) ) {
                 *pcbData = cbData;
         } else {
                 free(result);
@@ -88,7 +89,7 @@ LPVOID GetVersionInfoFromHModuleAlloc(HMODULE hModule, const wchar_t *pszSubBloc
         return result;
 }
 
-bool IsWindowsVersion(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
+bool ver_verify_version_info(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
 {
         OSVERSIONINFOEXW osvi = { sizeof osvi };
 
@@ -104,4 +105,14 @@ bool IsWindowsVersion(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackM
         return VerifyVersionInfoW(&osvi,
                 VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR,
                 dwlConditionMask) != FALSE;
+}
+
+bool ver_verify_windows_7_sp1(void)
+{
+        return ver_verify_version_info(6, 1, 1);
+}
+
+bool ver_verify_windows_8_1(void)
+{
+        return ver_verify_version_info(6, 3, 0);
 }
