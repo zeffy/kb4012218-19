@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wufuc", "wufuc\wufuc.vcxproj", "{00F96695-CE41-4C2F-A344-6219DFB4F887}"
 EndProject
@@ -12,6 +12,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wufuc_setup_bat", "wufuc_se
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdvancedInstallerHelper", "AdvancedInstallerHelper\AdvancedInstallerHelper.vcxproj", "{12498D61-02AF-4C13-925D-E130EEDE2543}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository Items", "Repository Items", "{E7EDB493-4D31-4646-8537-C515613689A6}"
+	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
+		..\appveyor.yml = ..\appveyor.yml
+		..\COPYING = ..\COPYING
+		..\DONATE.md = ..\DONATE.md
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{ACE23C8E-C137-4B93-9147-DCF126E1248E}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\ISSUE_TEMPLATE.md = ..\.github\ISSUE_TEMPLATE.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +52,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ACE23C8E-C137-4B93-9147-DCF126E1248E} = {E7EDB493-4D31-4646-8537-C515613689A6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5070ABC4-3344-4D6E-B744-E3508B10A327}

@@ -1,12 +1,11 @@
 #include "stdafx.h"
-
 #include "context.h"
 #include "wufuc.h"
-#include "modulehelper.h"
-#include "versionhelper.h"
 #include "hooks.h"
 #include "log.h"
+#include "modulehelper.h"
 #include "patternfind.h"
+#include "versionhelper.h"
 
 #include <minhook.h>
 

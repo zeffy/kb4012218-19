@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "context.h"
+
 #include <sddl.h>
 
 static bool ctxp_remove_handle(context *ctx, unsigned Index)

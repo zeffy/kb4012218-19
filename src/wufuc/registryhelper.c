@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "registryhelper.h"
-#include <sddl.h>
 
 PVOID reg_get_value_alloc(
         HKEY hKey,
-        const wchar_t *SubKey,
-        const wchar_t *Value,
+        LPCWSTR SubKey,
+        LPCWSTR Value,
         DWORD dwFlags,
         LPDWORD pdwType,
         LPDWORD pcbData)
@@ -31,8 +30,8 @@ PVOID reg_get_value_alloc(
 
 LPBYTE reg_query_value_alloc(
         HKEY hKey,
-        const wchar_t *SubKey,
-        const wchar_t *Value,
+        LPCWSTR SubKey,
+        LPCWSTR Value,
         LPDWORD pdwType,
         LPDWORD pcbData)
 {
@@ -100,15 +99,15 @@ PVOID reg_query_key_alloc(
         return result;
 }
 
-wchar_t *env_expand_strings_alloc(const wchar_t *src, LPDWORD pcchLength)
+LPWSTR env_expand_strings_alloc(LPCWSTR Src, LPDWORD pcchLength)
 {
-        wchar_t *result;
+        LPWSTR result;
         DWORD buffersize;
         DWORD size;
 
-        buffersize = ExpandEnvironmentStringsW(src, NULL, 0);
+        buffersize = ExpandEnvironmentStringsW(Src, NULL, 0);
         result = calloc(buffersize, sizeof *result);
-        size = ExpandEnvironmentStringsW(src, result, buffersize);
+        size = ExpandEnvironmentStringsW(Src, result, buffersize);
         if ( !size || size > buffersize ) {
                 free(result);
                 result = NULL;

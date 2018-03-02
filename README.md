@@ -11,7 +11,7 @@ Disables the "Unsupported Hardware" message in Windows Update, and allows you to
 
 [Unstable builds][AppVeyor] - Probably contains bugs; do not report issues with these builds.
 
-## Donate
+## Donate :heart:
 
 [**Click here for donation options!**](https://github.com/zeffy/wufuc/blob/master/DONATE.md)
 
@@ -24,9 +24,7 @@ The release notes for Windows updates KB4012218 and KB4012219 included the follo
 These updates marked the implementation of a [policy change](https://blogs.windows.com/windowsexperience/2016/01/15/windows-10-embracing-silicon-innovation/) they announced some time ago, where Microsoft stated that they would not be supporting Windows 7 or 8.1 on next-gen Intel, AMD and Qualcomm processors.
 This was essentially a big middle finger to anyone who decides to not "upgrade" to the steaming pile of :shit: known as Windows 10, especially considering the extended support periods for Windows 7 and 8.1 won't be ending until January 4, 2020 and January 10, 2023 respectively.
 
-## Some people with older Intel and AMD processors are also affected!
-
-I've received user reports of the following CPUs all being blocked from receiving updates:
+Some people with older Intel and AMD processors are also affected! I've received user reports of the following CPUs all being blocked from receiving updates:
 
 - [Intel Atom Z530](https://github.com/zeffy/wufuc/issues/7)
 - [Intel Atom D525](https://github.com/zeffy/wufuc/issues/34)
@@ -38,7 +36,10 @@ I've received user reports of the following CPUs all being blocked from receivin
 
 ## Bad Microsoft!
 
-If you are interested, you can read my original write up on discovering the CPU check [here](https://github.com/zeffy/wufuc/tree/old-kb4012218-19).
+If you are interested, you can read my original write-up on discovering the CPU check [here](https://github.com/zeffy/wufuc/tree/old-kb4012218-19).
+
+Basically, inside a system file named `wuaueng.dll`, there are two functions responsible for the CPU check: `IsDeviceServiceable(void)` and `IsCPUSupported(void)`. 
+`IsDeviceServiceable` simply calls `IsCPUSupported` once, and then re-uses the result that it receives on subsequent calls.
 
 ## Features
 
@@ -49,50 +50,21 @@ If you are interested, you can read my original write up on discovering the CPU 
 - Byte pattern-based patching, which means it will usually keep working even after new updates come out.
 - No dependencies.
 
+## Frequently Asked Questions
+
+See [FAQ.md](https://github.com/zeffy/wufuc/blob/master/FAQ.md).
+
 ## How it works
 
-Basically, inside a system file called `wuaueng.dll` there are two functions responsible for the CPU check: `IsDeviceServiceable(void)` and `IsCPUSupported(void)`. 
-`IsDeviceServiceable` simply calls `IsCPUSupported` once, and then re-uses the result that it receives on subsequent calls.
-My patch takes advantage of this behavior by patching a couple of boolean values and basically making Windows Update think that it has already checked your processor, and the result was that it is indeed supported.
+This is a basic run-down of what wufuc does when you install it:
 
 - The installer registers a scheduled task that automatically starts wufuc on system boot/user log on.
 - Depending on how the Windows Update service is configured to run, wufuc will:
     * **Shared process**: inject itself into the service host process that Windows Update will run in when it starts.
     * **Own process**: wait for the Windows Update service to start and then inject into it.
-- After that, wufuc will install some API hooks when appropriate:
+- Once injected, wufuc will hook some functions where appropriate:
     * `LoadLibraryExW` hook will automatically hook the `IsDeviceServiceable()` function inside `wuaueng.dll` when it is loaded.
     * `RegQueryValueExW` hook is necessary to provide compatibility with [UpdatePack7R2](../../issues/100). This hook not applied when `wuauserv` is configured to run in its own process.
-
-## FAQ
-
-### How to deploy wufuc using Group Policy
-
-[There is a tutorial on the Advanced Installer website that explains how to do this](http://www.advancedinstaller.com/user-guide/tutorial-gpo.html).
-
-### How to use unattended feature in the batch setup scripts
-
-`install_wufuc.bat` and `uninstall_wufuc.bat` both support two command line parameters that can be used alone, or combined to change the behavior of the scripts:
-
-- `/NORESTART` - Automatically declines rebooting after the setup finishes.
-- `/UNATTENDED` - Skips all prompts for user interaction, and automatically restarts unless `/NORESTART` is also specified.
-
-These must be used from an elevated command line prompt.
-
-### How to manually remove wufuc v0.8.0.x when it is impossible to uninstall it normally
-
-This only applies to wufuc version 0.8.0.x, which was only available for download for a short period of time. Other versions are unaffected. 
-
-There was a fundamental issue with the method I tried using in this version that caused very serious system instability, such as User Account Control breaking, getting a black screen with just a cursor at boot or after logging out, or very slow overall system performance from multiple services crashing repeatedly which would eventually end in a blue screen of death. Many of these issues unfortunately made uninstalling wufuc nearly impossible. I apologize for any inconvenience this version of wufuc may have caused.
-
-#### To manually uninstall wufuc v0.8.0.x:
-
-1. [Boot into Safe Mode with Command Prompt](https://support.microsoft.com/en-us/help/17419/windows-7-advanced-startup-options-safe-mode).
-2. In the command prompt type `regedit` and press enter.
-3. Navigate to the key `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options`
-4. Expand the `Image File Execution Options` tree.
-5. Locate the `svchost.exe` sub key, right-click it and press **Delete**.
-6. Reboot, and you should be able to log in normally again.
-7. Open Add and Remove Programs, locate and run the normal wufuc uninstaller to complete the removal process.
 
 ## Sponsors
 

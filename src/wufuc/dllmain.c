@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include <minhook.h>
 
 BOOL APIENTRY DllMain(HMODULE hModule,

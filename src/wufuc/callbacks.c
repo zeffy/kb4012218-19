@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "context.h"
 #include "callbacks.h"
 #include "hooks.h"
@@ -89,7 +88,13 @@ DWORD WINAPI cb_start(context *ctx)
         str = (wchar_t *)reg_query_value_alloc(HKEY_LOCAL_MACHINE,
                 L"SYSTEM\\CurrentControlSet\\services\\wuauserv\\Parameters",
                 L"ServiceDll", NULL, NULL);
+        if ( !str ) {
+abort_hook:
+                MH_RemoveHook(g_pfnRegQueryValueExW);
+                goto release;
+        }
         g_pszWUServiceDll = env_expand_strings_alloc(str, NULL);
+        if ( !g_pszWUServiceDll ) goto abort_hook;
         free(str);
 
         MH_CreateHookApi(L"kernel32.dll",
@@ -97,9 +102,8 @@ DWORD WINAPI cb_start(context *ctx)
                 LoadLibraryExW_hook,
                 &(PVOID)g_pfnLoadLibraryExW);
 
-        if ( g_pszWUServiceDll
-                && (GetModuleHandleExW(0, g_pszWUServiceDll, &hModule)
-                        || GetModuleHandleExW(0, PathFindFileNameW(g_pszWUServiceDll), &hModule))) {
+        if ( GetModuleHandleExW(0, g_pszWUServiceDll, &hModule)
+                || GetModuleHandleExW(0, PathFindFileNameW(g_pszWUServiceDll), &hModule) ) {
 
                 // hook IsDeviceServiceable if wuaueng.dll is already loaded
                 wufuc_hook(hModule);
@@ -110,7 +114,7 @@ DWORD WINAPI cb_start(context *ctx)
 
         // wait for unload event or parent mutex to be abandoned.
         // for example if the user killed rundll32.exe with task manager.
-        result = WaitForMultipleObjects(_countof(ctx->handles), ctx->handles, FALSE, INFINITE);
+        result = WaitForMultipleObjects(ctx->count, ctx->handles, FALSE, INFINITE);
         trace(L"Unload condition has been met.");
 
         switch ( result ) {

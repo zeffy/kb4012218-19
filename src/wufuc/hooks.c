@@ -1,9 +1,8 @@
 #include "stdafx.h"
-
+#include "context.h"
 #include "hooks.h"
 #include "log.h"
 #include "registryhelper.h"
-#include "context.h"
 #include "wufuc.h"
 
 wchar_t *g_pszWUServiceDll;

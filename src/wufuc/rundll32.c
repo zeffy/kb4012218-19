@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "context.h"
 #include "callbacks.h"
+#include "log.h"
 #include "modulehelper.h"
 #include "registryhelper.h"
 #include "servicehelper.h"
-#include "log.h"
 #include "wufuc.h"
 
 void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, int nCmdShow)

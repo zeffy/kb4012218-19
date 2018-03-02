@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "log.h"
 
 void logp_debug_write(const wchar_t *const format, ...)

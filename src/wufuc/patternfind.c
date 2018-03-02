@@ -144,7 +144,7 @@ void patternwrite(uint8_t *data, size_t datasize, const char *pattern)
 
         if ( patterntransform(pattern, writepattern, writepatternsize) ) {
                 DWORD OldProtect;
-                BOOL result = VirtualProtect(data, writepatternsize, PAGE_READWRITE, &OldProtect);
+                BOOL result = VirtualProtect(data, writepatternsize, PAGE_EXECUTE_READWRITE, &OldProtect);
                 if ( writepatternsize > datasize )
                         writepatternsize = datasize;
                 for ( size_t i = 0; i < writepatternsize; i++ )
