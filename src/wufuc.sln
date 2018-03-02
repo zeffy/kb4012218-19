@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository Items", "Reposit
 		..\appveyor.yml = ..\appveyor.yml
 		..\COPYING = ..\COPYING
 		..\DONATE.md = ..\DONATE.md
+		..\FAQ.md = ..\FAQ.md
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
