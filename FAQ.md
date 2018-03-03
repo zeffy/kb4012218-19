@@ -15,7 +15,7 @@ These must be used from an elevated command line prompt.
 
 ## How to manually remove wufuc v0.8.0.143 when it is impossible to uninstall it normally
 
-This only applies to wufuc version 0.8.0.143, which was only available for download for a short period of time. Other versions are unaffected.
+This applies exclusively to a very buggy version of wufuc that was only available for download for a short period of time, other versions are unaffected.
 
 1. [Boot into Safe Mode with Command Prompt](https://support.microsoft.com/en-us/help/17419/windows-7-advanced-startup-options-safe-mode).
 2. In the command prompt type `regedit` and press enter.
