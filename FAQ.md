@@ -1,4 +1,4 @@
-# FAQ
+# Frequently Asked Questions
 
 ## How to deploy wufuc using Group Policy
 
