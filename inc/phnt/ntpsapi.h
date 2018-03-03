@@ -44,7 +44,7 @@
 #define GDI_HANDLE_BUFFER_SIZE32 34
 #define GDI_HANDLE_BUFFER_SIZE64 60
 
-#ifndef WIN64
+#ifndef _WIN64
 #define GDI_HANDLE_BUFFER_SIZE GDI_HANDLE_BUFFER_SIZE32
 #else
 #define GDI_HANDLE_BUFFER_SIZE GDI_HANDLE_BUFFER_SIZE64
@@ -809,8 +809,12 @@ typedef struct _THREAD_LAST_SYSCALL_INFORMATION
 {
     PVOID FirstArgument;
     USHORT SystemCallNumber;
-    //USHORT Reserved; // since REDSTONE2
-    //ULONG64 WaitTime;
+#ifdef WIN64
+    USHORT Pad[0x3]; // since REDSTONE2
+#else
+    USHORT Pad[0x1]; // since REDSTONE2
+#endif
+    ULONG64 WaitTime;
 } THREAD_LAST_SYSCALL_INFORMATION, *PTHREAD_LAST_SYSCALL_INFORMATION;
 
 // private
@@ -999,6 +1003,11 @@ NtResumeProcess(
 #define NtCurrentSession() ((HANDLE)(LONG_PTR)-3)
 #define ZwCurrentSession() NtCurrentSession()
 #define NtCurrentPeb() (NtCurrentTeb()->ProcessEnvironmentBlock)
+
+// Windows 8 and above
+#define NtCurrentProcessToken() ((HANDLE)(LONG_PTR)-4)
+#define NtCurrentThreadToken() ((HANDLE)(LONG_PTR)-5)
+#define NtCurrentEffectiveToken() ((HANDLE)(LONG_PTR)-6)
 
 // Not NT, but useful.
 #define NtCurrentProcessId() (NtCurrentTeb()->ClientId.UniqueProcess)

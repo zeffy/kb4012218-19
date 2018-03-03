@@ -14,6 +14,46 @@ typedef struct _ACTIVATION_CONTEXT_STACK
     ULONG StackId;
 } ACTIVATION_CONTEXT_STACK, *PACTIVATION_CONTEXT_STACK;
 
+// private
+typedef struct _API_SET_NAMESPACE
+{
+    ULONG Version;
+    ULONG Size;
+    ULONG Flags;
+    ULONG Count;
+    ULONG EntryOffset;
+    ULONG HashOffset;
+    ULONG HashFactor;
+} API_SET_NAMESPACE, *PAPI_SET_NAMESPACE;
+
+// private
+typedef struct _API_SET_HASH_ENTRY
+{
+    ULONG Hash;
+    ULONG Index;
+} API_SET_HASH_ENTRY, *PAPI_SET_HASH_ENTRY;
+
+// private
+typedef struct _API_SET_NAMESPACE_ENTRY
+{
+    ULONG Flags;
+    ULONG NameOffset;
+    ULONG NameLength;
+    ULONG HashedLength;
+    ULONG ValueOffset;
+    ULONG ValueCount;
+} API_SET_NAMESPACE_ENTRY, *PAPI_SET_NAMESPACE_ENTRY;
+
+// private
+typedef struct _API_SET_VALUE_ENTRY 
+{
+    ULONG Flags;
+    ULONG NameOffset;
+    ULONG NameLength;
+    ULONG ValueOffset;
+    ULONG ValueLength;
+} API_SET_VALUE_ENTRY, *PAPI_SET_VALUE_ENTRY;
+
 // symbols
 typedef struct _PEB
 {
@@ -68,7 +108,7 @@ typedef struct _PEB
     };
     ULONG SystemReserved[1];
     ULONG AtlThunkSListPtr32;
-    PVOID ApiSetMap;
+    PAPI_SET_NAMESPACE ApiSetMap;
     ULONG TlsExpansionCounter;
     PVOID TlsBitmap;
     ULONG TlsBitmapBits[2];
@@ -84,7 +124,7 @@ typedef struct _PEB
     ULONG NumberOfProcessors;
     ULONG NtGlobalFlag;
 
-    LARGE_INTEGER CriticalSectionTimeout;
+    ULARGE_INTEGER CriticalSectionTimeout;
     SIZE_T HeapSegmentReserve;
     SIZE_T HeapSegmentCommit;
     SIZE_T HeapDeCommitTotalFreeThreshold;
@@ -159,6 +199,14 @@ typedef struct _PEB
     PVOID TelemetryCoverageHeader; // REDSTONE3
     ULONG CloudFileFlags;
 } PEB, *PPEB;
+
+#ifdef _WIN64
+C_ASSERT(FIELD_OFFSET(PEB, SessionId) == 0x2C0);
+C_ASSERT(sizeof(PEB) == 0x7B0);
+#else
+C_ASSERT(FIELD_OFFSET(PEB, SessionId) == 0x1D4);
+C_ASSERT(sizeof(PEB) == 0x468);
+#endif
 
 #define GDI_BATCH_BUFFER_SIZE 310
 
