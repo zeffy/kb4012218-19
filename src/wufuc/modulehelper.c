@@ -25,6 +25,7 @@ bool mod_inject_and_begin_thread(
         LPVOID pBaseAddress = NULL;
         SIZE_T cb;
         HMODULE hRemoteModule = NULL;
+        uintptr_t offset;
         HANDLE hThread;
 
         Status = NtSuspendProcess(hProcess);
@@ -43,10 +44,11 @@ bool mod_inject_and_begin_thread(
                         goto virt_free;
         }
         if ( mod_inject_by_hmodule(hProcess, hModule, &hRemoteModule) ) {
+                offset = (uintptr_t)pStartAddress - (uintptr_t)hModule;
                 hThread = CreateRemoteThread(hProcess,
                         NULL,
                         0,
-                        (LPTHREAD_START_ROUTINE)((uint8_t *)hRemoteModule + ((uint8_t *)pStartAddress - (uint8_t *)hModule)),
+                        (LPTHREAD_START_ROUTINE)RtlOffsetToPointer(hRemoteModule, offset),
                         pBaseAddress,
                         0,
                         NULL);
