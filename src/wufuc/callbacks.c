@@ -37,7 +37,6 @@ DWORD WINAPI cb_start(context *ctx)
         DWORD dwServiceType;
         wchar_t *str;
         HMODULE hModule;
-        DWORD result;
 
         // get mutex and unload event handles from virtual memory
         if ( !ctx ) {
@@ -118,7 +117,7 @@ abort_hook:
         // we use ctx_wait_any_unsafe here because contexts created by
         // ctx_duplicate_context are not initialized by ctx_create,
         // and have no critical section to lock, so they are only used to
-        // hold static values to send to another process.
+        // hold static handles to send to another process.
         ctx_wait_any_unsafe(ctx, false);
         trace(L"Unload condition has been met.");
 
