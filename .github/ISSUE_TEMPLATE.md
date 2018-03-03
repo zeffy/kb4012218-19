@@ -12,8 +12,7 @@ Then, make sure the following things are included in your issue:
 Any issues that do not include these, or go more than a week without a
 response from the original poster will be subject to closure at my discretion.
 
-If you have questions, be sure to check here:
-- https://git.io/vASQg
+If you have questions, be sure to check the FAQ: https://git.io/vASQg
 
 It is common for issues to go unanswered for several days or even weeks,
 so please do not take offense at this. 
@@ -21,7 +20,9 @@ so please do not take offense at this.
 I read every issue and usually only reply if there is clarification needed,
 or if there is a new release pending that will solve the issue.
 
+Thank you for your interest in contributing to this project!
 
+<!--
 Translations of this document contributed by volunteers:
 
 - Deutsch: https://git.io/vASNs
@@ -33,3 +34,4 @@ Translations of this document contributed by volunteers:
 - русский: https://git.io/vASN0
 - 简体中文: https://git.io/vASNg
 - 繁體中文: https://git.io/vASNa
+-->
