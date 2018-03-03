@@ -5,7 +5,8 @@ Licensed under Lesser GNU Public License 3.0
 
 Changes made:
 
-- Ported to C, removed dependency on C++ type vector<T>
-- Uses stdint.h type uint8_t instead of unsigned char (for readability)
-- Renamed patternfind overloads to patternfind, patternfind_bytes, patternfind_pbyte
-- Added VirtualProtect calls to patternwrite function to prevent access violation exceptions
+- Ported to C, removed dependency on C++ type vector<T>.
+- Uses stdint.h type uint8_t instead of unsigned char (for readability).
+- Renamed patternfind overloads to patternfind, patternfind_bytes, patternfind_pbyte.
+- Added VirtualProtect to patternwrite function to prevent access violation exceptions.
+- Added FlushInstructionCache to patternwrite function.

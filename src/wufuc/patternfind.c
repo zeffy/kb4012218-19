@@ -150,6 +150,7 @@ void patternwrite(uint8_t *data, size_t datasize, const char *pattern)
                 for ( size_t i = 0; i < writepatternsize; i++ )
                         patternwritebyte(&data[i], writepattern[i]);
                 result = VirtualProtect(data, writepatternsize, OldProtect, &OldProtect);
+                FlushInstructionCache(GetCurrentProcess(), data, datasize);
         }
 
         free(writepattern);
