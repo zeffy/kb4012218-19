@@ -15,7 +15,7 @@ Disables the "Unsupported Hardware" message in Windows Update, and allows you to
 
 [**Click here for donation options!**](https://github.com/zeffy/wufuc/blob/master/DONATE.md)
 
-## Preface
+## Background
 
 The release notes for Windows updates KB4012218 and KB4012219 included the following:
 
