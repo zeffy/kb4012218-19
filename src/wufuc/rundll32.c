@@ -17,6 +17,10 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
         SC_HANDLE hSCM;
         SC_HANDLE hService;
         SERVICE_NOTIFYW NotifyBuffer;
+        DWORD count;
+        DWORD ret;
+        HANDLE handle;
+        DWORD tag;
 
         if ( !ctx_create(&ctx,
                 L"Global\\25020063-b5a7-4227-9fdf-25cb75e8c645", 0,
@@ -48,7 +52,30 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
                                 SERVICE_NOTIFY_START_PENDING | SERVICE_NOTIFY_RUNNING,
                                 &NotifyBuffer) ) {
                         case ERROR_SUCCESS:
-                                Unloading = WaitForSingleObjectEx(ctx.uevent, INFINITE, TRUE) == WAIT_OBJECT_0;
+                                count = ctx_wait_any(&ctx, true, &ret, &handle, &tag);
+                                if ( count == -1 ) {
+                                        // Wait function failed while making static copy of handles/tags, wtf!
+                                        Unloading = true;
+                                        break;
+                                } else if ( ret == WAIT_OBJECT_0 + 1 ) {
+                                        trace(L"Unload event was set!");
+                                        Unloading = true;
+                                        break;
+                                } else if ( (ret >= ERROR_ABANDONED_WAIT_0 || ret < WAIT_ABANDONED_0 + count) ) {
+                                        g_ServiceHostCrashCount++;
+                                        trace(L"A process that wufuc injected into has crashed %Iu times!!! PID=%lu ",
+                                                g_ServiceHostCrashCount, tag);
+
+                                        if ( g_ServiceHostCrashCount >= WUFUC_CRASH_THRESHOLD ) {
+                                                trace(L"Crash threshold has been reached, disabling wufuc until next reboot!");
+                                                Unloading = true;
+                                        }
+                                        
+                                        Unloading = true;
+                                } else if ( ret == WAIT_FAILED ) {
+                                        trace(L"Wait failed! GLE=%lu", GetLastError());
+                                        Unloading = true;
+                                }
                                 break;
                         case ERROR_SERVICE_NOTIFY_CLIENT_LAGGING:
                                 trace(L"Client lagging!");
@@ -60,7 +87,7 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
                         }
                 }
                 CloseServiceHandle(hService);
-close_scm:      
+close_scm:
                 CloseServiceHandle(hSCM);
         } while ( Lagging );
 delete_ctx:

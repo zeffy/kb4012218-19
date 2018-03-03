@@ -3,13 +3,13 @@
 
 #include <sddl.h>
 
-static bool ctxp_remove_handle(context *ctx, unsigned Index)
+static bool ctxp_remove_handle(context *ctx, DWORD Index)
 {
         if ( !ctx || Index > _countof(ctx->handles) || Index > ctx->count )
                 return false;
 
         EnterCriticalSection(&ctx->cs);
-        for ( unsigned i = Index; i < ctx->count - 1; i++ ) {
+        for ( DWORD i = Index; i < ctx->count - 1; i++ ) {
                 ctx->handles[i] = ctx->handles[i + 1];
                 ctx->tags[i] = ctx->tags[i + 1];
         }
@@ -83,15 +83,15 @@ static bool ctxp_create_event_with_string_security_descriptor(
         return false;
 }
 
-static unsigned ctxp_find_handle_index(context *ctx, HANDLE Handle)
+static DWORD ctxp_find_handle_index(context *ctx, HANDLE Handle)
 {
-        unsigned result = -1;
+        DWORD result = -1;
 
         if ( !ctx || !Handle || Handle == INVALID_HANDLE_VALUE )
                 return -1;
 
         EnterCriticalSection(&ctx->cs);
-        for ( unsigned i = 0; i < ctx->count; i++ ) {
+        for ( DWORD i = 0; i < ctx->count; i++ ) {
                 if ( ctx->handles[i] == Handle ) {
                         result = i;
                         break;
@@ -103,15 +103,15 @@ static unsigned ctxp_find_handle_index(context *ctx, HANDLE Handle)
 
 bool ctx_create(context *ctx,
         const wchar_t *MutexName,
-        unsigned MutexTag,
+        DWORD MutexTag,
         const wchar_t *EventName,
         const wchar_t *EventStringSecurityDescriptor,
-        unsigned EventTag)
+        DWORD EventTag)
 {
         bool result = false;
-        
+
         if ( !ctx ) return false;
-        
+
         ZeroMemory(ctx, sizeof *ctx);
         InitializeCriticalSection(&ctx->cs);
         EnterCriticalSection(&ctx->cs);
@@ -146,16 +146,16 @@ bool ctx_delete(context *ctx)
         return true;
 }
 
-unsigned ctx_add_handle(context *ctx, HANDLE Handle, unsigned Tag)
+DWORD ctx_add_handle(context *ctx, HANDLE Handle, DWORD Tag)
 {
-        unsigned result = -1;
+        DWORD result = -1;
 
         if ( !ctx || !Handle )
                 return -1;
 
         EnterCriticalSection(&ctx->cs);
         result = ctxp_find_handle_index(ctx, Handle);
-        if ( result != -1) {
+        if ( result != -1 ) {
                 ctx->tags[result] = Tag;
         } else if ( ctx->count < _countof(ctx->handles) ) {
                 ctx->handles[ctx->count] = Handle;
@@ -167,10 +167,10 @@ unsigned ctx_add_handle(context *ctx, HANDLE Handle, unsigned Tag)
         return result;
 }
 
-bool ctx_get_tag(context *ctx, HANDLE Handle, unsigned *pTag)
+bool ctx_get_tag(context *ctx, HANDLE Handle, DWORD *pTag)
 {
         bool result = false;
-        unsigned index;
+        DWORD index;
 
         if ( !ctx || !Handle || !pTag )
                 return false;
@@ -187,14 +187,14 @@ bool ctx_get_tag(context *ctx, HANDLE Handle, unsigned *pTag)
         return result;
 }
 
-unsigned ctx_add_new_mutex(context *ctx,
+DWORD ctx_add_new_mutex(context *ctx,
         bool InitialOwner,
         const wchar_t *Name,
-        unsigned Tag,
+        DWORD Tag,
         HANDLE *pMutexHandle)
 {
         HANDLE hMutex;
-        unsigned result = -1;
+        DWORD result = -1;
 
         EnterCriticalSection(&ctx->cs);
         if ( ctxp_create_new_mutex(InitialOwner, Name, &hMutex) ) {
@@ -210,15 +210,15 @@ unsigned ctx_add_new_mutex(context *ctx,
         return result;
 }
 
-unsigned ctx_add_new_mutex_fmt(context *ctx,
+DWORD ctx_add_new_mutex_fmt(context *ctx,
         bool InitialOwner,
-        unsigned Tag,
+        DWORD Tag,
         HANDLE *pMutexHandle,
         const wchar_t *const NameFormat,
         ...)
 {
         HANDLE hMutex;
-        unsigned result = -1;
+        DWORD result = -1;
         va_list arglist;
 
         EnterCriticalSection(&ctx->cs);
@@ -237,13 +237,13 @@ unsigned ctx_add_new_mutex_fmt(context *ctx,
         return result;
 }
 
-unsigned ctx_add_event(context *ctx,
+DWORD ctx_add_event(context *ctx,
         const wchar_t *Name,
         const wchar_t *StringSecurityDescriptor,
-        unsigned Tag,
+        DWORD Tag,
         HANDLE *pEventHandle)
 {
-        unsigned result = -1;
+        DWORD result = -1;
         HANDLE hEvent;
 
         EnterCriticalSection(&ctx->cs);
@@ -265,10 +265,12 @@ unsigned ctx_add_event(context *ctx,
         return result;
 }
 
-bool ctx_wait(context *ctx, bool WaitAll, bool Alertable, DWORD *pResult)
+bool ctx_wait_all(context *ctx,
+        bool Alertable,
+        DWORD *pResult)
 {
         int ret;
-        unsigned count;
+        DWORD count;
         HANDLE handles[MAXIMUM_WAIT_OBJECTS];
 
         EnterCriticalSection(&ctx->cs);
@@ -276,22 +278,63 @@ bool ctx_wait(context *ctx, bool WaitAll, bool Alertable, DWORD *pResult)
         ret = memcpy_s(handles, sizeof(handles), ctx->handles, count * (sizeof *handles));
         LeaveCriticalSection(&ctx->cs);
 
-        if ( !ret ) {
-                *pResult = WaitForMultipleObjectsEx(count,
-                        handles,
-                        WaitAll,
-                        INFINITE,
-                        Alertable);
-                return true;
-        }
-        return false;
+        if ( ret )
+                return false;
+
+        *pResult = WaitForMultipleObjectsEx(count,
+                handles,
+                TRUE,
+                INFINITE,
+                Alertable);
+        return true;
 }
 
-bool ctx_close_and_remove_handle(context *ctx,
-        HANDLE Handle)
+DWORD ctx_wait_any(context *ctx,
+        bool Alertable,
+        DWORD *pResult,
+        HANDLE *pHandle,
+        DWORD *pTag)
+{
+        DWORD count;
+        HANDLE handles[MAXIMUM_WAIT_OBJECTS];
+        DWORD tags[MAXIMUM_WAIT_OBJECTS];
+        int ret;
+        DWORD result;
+        DWORD index;
+
+        EnterCriticalSection(&ctx->cs);
+        // make copies of the struct members on the stack before waiting, because
+        // WaitForMultipleObjects(Ex) doesn't like it when you modify the contents of
+        // the array it is waiting on.
+        count = ctx->count;
+        ret = memcpy_s(handles, sizeof(handles), ctx->handles, count * (sizeof *handles));
+        if ( !ret )
+                ret = memcpy_s(tags, sizeof(tags), ctx->tags, count * (sizeof *tags));
+        LeaveCriticalSection(&ctx->cs);
+
+        if ( ret )
+                return -1;
+
+        result = WaitForMultipleObjectsEx(count, handles, FALSE, INFINITE, Alertable);
+
+        if ( result >= WAIT_OBJECT_0 || result < WAIT_OBJECT_0 + count )
+                index = result - WAIT_OBJECT_0;
+        else if ( result >= WAIT_ABANDONED_0 || result < WAIT_ABANDONED_0 + count )
+                index = result - WAIT_ABANDONED_0;
+
+        if ( pHandle )
+                *pHandle = handles[index];
+        if ( pTag )
+                *pTag = tags[index];
+
+        *pResult = result;
+        return count;
+}
+
+bool ctx_close_and_remove_handle(context *ctx, HANDLE Handle)
 {
         bool result = false;
-        unsigned index;
+        DWORD index;
 
         EnterCriticalSection(&ctx->cs);
         index = ctxp_find_handle_index(ctx, Handle);
@@ -307,12 +350,12 @@ bool ctx_duplicate_context(const context *pSrc,
         context *pDst,
         HANDLE Handle,
         DWORD DesiredAccess,
-        unsigned Tag)
+        DWORD Tag)
 {
         bool result = false;
         HANDLE hSrcProcess;
         HANDLE hTarget;
-        size_t index;
+        DWORD index;
 
         hSrcProcess = GetCurrentProcess();
 
