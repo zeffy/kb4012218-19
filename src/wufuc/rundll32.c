@@ -41,7 +41,7 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
                 }
                 ZeroMemory(&NotifyBuffer, sizeof NotifyBuffer);
                 NotifyBuffer.dwVersion = SERVICE_NOTIFY_STATUS_CHANGE;
-                NotifyBuffer.pfnNotifyCallback = cb_service_notify;
+                NotifyBuffer.pfnNotifyCallback = (PFN_SC_NOTIFY_CALLBACK)cb_service_notify;
                 NotifyBuffer.pContext = (PVOID)&ctx;
                 while ( !Unloading && !Lagging ) {
                         switch ( NotifyServiceStatusChangeW(hService,

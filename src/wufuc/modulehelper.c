@@ -37,10 +37,10 @@ bool mod_inject_and_begin_thread(
                         cbParam,
                         MEM_RESERVE | MEM_COMMIT,
                         PAGE_READWRITE);
-                if ( !pBaseAddress ) goto resume;
+                if ( !pBaseAddress ) goto resume_process;
 
                 if ( !WriteProcessMemory(hProcess, pBaseAddress, pParam, cbParam, &cb) )
-                        goto vfree;
+                        goto virt_free;
         }
         if ( mod_inject_by_hmodule(hProcess, hModule, &hRemoteModule) ) {
                 hThread = CreateRemoteThread(hProcess,
@@ -56,10 +56,11 @@ bool mod_inject_and_begin_thread(
                         result = true;
                 }
         }
-vfree:
+virt_free:
         if ( !result && pBaseAddress )
                 VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
-resume: NtResumeProcess(hProcess);
+resume_process: 
+        NtResumeProcess(hProcess);
         return result;
 }
 
@@ -98,7 +99,7 @@ bool mod_inject(
         dwProcessId = GetProcessId(hProcess);
 
         hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
-        if ( !hSnapshot ) goto resume;
+        if ( !hSnapshot ) goto resume_process;
 
         *phRemoteModule = mod_get_from_th32_snapshot(hSnapshot,
                 pLibFilename);
@@ -106,7 +107,7 @@ bool mod_inject(
         CloseHandle(hSnapshot);
 
         // already injected... still sets *phRemoteModule
-        if ( *phRemoteModule ) goto resume;
+        if ( *phRemoteModule ) goto resume_process;
 
         nSize = (cchLibFilename + 1) * sizeof *pLibFilename;
         pBaseAddress = VirtualAllocEx(hProcess,
@@ -115,10 +116,10 @@ bool mod_inject(
                 MEM_RESERVE | MEM_COMMIT,
                 PAGE_READWRITE);
 
-        if ( !pBaseAddress ) goto resume;
+        if ( !pBaseAddress ) goto resume_process;
 
         if ( !WriteProcessMemory(hProcess, pBaseAddress, pLibFilename, nSize, NULL) )
-                goto vfree;
+                goto virt_free;
 
         hThread = CreateRemoteThread(hProcess,
                 NULL,
@@ -127,7 +128,7 @@ bool mod_inject(
                 pBaseAddress,
                 0,
                 NULL);
-        if ( !hThread ) goto vfree;
+        if ( !hThread ) goto virt_free;
 
         WaitForSingleObject(hThread, INFINITE);
 
@@ -145,7 +146,9 @@ bool mod_inject(
                 result = GetExitCodeThread(hThread, (LPDWORD)phRemoteModule) != FALSE;
         }
         CloseHandle(hThread);
-vfree:  VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
-resume: NtResumeProcess(hProcess);
+virt_free:  
+        VirtualFreeEx(hProcess, pBaseAddress, 0, MEM_RELEASE);
+resume_process: 
+        NtResumeProcess(hProcess);
         return result;
 }

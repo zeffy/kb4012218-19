@@ -74,52 +74,54 @@ bool wufuc_hook(HMODULE hModule)
                 }
 
                 // identify wuaueng.dll by its resource data
-                if ( !_wcsicmp(pInternalName, L"wuaueng.dll") ) {
-                        pffi = ver_get_version_info_from_hmodule_alloc(hModule, L"\\", &cbffi);
-                        if ( !pffi ) {
-                                trace(L"Failed to allocate version information from hmodule.");
-                                break;
-                        }
-                        trace(L"Windows Update Agent version: %hu.%hu.%hu.%hu"),
-                                HIWORD(pffi->dwProductVersionMS),
-                                LOWORD(pffi->dwProductVersionMS),
-                                HIWORD(pffi->dwProductVersionLS),
-                                LOWORD(pffi->dwProductVersionLS);
-
-                        // assure wuaueng.dll is at least the minimum supported version
-                        tmp = ((ver_verify_windows_7_sp1() && ver_compare_product_version(pffi, 7, 6, 7601, 23714) != -1)
-                                || (ver_verify_windows_8_1() && ver_compare_product_version(pffi, 7, 9, 9600, 18621) != -1));
-                        free(pffi);
-                        if ( !tmp ) {
-                                trace(L"Windows Update Agent does not meet the minimum supported version.");
-                                break;
-                        }
-                        if ( !GetModuleInformation(hProcess, hModule, &modinfo, sizeof modinfo) ) {
-                                trace(L"Failed to get module information (%p)", hModule);
-                                break;
-                        }
-                        offset = patternfind(modinfo.lpBaseOfDll, modinfo.SizeOfImage,
-#ifdef _WIN64
-                                "FFF3 4883EC?? 33DB 391D???????? 7508 8B05????????"
-#else
-                                ver_verify_windows_7_sp1()
-                                ? "833D????????00 743E E8???????? A3????????"
-                                : "8BFF 51 833D????????00 7507 A1????????"
-#endif
-                        );
-
-                        if ( offset == -1 ) {
-                                trace(L"Could not locate pattern offset!");
-                                break;
-                        } else {
-                                result = MH_CreateHook((PVOID)((uint8_t *)modinfo.lpBaseOfDll + offset),
-                                        IsDeviceServiceable_hook,
-                                        NULL) == MH_OK;
-                        }
-                        break;
-                        } else trace(L"Module internal name does not match. (%ls)", pInternalName);
-                        free(pInternalName);
+                if ( _wcsicmp(pInternalName, L"wuaueng.dll") ) {
+                        trace(L"Module internal name does not match. (%ls)", pInternalName);
+                        goto free_iname;
                 }
+                pffi = ver_get_version_info_from_hmodule_alloc(hModule, L"\\", &cbffi);
+                if ( !pffi ) {
+                        trace(L"Failed to allocate version information from hmodule.");
+                        break;
+                }
+                trace(L"Windows Update Agent version: %hu.%hu.%hu.%hu"),
+                        HIWORD(pffi->dwProductVersionMS),
+                        LOWORD(pffi->dwProductVersionMS),
+                        HIWORD(pffi->dwProductVersionLS),
+                        LOWORD(pffi->dwProductVersionLS);
+
+                // assure wuaueng.dll is at least the minimum supported version
+                tmp = ((ver_verify_windows_7_sp1() && ver_compare_product_version(pffi, 7, 6, 7601, 23714) != -1)
+                        || (ver_verify_windows_8_1() && ver_compare_product_version(pffi, 7, 9, 9600, 18621) != -1));
+                free(pffi);
+                if ( !tmp ) {
+                        trace(L"Windows Update Agent does not meet the minimum supported version.");
+                        break;
+                }
+                if ( !GetModuleInformation(hProcess, hModule, &modinfo, sizeof modinfo) ) {
+                        trace(L"Failed to get module information (%p)", hModule);
+                        break;
+                }
+                offset = patternfind(modinfo.lpBaseOfDll, modinfo.SizeOfImage,
+#ifdef _WIN64
+                        "FFF3 4883EC?? 33DB 391D???????? 7508 8B05????????"
+#else
+                        ver_verify_windows_7_sp1()
+                        ? "833D????????00 743E E8???????? A3????????"
+                        : "8BFF 51 833D????????00 7507 A1????????"
+#endif
+                );
+                if ( offset != -1 ) {
+                        result = MH_CreateHook(
+                                RtlOffsetToPointer(modinfo.lpBaseOfDll, offset),
+                                IsDeviceServiceable_hook,
+                                NULL) == MH_OK;
+                } else {
+                        trace(L"Could not locate pattern offset!");
+                }
+free_iname:
+                free(pInternalName);
+                break;
+        }
         free(ptl);
         return result;
-        }
+}
