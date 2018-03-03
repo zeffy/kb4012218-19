@@ -112,9 +112,14 @@ abort_hook:
         }
         MH_EnableHook(MH_ALL_HOOKS);
 
-        // wait for unload event or parent mutex to be abandoned.
+        // wait for unload event or the main mutex to be released or abandoned,
         // for example if the user killed rundll32.exe with task manager.
-        result = WaitForMultipleObjects(ctx->count, ctx->handles, FALSE, INFINITE);
+
+        // we use ctx_wait_any_unsafe here because contexts created by
+        // ctx_duplicate_context are not initialized by ctx_create,
+        // and have no critical section to lock, so they are only used to
+        // hold static values to send to another process.
+        ctx_wait_any_unsafe(ctx, false);
         trace(L"Unload condition has been met.");
 
         switch ( result ) {
@@ -133,7 +138,7 @@ close_handles:
         CloseHandle(ctx->uevent);
         VirtualFree(ctx, 0, MEM_RELEASE);
 unload:
-        trace(L"Freeing library and exiting thread.");
+        trace(L"Unloading wufuc and exiting thread.");
         FreeLibraryAndExitThread(PIMAGEBASE, 0);
 }
 

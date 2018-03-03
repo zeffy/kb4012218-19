@@ -265,6 +265,16 @@ DWORD ctx_add_event(context *ctx,
         return result;
 }
 
+DWORD ctx_wait_all_unsafe(context *ctx,
+        bool Alertable)
+{
+        return WaitForMultipleObjectsEx(ctx->count,
+                ctx->handles,
+                TRUE,
+                INFINITE,
+                Alertable);
+}
+
 bool ctx_wait_all(context *ctx,
         bool Alertable,
         DWORD *pResult)
@@ -287,6 +297,16 @@ bool ctx_wait_all(context *ctx,
                 INFINITE,
                 Alertable);
         return true;
+}
+
+DWORD ctx_wait_any_unsafe(context *ctx,
+        bool Alertable)
+{
+        return WaitForMultipleObjectsEx(ctx->count,
+                ctx->handles,
+                FALSE,
+                INFINITE,
+                Alertable);
 }
 
 DWORD ctx_wait_any(context *ctx,
@@ -361,13 +381,16 @@ bool ctx_duplicate_context(const context *pSrc,
 
         if ( !DuplicateHandle(hSrcProcess, pSrc->mutex, hProcess, &pDst->mutex, SYNCHRONIZE, FALSE, 0) )
                 return false;
+        pDst->count++;
 
         if ( !DuplicateHandle(hSrcProcess, pSrc->uevent, hProcess, &pDst->uevent, SYNCHRONIZE, FALSE, 0) ) {
 close_mutex:
                 CloseHandle(pDst->mutex);
                 pDst->mutex = INVALID_HANDLE_VALUE;
+                pDst->count = 0;
                 return false;
         }
+        pDst->count++;
         if ( !DuplicateHandle(hSrcProcess, Handle, hProcess, &hTarget, 0, FALSE, DesiredAccess)
                 || (index = ctx_add_handle(pDst, hTarget, Tag)) == -1 ) {
 
@@ -376,6 +399,6 @@ close_mutex:
                 goto close_mutex;
 
         }
-        pDst->tags[0] = index;
+        pDst->mutex_tag = index;
         return true;
 }

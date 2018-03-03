@@ -51,9 +51,13 @@ DWORD ctx_add_event(context *ctx,
         const wchar_t *StringSecurityDescriptor,
         DWORD Tag,
         HANDLE *pEventHandle);
+DWORD ctx_wait_all_unsafe(context *ctx,
+        bool Alertable);
 bool ctx_wait_all(context *ctx,
         bool Alertable,
         DWORD *pResult);
+DWORD ctx_wait_any_unsafe(context *ctx,
+        bool Alertable);
 DWORD ctx_wait_any(context *ctx,
         bool Alertable,
         DWORD *pResult,

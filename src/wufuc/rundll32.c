@@ -58,20 +58,20 @@ void CALLBACK RUNDLL32_StartW(HWND hwnd, HINSTANCE hinst, LPWSTR lpszCmdLine, in
                                         Unloading = true;
                                         break;
                                 } else if ( ret == WAIT_OBJECT_0 + 1 ) {
-                                        trace(L"Unload event was set!");
+                                        trace(L"Unload event was signaled!");
                                         Unloading = true;
                                         break;
                                 } else if ( (ret >= ERROR_ABANDONED_WAIT_0 || ret < WAIT_ABANDONED_0 + count) ) {
                                         g_ServiceHostCrashCount++;
-                                        trace(L"A process that wufuc injected into has crashed %Iu times!!! PID=%lu ",
+                                        trace(L"A process that wufuc injected into has crashed %Iu times!!! PID=%lu",
                                                 g_ServiceHostCrashCount, tag);
 
+                                        ReleaseMutex(handle); // release the abandoned mutex
+                                        ctx_close_and_remove_handle(&ctx, handle);
                                         if ( g_ServiceHostCrashCount >= WUFUC_CRASH_THRESHOLD ) {
                                                 trace(L"Crash threshold has been reached, disabling wufuc until next reboot!");
                                                 Unloading = true;
                                         }
-                                        
-                                        Unloading = true;
                                 } else if ( ret == WAIT_FAILED ) {
                                         trace(L"Wait failed! GLE=%lu", GetLastError());
                                         Unloading = true;
