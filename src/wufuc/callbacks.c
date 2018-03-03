@@ -122,12 +122,6 @@ abort_hook:
         ctx_wait_any_unsafe(ctx, false);
         trace(L"Unload condition has been met.");
 
-        switch ( result ) {
-        case ERROR_ABANDONED_WAIT_0:
-                ReleaseMutex(ctx->mutex);
-                break;
-        }
-
         MH_DisableHook(MH_ALL_HOOKS);
         free(g_pszWUServiceDll);
 release:
