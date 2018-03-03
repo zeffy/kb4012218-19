@@ -24,12 +24,12 @@ or if there is a new release pending that will solve the issue.
 
 Translations of this document contributed by volunteers:
 
-- Deutsch: https://git.io/vASQG
-- Español: https://git.io/vASQZ
-- Français: https://git.io/vASQC
-- Italiano: https://git.io/vASQ8
-- Magyar: https://git.io/vASQ4
-- Português Brasileiro: https://git.io/vASQB
-- русский: https://git.io/vASQR
-- 简体中文: https://git.io/vASQE
-- 繁體中文: https://git.io/vASQu
+- Deutsch: https://git.io/vASNs
+- Español: https://git.io/vASNG
+- Français: https://git.io/vASNZ
+- Italiano: https://git.io/vASN8
+- Magyar: https://git.io/vASN4
+- Português Brasileiro: https://git.io/vASNR
+- русский: https://git.io/vASN0
+- 简体中文: https://git.io/vASNg
+- 繁體中文: https://git.io/vASNa

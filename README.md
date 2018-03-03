@@ -88,7 +88,7 @@ Advanced Installer's intuitive and friendly user interface allowed me to quickly
 [:fr:]: https://github.com/zeffy/wufuc/wiki/README-(Fran%C3%A7ais)
 [:it:]: https://github.com/zeffy/wufuc/wiki/README-(Italiano)
 [:hungary:]: https://github.com/zeffy/wufuc/wiki/README-(Magyar)
-[:brazil:]: https://github.com/zeffy/wufuc/wiki/README-(Portugu%C3%AAs%20Brasileiro)
+[:brazil:]: https://github.com/zeffy/wufuc/wiki/README-(Portugu%C3%AAs-Brasileiro)
 [:ru:]: https://github.com/zeffy/wufuc/wiki/README-(%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
 [:cn:]: https://github.com/zeffy/wufuc/wiki/README-(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
 [:taiwan:]: https://github.com/zeffy/wufuc/wiki/README-(%E7%B9%81%E9%AB%94%E4%B8%AD%E6%96%87)
