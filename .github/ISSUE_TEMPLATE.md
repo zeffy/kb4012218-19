@@ -13,7 +13,7 @@ Any issues that do not include these, or go more than a week without a
 response from the original poster will be subject to closure at my discretion.
 
 If you have questions, be sure to check here:
-- https://github.com/zeffy/wufuc/blob/master/FAQ.md
+- https://git.io/vASQg
 
 It is common for issues to go unanswered for several days or even weeks,
 so please do not take offense at this. 
@@ -24,12 +24,12 @@ or if there is a new release pending that will solve the issue.
 
 Translations of this document contributed by volunteers:
 
-- Deutsch: https://github.com/zeffy/wufuc/wiki/README-(Deutsch)
-- Español: https://github.com/zeffy/wufuc/wiki/README-(Espa%C3%B1ol)
-- Français: https://github.com/zeffy/wufuc/wiki/README-(Fran%C3%A7ais)
-- Italiano: https://github.com/zeffy/wufuc/wiki/README-(Italiano)
-- Magyar: https://github.com/zeffy/wufuc/wiki/README-(Magyar)
-- Português Brasileiro: https://github.com/zeffy/wufuc/wiki/README-(Portugu%C3%AAs%20Brasileiro)
-- русский: https://github.com/zeffy/wufuc/wiki/README-(%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
-- 简体中文: https://github.com/zeffy/wufuc/wiki/README-(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
-- 繁體中文: https://github.com/zeffy/wufuc/wiki/README-(%E7%B9%81%E9%AB%94%E4%B8%AD%E6%96%87)
+- Deutsch: https://git.io/vASQG
+- Español: https://git.io/vASQZ
+- Français: https://git.io/vASQC
+- Italiano: https://git.io/vASQ8
+- Magyar: https://git.io/vASQ4
+- Português Brasileiro: https://git.io/vASQB
+- русский: https://git.io/vASQR
+- 简体中文: https://git.io/vASQE
+- 繁體中文: https://git.io/vASQu
