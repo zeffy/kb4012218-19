@@ -30,7 +30,8 @@ void logp_debug_write(const wchar_t *const format, ...)
         count = _scwprintf(fmt, datebuf, timebuf, exename, pid, buffer1) + 1;
 
         buffer2 = calloc(count, sizeof *buffer2);
-        swprintf_s(buffer1, count, fmt, datebuf, timebuf, exename, pid, buffer1);
+        swprintf_s(buffer2, count, fmt, datebuf, timebuf, exename, pid, buffer1);
+
         free(buffer1);
         OutputDebugStringW(buffer2);
         free(buffer2);
