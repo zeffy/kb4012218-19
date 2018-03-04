@@ -1,102 +1,94 @@
-### [Click here if you are looking for the latest patch files!](https://github.com/zeffy/kb4012218-19/releases/latest)  [<img src="https://img.shields.io/github/downloads/zeffy/kb4012218-19/total.svg"/>](https://github.com/zeffy/kb4012218-19/releases/latest)
+# wufuc
+[![Donate Bitcoin](https://cdn.rawgit.com/zeffy/wufuc/badges/bitcoin.svg)](https://admin.gear.mycelium.com/gateways/3554/orders/new) [![AppVeyor Builds](https://img.shields.io/appveyor/ci/zeffy/wufuc.svg?logo=appveyor&style=flat-square)][AppVeyor] [![Chat on Telegram](https://cdn.rawgit.com/zeffy/wufuc/badges/telegram.svg)](https://t.me/joinchat/HEo6LUvV_83O92WzbYXLeQ) [![All Releases](https://img.shields.io/github/downloads/zeffy/wufuc/total.svg?style=flat-square)][Latest]
 
----
+[:de:] [:es:] [:fr:] [:it:] [:hungary:] [:brazil:] [:ru:] [:cn:] [:taiwan:]
 
-### [Click here for a list of Windows updates supported by this patch](docs/Patch_Offsets.md)
+Disables the "Unsupported Hardware" message in Windows Update, and allows you to continue installing updates on Windows 7 and 8.1 systems with Intel Kaby Lake, AMD Ryzen, or other unsupported processors.
 
----
+## Downloads 
 
-## Preface
+**[Latest stable build][Latest] - Most people will want this version.**
 
-After reading [this article on gHacks](https://www.ghacks.net/2017/03/22/kb4012218-kb4012219-windows-update-processor-generation-detection/), I was inspired to look into these new rollup updates that Microsoft released on March 16. Among other things, the changelog mentions the following:
+[Unstable builds][AppVeyor] - Probably contains bugs; do not report issues with these builds.
+
+## Donate :heart:
+
+[**Click here for donation options!**](https://github.com/zeffy/wufuc/blob/master/DONATE.md)
+
+## Background
+
+The release notes for Windows updates KB4012218 and KB4012219 included the following:
 
 > Enabled detection of processor generation and hardware support when PC tries to scan or download updates through Windows Update.
 
-This update marked the implementation of a [policy change](https://blogs.windows.com/windowsexperience/2016/01/15/windows-10-embracing-silicon-innovation/) they announced some time ago, where Microsoft stated that they would not be supporting Windows 7 or 8.1 on next-gen Intel, AMD and Qualcomm processors. 
+These updates marked the implementation of a [policy change](https://blogs.windows.com/windowsexperience/2016/01/15/windows-10-embracing-silicon-innovation/) they announced some time ago, where Microsoft stated that they would not be supporting Windows 7 or 8.1 on next-gen Intel, AMD and Qualcomm processors.
 
-That is essentially a giant middle finger to anyone who dare not "upgrade" to the steaming pile of garbage known as Windows 10. Especially considering the extended support periods for Windows 7 and 8.1 still have a few years left, and will be ending on January 4, 2020 and January 10, 2023 respectively.
+This is essentially a big middle finger to anyone who decides to not "upgrade" to Windows 10,
+and it is especially unfortunate considering the extended support periods for Windows 7 and 8.1 won't be ending until January 4, 2020 and January 10, 2023 respectively.
 
-There have even been people with older Intel and AMD systems who have been locked out of Windows Update because of these updates (see [#7](/../../issues/7) and [this](https://answers.microsoft.com/en-us/windows/forum/windows8_1-update/amd-carrizo-ddr4-unsupported-hardware-message-on/f3fb2326-f413-41c9-a24b-7c14e6d51b0c?tab=question&status=AllReplies)).
+Some people with older Intel and AMD processors are also affected! I've received user reports of the following CPUs all being blocked from receiving updates:
+
+- [Intel Atom Z530](https://github.com/zeffy/wufuc/issues/7)
+- [Intel Atom D525](https://github.com/zeffy/wufuc/issues/34)
+- [Intel Core i5-M 560](https://github.com/zeffy/wufuc/issues/23)
+- [Intel Core i5-4300M](https://github.com/zeffy/wufuc/issues/24)
+- [Intel Pentium B940](https://github.com/zeffy/wufuc/issues/63)
+- [AMD FX-8350](https://github.com/zeffy/wufuc/issues/32)
+- [AMD Turion 64 Mobile Technology ML-34](https://github.com/zeffy/wufuc/issues/80)
 
 ## Bad Microsoft!
 
-I started by downloading the update package for my system (in my case, it was `windows6.1-kb4012218-x64_590943c04550a47c1ed02d3a040d325456f03663.msu`)
+If you are interested, you can read my original write-up on discovering the CPU check [here](https://github.com/zeffy/wufuc/tree/old-kb4012218-19).
 
-I extracted it using the command line `expand` tool:
+The tl;dr version is basically, inside a system file named `wuaueng.dll`, there are two functions responsible for the CPU check: `IsDeviceServiceable(void)` and `IsCPUSupported(void)`. 
+`IsDeviceServiceable` simply calls `IsCPUSupported` once, and then re-uses the result that it receives on subsequent calls.
 
-```bat
-md "windows6.1-kb4012218-x64"
-expand -f:* ".\windows6.1-kb4012218-x64_590943c04550a47c1ed02d3a040d325456f03663.msu" ".\windows6.1-kb4012218-x64"
-cd ".\windows6.1-kb4012218-x64"
-md "Windows6.1-KB4012218-x64"
-expand -f:* ".\Windows6.1-KB4012218-x64.cab" ".\Windows6.1-KB4012218-x64"
-```
+## Features
 
-Great, now there's thousands of files to sort through! Just kidding. Sort of. Maybe. :thinking:
+- Enables Windows Update on PCs with unsupported processors.
+- Written in C, the best programming language. :sunglasses:
+- Completely free (as in freedom) software.
+- Does not modify any system files.
+- Byte pattern-based patching, which means it will usually keep working even after new updates come out.
+- No dependencies.
 
-I ended up using PowerShell to sort through and filter out all the binaries that weren't related to Windows Update, like so:
+## Frequently Asked Questions
 
-```powershell
-Get-ChildItem -Filter "wu*" -Exclude "*.mui" -Recurse | ForEach-Object { $_.FullName }
-```
+See [FAQ.md](https://github.com/zeffy/wufuc/blob/master/FAQ.md).
 
-That narrowed it down to 14 files, excellent!
+## How it works
 
-Next, I started comparing these binaries with the ones already on my system with [BinDiff] and [Diaphora]. I eventually got to `wuaueng.dll`, which turned up quite a few interesting new functions:
+This is a basic run-down of what wufuc does when you install it:
 
-EA | Name | Basicblock | Instructions | Edges 
--- | ---- | ---------- | ------------ | -----
-`00000600001DCB9C` | ``CWUTelemetryDownloadCanceledEvent::FireAsimovEvent(void)`` | 36 | 446 | 53
-`00000600001D8F98` | ``CWUTelemetryDownloadCanceledEvent::`scalar deleting destructor'(uint)`` | 3 | 15 | 3
-`00000600001D8FD0` | ``CWUTelemetryDownloadEvent::CWUTelemetryDownloadEvent(void)`` | 1 | 58 | 0
-`00000600001DAEDC` | ``CWUTelemetryDownloadEvent::Init(CReporter *,long,long,ushort const *,long,_GUID,_GUID,CReportingOptionalValues &,AsimovDataInAddition *)`` | 6 | 50 | 8
-`00000600001DAFB8` | ``CWUTelemetryDownloadEvent::InitializeMemebersFromOptionalData(tagOptionalData *)`` | 27 | 91 | 40
-`00000600001D9100` | ``CWUTelemetryDownloadEvent::~CWUTelemetryDownloadEvent(void)`` | 2 | 60 | 1
-`00000600001DC2C4` | ``CWUTelemetryDownloadFailedEvent::FireAsimovEvent(void)`` | 36 | 446 | 53
-`00000600001DB114` | ``CWUTelemetryDownloadStartedEvent::FireAsimovEvent(void)`` | 36 | 446 | 53
-`00000600001DB9EC` | ``CWUTelemetryDownloadSucceededEvent::FireAsimovEvent(void)`` | 36 | 446 | 53
-`00000600001D8C48` | ``CWUTelemetryEventFactory::FireTelemetryEvent(CReporter *,long,long,ushort const *,long,_GUID,_GUID,CReportingOptionalValues &,AsimovDataInAddition *)`` | 11 | 76 | 17
-`00000600001D8574` | ``CWUTelemetryEventFactory::GetTelemetryEvent(CReporter *,long,long,ushort const *,long,_GUID,_GUID,CReportingOptionalValues &,AsimovDataInAddition *,CWUTelemetryEvent * *)`` | 77 | 395 | 127
-`00000600001DEE7C` | ``CWUTelemetryInstallCanceledEvent::FireAsimovEvent(void)`` | 34 | 409 | 50
-`00000600001D8DD4` | ``CWUTelemetryInstallEvent::CWUTelemetryInstallEvent(void)`` | 1 | 57 | 0
-`00000600001DD474` | ``CWUTelemetryInstallEvent::Init(CReporter *,long,long,ushort const *,long,_GUID,_GUID,CReportingOptionalValues &,AsimovDataInAddition *)`` | 6 | 50 | 8
-`00000600001DD550` | ``CWUTelemetryInstallEvent::InitializeMemebersFromOptionalData(tagOptionalData *)`` | 23 | 81 | 34
-`00000600001D8EFC` | ``CWUTelemetryInstallEvent::~CWUTelemetryInstallEvent(void)`` | 2 | 66 | 1
-`00000600001DE67C` | ``CWUTelemetryInstallFailedEvent::FireAsimovEvent(void)`` | 34 | 409 | 50
-`00000600001DF67C` | ``CWUTelemetryInstallRebootPendingEvent::FireAsimovEvent(void)`` | 34 | 409 | 50
-`00000600001D8D9C` | ``CWUTelemetryInstallRebootPendingEvent::`scalar deleting destructor'(uint)`` | 3 | 15 | 3
-`00000600001DD67C` | ``CWUTelemetryInstallStartedEvent::FireAsimovEvent(void)`` | 34 | 409 | 50
-`00000600001DDE7C` | ``CWUTelemetryInstallSucceededEvent::FireAsimovEvent(void)`` | 34 | 409 | 50
-`00000600001CAE68` | ``CWUTelemetryScanFailedEvent::FireAsimovEvent(void)`` | 31 | 416 | 46
-`00000600001CA100` | ``CWUTelemetryScanRetryEvent::FireAsimovEvent(void)`` | 9 | 108 | 13
-`00000600001CA588` | ``CWUTelemetryScanSucceededEvent::FireAsimovEvent(void)`` | 47 | 459 | 73
-`00000600001CB790` | ``CWUTelemetryUnsupportedSystemClickSupportEvent::FireAsimovEvent(void)`` | 5 | 22 | 7
-`00000600001CB9B0` | ``CWUTelemetryUnsupportedSystemClickSupportEvent::`scalar deleting destructor'(uint)`` | 3 | 17 | 3
-`00000600001CB7FC` | ``CWUTelemetryUnsupportedSystemDetectionEvent::FireAsimovEvent(void)`` | 5 | 22 | 7
-`00000600001CB970` | ``CWUTelemetryUnsupportedSystemDetectionEvent::`scalar deleting destructor'(uint)`` | 3 | 17 | 3
-`00000600001CB724` | ``CWUTelemetryUnsupportedSystemNotificationDismissEvent::FireAsimovEvent(void)`` | 5 | 22 | 7
-`00000600001CB9F0` | ``CWUTelemetryUnsupportedSystemNotificationDismissEvent::`scalar deleting destructor'(uint)`` | 3 | 17 | 3
-`00000600001CB6B8` | ``CWUTelemetryUnsupportedSystemNotificationShowEvent::FireAsimovEvent(void)`` | 5 | 22 | 7
-`00000600001CBA30` | ``CWUTelemetryUnsupportedSystemNotificationShowEvent::`scalar deleting destructor'(uint)`` | 3 | 17 | 3
-**`0000060000102F08`** | **``IsCPUSupported(void)``** | **20** | **157** | **31**
-**`00000600000AF3C0`** | **``IsDeviceServiceable(void)``** | **7** | **31** | **8**
-`00000600000832CC` | ``TraceLoggingEnableForTelemetry(_TlgProvider_t const *)`` | 16 | 86 | 23
-`0000060000083210` | ``TraceLoggingSetInformation(_TlgProvider_t const *,_EVENT_INFO_CLASS,void *,ulong)`` | 6 | 50 | 8
+- The installer registers a scheduled task that automatically starts wufuc on system boot/user log on.
+- Depending on how the Windows Update service is configured to run, wufuc will:
+    * **Shared process**: inject itself into the service host process that Windows Update will run in when it starts.
+    * **Own process**: wait for the Windows Update service to start and then inject into it.
+- Once injected, wufuc will hook some functions where appropriate:
+    * `LoadLibraryExW` hook will automatically hook the `IsDeviceServiceable()` function inside `wuaueng.dll` when it is loaded.
+    * `RegQueryValueExW` hook is necessary to provide compatibility with [UpdatePack7R2](../../issues/100). This hook not applied when `wuauserv` is configured to run in its own process.
 
-We have found culprits, [`IsDeviceServiceable(void)`](https://gist.github.com/zeffy/e5ec266952932bc905eb0cbc6ed72185) and [`IsCPUSupported(void)`](https://gist.github.com/zeffy/1a8f8984d2bec97ae24af63a76278694)!
+## Sponsors
 
-## Solutions
+### [Advanced Installer](https://www.advancedinstaller.com/)
 
-Luckily, there are a couple of different ways to kill this CPU check by patching `wuaueng.dll`.
+The installer packages are created with Advanced Installer using an [open source license](http://www.advancedinstaller.com/free-license.html). 
+Advanced Installer's intuitive and friendly user interface allowed me to quickly create a feature complete installer with minimal effort. Check it out!
 
-1. Change the value of `dword_600002EE948` (see [this line](https://gist.github.com/zeffy/e5ec266952932bc905eb0cbc6ed72185#file-isdeviceserviceable-c-L7)) which is at file offset `0x26C948`, from `0x01` to `0x00`. This makes `IsDeviceServiceable(void)` skip over the entire CPU check and immediately return the value stored at `dword_600002EE94C`, which by default is 1 (supported CPU). This is my preferred method, as it is a simple 1-byte change. **Note: this offset is only for the KB4012218-x64, for a list of all the patch offsets [click here](docs/Patch_Offsets.md).**
+## Special thanks
 
-2. Fill all the instructions highlighted [here](https://gist.github.com/zeffy/e5ec266952932bc905eb0cbc6ed72185#file-isdeviceserviceable-asm-L24-L26) in `IsDeviceServiceable(void)` with `nop`s. This will enabling using the `ForceUnsupportedCPU` value of type `REG_DWORD` under the registry key `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Test\Scan` (you will most likely have to create this registry key). You can set this value to `0x00000001` to force unsupported CPUs, or to `0x00000000` to use the default behaviour. You will probably need to restart your PC or restart the `wuauserv` service in order for changes to apply. **This is an internal testing feature used by Microsoft and could be removed in future updates, so I will not be providing xdelta files for it.**
+- Wen Jia Liu ([@wj32](https://github.com/wj32)) for his awesome program [Process Hacker](https://github.com/processhacker2/processhacker), and also for his [phnt headers](https://github.com/processhacker2/processhacker/tree/master/phnt).
+- Duncan Ogilvie ([@mrexodia](https://github.com/mrexodia)) for [x64dbg](https://github.com/x64dbg/x64dbg), its [`patternfind.cpp`](https://github.com/x64dbg/x64dbg/blob/development/src/dbg/patternfind.cpp) algorithm, and its issue template which I adapted for this project.
+- Tsuda Kageyu ([@TsudaKageyu](https://github.com/TsudaKageyu)) for his excellent [minhook](https://github.com/TsudaKageyu/minhook) library.
 
-## Caveats
-
-- You have to apply a new patch whenever `wuaueng.dll` gets updated.
-- SFC scan errors will most likely occur as it will believe the integrity of the system has been compromised.
-
-[BinDiff]: https://www.zynamics.com/software.html
-[Diaphora]: http://diaphora.re
+[Latest]: https://github.com/zeffy/wufuc/releases/latest
+[AppVeyor]: https://ci.appveyor.com/project/zeffy/wufuc
+[:de:]: https://github.com/zeffy/wufuc/wiki/README-(Deutsch)
+[:es:]: https://github.com/zeffy/wufuc/wiki/README-(Espa%C3%B1ol)
+[:fr:]: https://github.com/zeffy/wufuc/wiki/README-(Fran%C3%A7ais)
+[:it:]: https://github.com/zeffy/wufuc/wiki/README-(Italiano)
+[:hungary:]: https://github.com/zeffy/wufuc/wiki/README-(Magyar)
+[:brazil:]: https://github.com/zeffy/wufuc/wiki/README-(Portugu%C3%AAs-Brasileiro)
+[:ru:]: https://github.com/zeffy/wufuc/wiki/README-(%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
+[:cn:]: https://github.com/zeffy/wufuc/wiki/README-(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)
+[:taiwan:]: https://github.com/zeffy/wufuc/wiki/README-(%E7%B9%81%E9%AB%94%E4%B8%AD%E6%96%87)

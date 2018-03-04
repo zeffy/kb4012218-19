@@ -1,0 +1,5 @@
+LIBRARY
+EXPORTS
+        RUNDLL32_StartW @1
+        RUNDLL32_UnloadW @2
+        RUNDLL32_DeleteFileW @3
